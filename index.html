@@ -107,6 +107,19 @@
   #section-adult .cta-final{left:29%; top:81.22%; width:42%; height:3.37%;}
 
   /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
+  /* Плаваюча підказка "гортай вниз" — видно тільки поки не долистали до
+     дорослої секції. Не запечена в картинку, окремий шар. */
+  .scroll-hint-fab{
+    position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:20;
+    background:rgba(20,15,50,0.8); color:#fff; border:1px solid rgba(255,255,255,0.3);
+    border-radius:100px; padding:8px 16px; display:flex; align-items:center; gap:6px;
+    font-family:Arial,sans-serif; font-size:12px; font-weight:600; text-decoration:none;
+    opacity:1; transition:opacity .3s;
+  }
+  .scroll-hint-fab.hidden{opacity:0; pointer-events:none;}
+  .scroll-hint-fab svg{width:16px; height:16px; animation:bounce 1.4s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);}}
+
   .back-to-top{
     position:fixed; right:16px; bottom:16px; z-index:20;
     background:rgba(20,15,50,0.75); color:#fff; border:1px solid rgba(255,255,255,0.25);
@@ -117,23 +130,27 @@
   .back-to-top svg{width:20px; height:20px;}
 
   /* ---------- Полоска соцмереж (внизу сторінки, реальний HTML-шар) ---------- */
-  /* На всю ширину, поділена на 5 рівних секцій, кожна у фірмовому кольорі
-     платформи — щоб було одразу видно, куди тиснути, а не губилось у
-     маленьких сірих кружечках. */
+  /* П'ять кнопок строго в межах ширини лендингу (flex:1 1 0 + gap замість
+     aspect-ratio, який раніше "розпирав" ряд і виштовхував 5-ту іконку за
+     екран). Кожна — окрема кнопка з заокругленням і тінню, щоб було видно,
+     що це саме кнопка, а не просто картинка. */
   .social-bar{
-    display:flex; width:100%;
+    display:flex; width:100%; gap:8px; padding:14px 12px; box-sizing:border-box;
+    background:#0A0722;
   }
   .social-bar a{
-    flex:1 1 20%; aspect-ratio:1.4/1; display:flex; align-items:center; justify-content:center;
-    color:#fff; text-decoration:none; transition:filter .2s; min-height:64px;
+    flex:1 1 0; min-width:0; height:52px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; text-decoration:none; transition:transform .15s, filter .15s;
+    box-shadow:0 3px 8px rgba(0,0,0,0.4);
   }
-  .social-bar a:hover, .social-bar a:active{filter:brightness(1.15);}
-  .social-bar svg{width:26px; height:26px;}
+  .social-bar a:hover, .social-bar a:active{filter:brightness(1.15); transform:translateY(-1px);}
+  .social-bar svg{width:22px; height:22px;}
   .social-bar .sb-youtube{background:#FF0000;}
-  .social-bar .sb-tiktok{background:#000000;}
+  .social-bar .sb-tiktok{background:#1a1a1a;}
   .social-bar .sb-instagram{background:linear-gradient(45deg,#FEDA75,#FA7E1E,#D62976,#962FBF,#4F5BD5);}
   .social-bar .sb-facebook{background:#1877F2;}
-  .social-bar .sb-threads{background:#000000;}
+  .social-bar .sb-threads{background:#1a1a1a;}
 
   /* ---------- Спільний бренд-лого (плаваюче, ліва верхня позиція) ---------- */
   .brand-logo{
@@ -230,11 +247,11 @@
   <a class="sb-instagram" href="https://www.instagram.com/cartobi_studio" target="_blank" rel="noopener" aria-label="Instagram">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
   </a>
-  <a class="sb-facebook" href="https://www.facebook.com/profile.php?id=61592096181146" target="_blank" rel="noopener" aria-label="Facebook">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V8c0-.9.2-1.5 1.6-1.5h1.6V3.7C15.9 3.5 15 3.5 14 3.5c-2.5 0-4.2 1.5-4.2 4.3v2.1H7v3.1h2.8v8h3.7Z"/></svg>
-  </a>
   <a class="sb-threads" href="https://www.threads.net/@cartobi_studio" target="_blank" rel="noopener" aria-label="Threads">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.2 2C7.4 2 4 5.6 3.7 10.4c-.1 2.1.3 4 1.2 5.6.9 1.6 2.2 2.8 3.9 3.6 1.6.7 3.4 1 5.3.9 2.4-.1 4.3-1 5.6-2.5 1.1-1.3 1.6-2.9 1.6-4.7 0-1.5-.4-2.7-1.2-3.6-.6-.7-1.4-1.1-2.4-1.3.1-1.2-.2-2.2-.9-3-1-1.1-2.5-1.6-4.4-1.5-1.7.1-3 .8-3.9 1.9l1.5 1c.6-.7 1.4-1.1 2.5-1.2 1.2-.1 2.1.2 2.6.8.4.4.6 1 .6 1.7-.9-.1-1.9-.1-2.9.1-2.5.4-4 1.8-3.9 3.7.1 2 1.9 3.2 4.2 3.1 1.7-.1 2.9-.8 3.7-2 .5-.8.8-1.8.9-2.9.6.2 1.1.5 1.4.9.5.6.7 1.4.7 2.4 0 1.3-.4 2.4-1.1 3.2-1 1.1-2.4 1.7-4.3 1.8-1.6.1-3-.2-4.3-.7-1.3-.6-2.3-1.5-3-2.8-.7-1.3-1-2.8-.9-4.5.3-4 3-6.8 6.9-6.8 1.9 0 3.5.6 4.6 1.7 1 1 1.6 2.4 1.8 4.1l1.9-.2c-.2-2.2-1-3.9-2.4-5.3C16.5 2.7 14.5 2 12.2 2Zm.4 10.1c.8-.1 1.6-.1 2.4 0-.1.9-.3 1.6-.6 2.1-.5.7-1.2 1.1-2.2 1.2-1.2.1-2.1-.4-2.2-1.3-.1-1 .8-1.8 2.6-2Z"/></svg>
+  </a>
+  <a class="sb-facebook" href="https://www.facebook.com/profile.php?id=61592096181146" target="_blank" rel="noopener" aria-label="Facebook">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V8c0-.9.2-1.5 1.6-1.5h1.6V3.7C15.9 3.5 15 3.5 14 3.5c-2.5 0-4.2 1.5-4.2 4.3v2.1H7v3.1h2.8v8h3.7Z"/></svg>
   </a>
 </div>
 
@@ -247,6 +264,11 @@
 <!-- Кнопка "наверх, до дитячої" — з'являється, коли гортаємо другу секцію -->
 <a class="back-to-top" id="back-to-top" href="#section-kids">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</a>
+
+<a class="scroll-hint-fab" id="scroll-hint-fab" href="#section-adult">
+  <span>Погортайте вниз — є ще!</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
 <script>
@@ -328,6 +350,15 @@
     });
   }, { threshold: 0.01 });
   if (socialBar) socialObserver.observe(socialBar);
+
+  // Ховаємо підказку "гортай вниз", щойно доросла секція потрапляє у в'юпорт
+  const scrollHint = document.getElementById('scroll-hint-fab');
+  const hintObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      scrollHint.classList.toggle('hidden', entry.isIntersecting);
+    });
+  }, { threshold: 0.15 });
+  if (scrollHint) hintObserver.observe(adultSection);
 </script>
 
 </body>
