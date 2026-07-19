@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartobi — мультфільми на замовлення</title>
+<style>
+  *{margin:0; padding:0; box-sizing:border-box; -webkit-text-size-adjust:100%;}
+  html{scroll-behavior:smooth;}
+  body{background:#0A0722;}
+
+  section.frame{position:relative; width:100%; max-width:540px; margin:0 auto;}
+  section.frame::before{content:''; display:block; padding-top:177.78%;}
+  .frame-inner{position:absolute; inset:0;}
+  .frame-inner img{width:100%; height:100%; object-fit:contain; display:block;}
+
+  .hot{position:absolute; cursor:pointer; background:transparent; border:none; padding:0;}
+  .hot:active{opacity:0.6;}
+
+  /* ---------- Секція 1: Дитяча лінійка ---------- */
+  #section-kids{background:#0A0722;}
+  #section-kids .cta-main{left:33.27%; top:31.5%; width:33.37%; height:4%;}
+  #section-kids .cta-view-example{left:56.63%; top:65.8%; width:29.2%; height:3%;}
+  #section-kids .cta-final{left:30.77%; top:79.3%; width:38.38%; height:4%;}
+  #section-kids .play-btn{left:24.93%; top:59%; width:13.35%; height:7%;}
+  /* Карточки 5 жанрів — попередні координати, звірити з фінальною картинкою завтра */
+  #section-kids .genre-1{left:2%; top:40%; width:18%; height:9%;}
+  #section-kids .genre-2{left:22%; top:40%; width:18%; height:9%;}
+  #section-kids .genre-3{left:42%; top:40%; width:18%; height:9%;}
+  #section-kids .genre-4{left:62%; top:40%; width:18%; height:9%;}
+  #section-kids .genre-5{left:82%; top:40%; width:16%; height:9%;}
+
+  /* Підказка "скрольте далі" в кінці першої секції */
+  .scroll-hint{
+    position:relative; width:100%; max-width:540px; margin:0 auto;
+    background:linear-gradient(180deg,#0A0722,#150e3a);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:22px 16px 26px; text-align:center; font-family:Arial,sans-serif;
+    cursor:pointer; border:none;
+  }
+  .scroll-hint span{color:#e8e5f5; font-size:14px; font-weight:600; margin-bottom:8px;}
+  .scroll-hint svg{width:26px; height:26px; animation:bounce 1.6s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(8px);}}
+
+  /* ---------- Модалка відео-плеєра ---------- */
+  .video-modal{
+    position:fixed; inset:0; z-index:50; background:rgba(5,3,20,0.92);
+    display:none; align-items:center; justify-content:center; padding:16px;
+  }
+  .video-modal.open{display:flex;}
+  .video-modal video{width:100%; max-width:420px; max-height:85vh; border-radius:14px; display:block;}
+  .video-modal .close-btn{
+    position:absolute; top:16px; right:16px; width:40px; height:40px; border-radius:100px;
+    background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:20px; cursor:pointer;
+  }
+
+  /* ---------- Міні-превью прикладів під дитячою секцією ---------- */
+  .kids-examples{
+    display:flex; gap:10px; justify-content:center; padding:14px 16px 20px;
+    background:#0A0722; font-family:Arial,sans-serif;
+  }
+  .kids-examples button{
+    position:relative; width:130px; border:none; padding:0; border-radius:12px; overflow:hidden; cursor:pointer;
+  }
+  .kids-examples img{width:100%; display:block; aspect-ratio:9/16; object-fit:cover;}
+  .kids-examples span{
+    position:absolute; bottom:6px; left:6px; right:6px; color:#fff; font-size:11px; font-weight:700;
+    text-shadow:0 1px 4px rgba(0,0,0,0.8); text-align:left;
+  }
+  .kids-examples .play-dot{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:32px; height:32px; border-radius:100px; background:rgba(255,255,255,0.85);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .kids-examples .play-dot svg{width:14px; height:14px; fill:#1a1030;}
+
+  /* ---------- Блок "реакції батьків" (соцпруф) ---------- */
+  #section-reactions{
+    background:linear-gradient(180deg,#150e3a,#1a1440);
+    padding:24px 16px 8px; text-align:center; font-family:Arial,sans-serif;
+  }
+  #section-reactions h3{color:#fff; font-size:17px; margin-bottom:14px;}
+  .reactions-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:10px; max-width:540px; margin:0 auto;
+  }
+  .reactions-grid .r-item{grid-column:span 1;}
+  .reactions-grid .r-item.wide{grid-column:span 2;}
+  .reactions-grid img{width:100%; border-radius:14px; display:block; object-fit:cover; aspect-ratio:4/3;}
+  #section-adult{background:#060726;}
+  #section-adult .cta-main{left:12%; top:25.95%; width:33%; height:3.37%;}
+  #section-adult .arrow-left-1{left:0%; top:39.03%; width:5%; height:4.22%;}
+  #section-adult .arrow-right-1{left:95%; top:39.03%; width:5%; height:4.22%;}
+  #section-adult .card-1{left:2%; top:33.97%; width:23%; height:13.5%;}
+  #section-adult .card-2{left:27%; top:33.97%; width:23%; height:13.5%;}
+  #section-adult .card-3{left:52%; top:33.97%; width:23%; height:13.5%;}
+  #section-adult .card-4{left:77%; top:33.97%; width:21%; height:13.5%;}
+  #section-adult .arrow-left-2{left:0%; top:66.03%; width:5%; height:4.22%;}
+  #section-adult .arrow-right-2{left:95%; top:66.03%; width:5%; height:4.22%;}
+  #section-adult .ex-1{left:2%; top:63.5%; width:23%; height:10.97%;}
+  #section-adult .ex-2{left:27%; top:63.5%; width:23%; height:10.97%;}
+  #section-adult .ex-3{left:52%; top:63.5%; width:23%; height:10.97%;}
+  #section-adult .ex-4{left:77%; top:63.5%; width:21%; height:10.97%;}
+  #section-adult .cta-final{left:29%; top:81.22%; width:42%; height:3.37%;}
+
+  /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
+  .back-to-top{
+    position:fixed; right:16px; bottom:16px; z-index:20;
+    background:rgba(20,15,50,0.75); color:#fff; border:1px solid rgba(255,255,255,0.25);
+    border-radius:100px; width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; text-decoration:none; opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .back-to-top.visible{opacity:1; pointer-events:auto;}
+  .back-to-top svg{width:20px; height:20px;}
+
+  /* ---------- Полоска соцмереж (внизу сторінки, реальний HTML-шар) ---------- */
+  .social-bar{
+    background:#0A0722; padding:22px 16px 28px; display:flex; align-items:center;
+    justify-content:center; gap:16px; border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .social-bar a{
+    width:42px; height:42px; border-radius:100px; background:rgba(255,255,255,0.06);
+    display:flex; align-items:center; justify-content:center; color:#e8e5f5; text-decoration:none;
+    transition:background .2s;
+  }
+  .social-bar a:hover, .social-bar a:active{background:rgba(255,255,255,0.14);}
+  .social-bar svg{width:20px; height:20px;}
+
+  /* ---------- Спільний бренд-лого (плаваюче, ліва верхня позиція) ---------- */
+  .brand-logo{
+    position:fixed; top:12px; left:12px; z-index:30;
+    width:44px; height:44px; border-radius:100px; overflow:hidden; cursor:pointer;
+    border:2px solid rgba(255,255,255,0.35); box-shadow:0 4px 16px rgba(0,0,0,0.4);
+    background:#1a1440;
+  }
+  .brand-logo img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  /* ---------- Спільний перемикач мов (плаваючий, видно на обох секціях) ---------- */
+  .lang-switch{
+    position:fixed; top:12px; right:12px; z-index:30;
+    background:rgba(20,15,50,0.7); border:1px solid rgba(255,255,255,0.25); border-radius:100px;
+    display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;
+    padding:8px 14px; font-family:Arial,sans-serif; color:#fff; font-size:13px; font-weight:600;
+  }
+  .lang-switch svg{width:16px; height:16px; flex-shrink:0;}
+  .lang-dropdown{
+    position:fixed; top:52px; right:12px; z-index:35; background:#1a1440; border:1px solid rgba(255,255,255,0.15);
+    border-radius:14px; padding:6px; display:none; max-height:60vh; overflow-y:auto; min-width:170px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  }
+  .lang-dropdown.open{display:block;}
+  .lang-dropdown button{display:block; width:100%; text-align:left; background:none; border:none; color:#e8e5f5;
+    font-family:Arial,sans-serif; font-size:14px; padding:9px 12px; border-radius:8px; cursor:pointer;}
+  .lang-dropdown button:hover, .lang-dropdown button:active{background:rgba(255,255,255,0.1);}
+  .lang-dropdown button.active{color:#ffb020; font-weight:700;}
+
+  @media (orientation:landscape) and (max-height:600px){
+    section.frame{width:auto; max-width:none;}
+    section.frame::before{padding-top:0; display:none;}
+    .frame-inner{position:static; height:96vh;}
+    .frame-inner img{width:auto; height:100%; margin:0 auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Плаваючий бренд-лого Cartobi, замінює "три палички" з макету -->
+<div class="brand-logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+  <img src="assets/cartobi-logo.png" alt="Cartobi">
+</div>
+
+<!-- Плаваючий перемикач мов, видно завжди -->
+<div class="lang-switch" onclick="toggleLangDropdown()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg>
+  <span id="lang-current">UA</span>
+</div>
+<div class="lang-dropdown" id="lang-dropdown"></div>
+
+<!-- ============ СЕКЦІЯ 1: ДИТЯЧА ЛІНІЙКА ============ -->
+<section class="frame" id="section-kids">
+  <div class="frame-inner">
+    <img src="hero-kids.jpg" alt="Cartobi — дитяча лінійка">
+  </div>
+  <button class="hot cta-main" onclick="goToBot('kids')"></button>
+  <button class="hot genre-1" onclick="goToBot('kids','space')"></button>
+  <button class="hot genre-2" onclick="goToBot('kids','dragons')"></button>
+  <button class="hot genre-3" onclick="goToBot('kids','tale')"></button>
+  <button class="hot genre-4" onclick="goToBot('kids','cars')"></button>
+  <button class="hot genre-5" onclick="goToBot('kids','heroes')"></button>
+  <button class="hot play-btn" onclick="playPreview()"></button>
+  <button class="hot cta-view-example" onclick="playPreview()"></button>
+  <button class="hot cta-final" onclick="goToBot('kids')"></button>
+</section>
+
+<!-- ============ СЕКЦІЯ 2: ДОРОСЛА ЛІНІЙКА ============ -->
+<section class="frame" id="section-adult">
+  <div class="frame-inner">
+    <img src="hero-adult.jpg" alt="Cartobi — доросла лінійка">
+  </div>
+  <button class="hot cta-main" onclick="goToBot('romance')"></button>
+  <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
+  <button class="hot arrow-right-1" onclick="shiftFormats(1)"></button>
+  <button class="hot card-1" onclick="goToBot('romance')"></button>
+  <button class="hot card-2" onclick="goToBot('birthday')"></button>
+  <button class="hot card-3" onclick="goToBot('corporate')"></button>
+  <button class="hot card-4" onclick="goToBot('wedding')"></button>
+  <button class="hot arrow-left-2" onclick="shiftExamples(-1)"></button>
+  <button class="hot arrow-right-2" onclick="shiftExamples(1)"></button>
+  <button class="hot ex-1" onclick="openVideo('videos/romance-2-restaurant-flowers.mp4')"></button>
+  <button class="hot ex-2" onclick="openVideo('videos/romance-1-park-bouquet.mp4')"></button>
+  <button class="hot ex-3" onclick="openVideo('videos/corporate-mike-store.mp4')"></button>
+  <button class="hot ex-4" onclick="openVideo('videos/romance-5-rollsroyce.mp4')"></button>
+  <button class="hot cta-final" onclick="goToBot('romance')"></button>
+</section>
+
+<!-- Полоска соцмереж — посилання підставити пізніше (TODO нижче) -->
+<div class="social-bar">
+  <a href="https://www.youtube.com/@Cartobistudio" target="_blank" rel="noopener" aria-label="YouTube">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg>
+  </a>
+  <a href="https://www.tiktok.com/@cartobi.studio" target="_blank" rel="noopener" aria-label="TikTok">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8a4.3 4.3 0 0 1-3.1-1.6V15a5 5 0 1 1-4.3-5v2.2a2.8 2.8 0 1 0 2 2.7V2h2.2a4.3 4.3 0 0 0 3.2 3.5v2.3Z"/></svg>
+  </a>
+  <a href="https://www.instagram.com/cartobi_studio" target="_blank" rel="noopener" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+  </a>
+  <a href="https://www.facebook.com/profile.php?id=61592096181146" target="_blank" rel="noopener" aria-label="Facebook">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V8c0-.9.2-1.5 1.6-1.5h1.6V3.7C15.9 3.5 15 3.5 14 3.5c-2.5 0-4.2 1.5-4.2 4.3v2.1H7v3.1h2.8v8h3.7Z"/></svg>
+  </a>
+  <a href="https://www.threads.net/@cartobi_studio" target="_blank" rel="noopener" aria-label="Threads">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.2 2C7.4 2 4 5.6 3.7 10.4c-.1 2.1.3 4 1.2 5.6.9 1.6 2.2 2.8 3.9 3.6 1.6.7 3.4 1 5.3.9 2.4-.1 4.3-1 5.6-2.5 1.1-1.3 1.6-2.9 1.6-4.7 0-1.5-.4-2.7-1.2-3.6-.6-.7-1.4-1.1-2.4-1.3.1-1.2-.2-2.2-.9-3-1-1.1-2.5-1.6-4.4-1.5-1.7.1-3 .8-3.9 1.9l1.5 1c.6-.7 1.4-1.1 2.5-1.2 1.2-.1 2.1.2 2.6.8.4.4.6 1 .6 1.7-.9-.1-1.9-.1-2.9.1-2.5.4-4 1.8-3.9 3.7.1 2 1.9 3.2 4.2 3.1 1.7-.1 2.9-.8 3.7-2 .5-.8.8-1.8.9-2.9.6.2 1.1.5 1.4.9.5.6.7 1.4.7 2.4 0 1.3-.4 2.4-1.1 3.2-1 1.1-2.4 1.7-4.3 1.8-1.6.1-3-.2-4.3-.7-1.3-.6-2.3-1.5-3-2.8-.7-1.3-1-2.8-.9-4.5.3-4 3-6.8 6.9-6.8 1.9 0 3.5.6 4.6 1.7 1 1 1.6 2.4 1.8 4.1l1.9-.2c-.2-2.2-1-3.9-2.4-5.3C16.5 2.7 14.5 2 12.2 2Zm.4 10.1c.8-.1 1.6-.1 2.4 0-.1.9-.3 1.6-.6 2.1-.5.7-1.2 1.1-2.2 1.2-1.2.1-2.1-.4-2.2-1.3-.1-1 .8-1.8 2.6-2Z"/></svg>
+  </a>
+</div>
+
+<!-- Модалка відео-плеєра (спільна для обох секцій) -->
+<div class="video-modal" id="video-modal">
+  <button class="close-btn" onclick="closeVideo()">✕</button>
+  <video id="modal-video" controls playsinline></video>
+</div>
+
+<!-- Кнопка "наверх, до дитячої" — з'являється, коли гортаємо другу секцію -->
+<a class="back-to-top" id="back-to-top" href="#section-kids">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</a>
+
+<script>
+  const BOT_USERNAME = 'CartobiBot'; // подтверждено Игорем — @CartobiBot
+
+  const LANGUAGES = [
+    { code: 'ua', label: 'Українська' },
+    { code: 'en', label: 'English' },
+    { code: 'ru', label: 'Русский' },
+    { code: 'pl', label: 'Polski' },
+    { code: 'de', label: 'Deutsch' },
+    { code: 'fr', label: 'Français' },
+    { code: 'es', label: 'Español' },
+    { code: 'it', label: 'Italiano' },
+    { code: 'pt', label: 'Português' },
+    { code: 'tr', label: 'Türkçe' },
+  ];
+  let currentLang = 'ua';
+
+  function buildLangDropdown() {
+    const el = document.getElementById('lang-dropdown');
+    el.innerHTML = LANGUAGES.map(l =>
+      `<button class="${l.code === currentLang ? 'active' : ''}" onclick="setLang('${l.code}')">${l.label}</button>`
+    ).join('');
+  }
+  function toggleLangDropdown() {
+    document.getElementById('lang-dropdown').classList.toggle('open');
+  }
+  function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('lang-current').textContent = lang.toUpperCase();
+    document.getElementById('lang-dropdown').classList.remove('open');
+    buildLangDropdown();
+    console.log('lang set to', lang);
+  }
+  buildLangDropdown();
+
+  function openVideo(src) {
+    const modal = document.getElementById('video-modal');
+    const video = document.getElementById('modal-video');
+    video.src = src;
+    modal.classList.add('open');
+    video.play().catch(() => {});
+  }
+  function closeVideo() {
+    const modal = document.getElementById('video-modal');
+    const video = document.getElementById('modal-video');
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    modal.classList.remove('open');
+  }
+  function playPreview() { openVideo('videos/kids-gymnast.mp4'); }
+  function shiftFormats(dir) { console.log('shift formats', dir); }
+  function shiftExamples(dir) { console.log('shift examples', dir); }
+
+  function goToBot(genre, substyle) {
+    let payload = 'g' + genre;
+    if (substyle) payload += '_s' + substyle;
+    window.location.href = 'https://t.me/' + BOT_USERNAME + '?start=' + payload;
+  }
+
+  // Показуємо кнопку "наверх" тільки коли доросла секція у в'юпорті
+  const adultSection = document.getElementById('section-adult');
+  const backBtn = document.getElementById('back-to-top');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      backBtn.classList.toggle('visible', entry.isIntersecting);
+    });
+  }, { threshold: 0.3 });
+  observer.observe(adultSection);
+</script>
+
+</body>
+</html>
