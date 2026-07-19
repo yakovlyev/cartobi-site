@@ -49,14 +49,20 @@
   /* ---------- Модалка відео-плеєра ---------- */
   .video-modal{
     position:fixed; inset:0; z-index:50; background:rgba(5,3,20,0.92);
-    display:none; align-items:center; justify-content:center; padding:16px;
+    display:none; align-items:center; justify-content:center; padding:16px; flex-direction:column; gap:12px;
   }
   .video-modal.open{display:flex;}
-  .video-modal video{width:100%; max-width:420px; max-height:85vh; border-radius:14px; display:block;}
+  .video-modal video{width:100%; max-width:420px; max-height:75vh; border-radius:14px; display:block;}
   .video-modal .close-btn{
     position:absolute; top:16px; right:16px; width:40px; height:40px; border-radius:100px;
-    background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:20px; cursor:pointer;
+    background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:20px; cursor:pointer; z-index:51;
   }
+  .video-modal .order-btn{
+    display:none; width:100%; max-width:420px; padding:14px; border:none; border-radius:100px;
+    background:linear-gradient(135deg,#ff9a3c,#e2842c); color:#fff; font-family:Arial,sans-serif;
+    font-weight:700; font-size:15px; cursor:pointer;
+  }
+  .video-modal .order-btn.visible{display:block;}
 
   /* ---------- Міні-превью прикладів під дитячою секцією ---------- */
   .kids-examples{
@@ -205,11 +211,11 @@
     <img src="hero-kids.jpg" alt="Cartobi — дитяча лінійка">
   </div>
   <button class="hot cta-main" onclick="goToBot('kids')"></button>
-  <button class="hot genre-1" onclick="goToBot('kids','space')"></button>
-  <button class="hot genre-2" onclick="goToBot('kids','dragons')"></button>
-  <button class="hot genre-3" onclick="goToBot('kids','tale')"></button>
-  <button class="hot genre-4" onclick="goToBot('kids','cars')"></button>
-  <button class="hot genre-5" onclick="goToBot('kids','heroes')"></button>
+  <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
+  <button class="hot genre-2" onclick="openVideo('videos/kids-dragons.mp4','kids','dragons')"></button>
+  <button class="hot genre-3" onclick="openVideo('videos/kids-tale.mp4','kids','tale')"></button>
+  <button class="hot genre-4" onclick="openVideo('videos/kids-cars.mp4','kids','cars')"></button>
+  <button class="hot genre-5" onclick="openVideo('videos/kids-heroes.mp4','kids','heroes')"></button>
   <button class="hot play-btn" onclick="playPreview()"></button>
   <button class="hot cta-view-example" onclick="playPreview()"></button>
   <button class="hot cta-final" onclick="goToBot('kids')"></button>
@@ -223,16 +229,16 @@
   <button class="hot cta-main" onclick="goToBot('romance')"></button>
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
   <button class="hot arrow-right-1" onclick="shiftFormats(1)"></button>
-  <button class="hot card-1" onclick="goToBot('romance')"></button>
-  <button class="hot card-2" onclick="goToBot('birthday')"></button>
-  <button class="hot card-3" onclick="goToBot('corporate')"></button>
-  <button class="hot card-4" onclick="goToBot('wedding')"></button>
+  <button class="hot card-1" onclick="openVideo('videos/romance-1-park-bouquet.mp4','romance')"></button>
+  <button class="hot card-2" onclick="openVideo('videos/adult-birthday.mp4','birthday')"></button>
+  <button class="hot card-3" onclick="openVideo('videos/corporate-mike-store.mp4','corporate')"></button>
+  <button class="hot card-4" onclick="openVideo('videos/adult-wedding.mp4','wedding')"></button>
   <button class="hot arrow-left-2" onclick="shiftExamples(-1)"></button>
   <button class="hot arrow-right-2" onclick="shiftExamples(1)"></button>
-  <button class="hot ex-1" onclick="openVideo('videos/romance-2-restaurant-flowers.mp4')"></button>
-  <button class="hot ex-2" onclick="openVideo('videos/romance-1-park-bouquet.mp4')"></button>
-  <button class="hot ex-3" onclick="openVideo('videos/corporate-mike-store.mp4')"></button>
-  <button class="hot ex-4" onclick="openVideo('videos/romance-5-rollsroyce.mp4')"></button>
+  <button class="hot ex-1" onclick="openVideo('videos/romance-2-restaurant-flowers.mp4','romance')"></button>
+  <button class="hot ex-2" onclick="openVideo('videos/romance-1-park-bouquet.mp4','romance')"></button>
+  <button class="hot ex-3" onclick="openVideo('videos/corporate-mike-store.mp4','corporate')"></button>
+  <button class="hot ex-4" onclick="openVideo('videos/romance-5-rollsroyce.mp4','romance')"></button>
   <button class="hot cta-final" onclick="goToBot('romance')"></button>
 </section>
 
@@ -259,6 +265,7 @@
 <div class="video-modal" id="video-modal">
   <button class="close-btn" onclick="closeVideo()">✕</button>
   <video id="modal-video" controls playsinline></video>
+  <button class="order-btn" id="modal-order-btn">⭐ Замовити такий мультфільм</button>
 </div>
 
 <!-- Кнопка "наверх, до дитячої" — з'являється, коли гортаємо другу секцію -->
@@ -327,12 +334,20 @@
   }
   buildLangDropdown();
 
-  function openVideo(src) {
+  function openVideo(src, genre, substyle) {
     const modal = document.getElementById('video-modal');
     const video = document.getElementById('modal-video');
+    const orderBtn = document.getElementById('modal-order-btn');
     video.src = src;
     modal.classList.add('open');
     video.play().catch(() => {});
+    if (genre) {
+      orderBtn.classList.add('visible');
+      orderBtn.onclick = () => goToBot(genre, substyle);
+    } else {
+      orderBtn.classList.remove('visible');
+      orderBtn.onclick = null;
+    }
   }
   function closeVideo() {
     const modal = document.getElementById('video-modal');
@@ -342,7 +357,7 @@
     video.load();
     modal.classList.remove('open');
   }
-  function playPreview() { openVideo('videos/kids-gymnast.mp4'); }
+  function playPreview() { openVideo('videos/kids-space.mp4', 'kids', 'space'); }
   function shiftFormats(dir) { console.log('shift formats', dir); }
   function shiftExamples(dir) { console.log('shift examples', dir); }
 
