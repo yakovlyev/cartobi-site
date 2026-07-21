@@ -134,11 +134,12 @@
   #section-pets .pet-label-4{left:60.8%; top:46.5%; width:18.4%;}
   #section-pets .pet-label-5{left:80.4%; top:46.5%; width:17.6%;}
   #section-pets .pets-cta-final{
-    position:absolute; left:50%; top:91%; transform:translateX(-50%);
-    width:78%; padding:13px 10px; border:none; border-radius:100px; cursor:pointer;
+    position:absolute; right:4%; bottom:3%; left:auto; top:auto; transform:none;
+    width:19%; aspect-ratio:1/1; padding:0; border:none; border-radius:100px; cursor:pointer;
     background:linear-gradient(135deg,#ffd166,#ff9f2e); color:#3a2400;
-    font-family:Arial,sans-serif; font-weight:800; font-size:clamp(11px,3vw,15px);
-    box-shadow:0 6px 18px rgba(255,159,46,0.5);
+    font-family:Arial,sans-serif; font-weight:800; font-size:clamp(9px,2.6vw,12px);
+    box-shadow:0 6px 18px rgba(255,159,46,0.6);
+    display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.1;
   }
 
   /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
@@ -421,17 +422,17 @@
 
   const PET_TRANSLATIONS = {
     ua: { cats:'Котики', dogs:'Песики', birds:'Птахи', small:'Гризуни', exotic:'Екзотика',
-      ctaFinal:'★ Створити мультфільм для улюбленця', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
+      ctaFinal:'★ Замовити', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
     en: { cats:'Cats', dogs:'Dogs', birds:'Birds', small:'Small pets', exotic:'Exotic',
-      ctaFinal:'★ Create a cartoon for your pet', comingSoon:'Ordering here is coming soon 🐾' },
+      ctaFinal:'★ Order', comingSoon:'Ordering here is coming soon 🐾' },
     ru: { cats:'Кошки', dogs:'Собаки', birds:'Птицы', small:'Грызуны', exotic:'Экзотика',
-      ctaFinal:'★ Создать мультфильм для питомца', comingSoon:'Скоро здесь можно будет заказать 🐾' },
+      ctaFinal:'★ Заказать', comingSoon:'Скоро здесь можно будет заказать 🐾' },
     it: { cats:'Gatti', dogs:'Cani', birds:'Uccelli', small:'Piccoli animali', exotic:'Esotici',
-      ctaFinal:'★ Crea un cartone per il tuo animale', comingSoon:'Presto potrai ordinare qui 🐾' },
+      ctaFinal:'★ Ordina', comingSoon:'Presto potrai ordinare qui 🐾' },
     fr: { cats:'Chats', dogs:'Chiens', birds:'Oiseaux', small:'Petits animaux', exotic:'Exotiques',
-      ctaFinal:'★ Créer un dessin animé pour votre animal', comingSoon:'Vous pourrez bientôt commander ici 🐾' },
+      ctaFinal:'★ Commander', comingSoon:'Vous pourrez bientôt commander ici 🐾' },
     es: { cats:'Gatos', dogs:'Perros', birds:'Aves', small:'Pequeñas mascotas', exotic:'Exóticos',
-      ctaFinal:'★ Crear un dibujo animado para tu mascota', comingSoon:'Pronto podrás pedir aquí 🐾' },
+      ctaFinal:'★ Pedir', comingSoon:'Pronto podrás pedir aquí 🐾' },
   };
 
   function renderPetLabels(lang) {
