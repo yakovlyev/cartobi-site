@@ -112,6 +112,35 @@
   #section-adult .ex-4{left:77%; top:63.5%; width:21%; height:10.97%;}
   #section-adult .cta-final{left:29%; top:81.22%; width:42%; height:3.37%;}
 
+  /* ---------- Секція "Домашні улюбленці" — третя лінійка ---------- */
+  #section-pets{background:#04211f;}
+  #section-pets .pet-card-1{left:2%; top:28%; width:18.4%; height:20%;}
+  #section-pets .pet-card-2{left:21.6%; top:28%; width:18.4%; height:20%;}
+  #section-pets .pet-card-3{left:41.2%; top:28%; width:18.4%; height:20%;}
+  #section-pets .pet-card-4{left:60.8%; top:28%; width:18.4%; height:20%;}
+  #section-pets .pet-card-5{left:80.4%; top:28%; width:17.6%; height:20%;}
+  /* Підписи категорій — реальний HTML-текст поверх картинки, одразу
+     мультимовний (на відміну від дитячої/дорослої, де текст запечений в
+     арт). Перший прохід координат — звірити вживу і підправити %, як
+     робили з genre-hotspot'ами на дитячій секції. */
+  .pet-label{
+    position:absolute; text-align:center; color:#fff; font-family:Arial,sans-serif;
+    font-weight:800; font-size:clamp(9px,2.6vw,13px); text-shadow:0 1px 5px rgba(0,0,0,0.7);
+    pointer-events:none;
+  }
+  #section-pets .pet-label-1{left:2%; top:46.5%; width:18.4%;}
+  #section-pets .pet-label-2{left:21.6%; top:46.5%; width:18.4%;}
+  #section-pets .pet-label-3{left:41.2%; top:46.5%; width:18.4%;}
+  #section-pets .pet-label-4{left:60.8%; top:46.5%; width:18.4%;}
+  #section-pets .pet-label-5{left:80.4%; top:46.5%; width:17.6%;}
+  #section-pets .pets-cta-final{
+    position:absolute; left:50%; top:91%; transform:translateX(-50%);
+    width:78%; padding:13px 10px; border:none; border-radius:100px; cursor:pointer;
+    background:linear-gradient(135deg,#2fe0c8,#12a894); color:#04211f;
+    font-family:Arial,sans-serif; font-weight:800; font-size:clamp(11px,3vw,15px);
+    box-shadow:0 6px 18px rgba(18,168,148,0.5);
+  }
+
   /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
   /* Плаваюча підказка "гортай вниз" — видно тільки поки не долистали до
      дорослої секції. Не запечена в картинку, окремий шар. */
@@ -242,6 +271,23 @@
   <button class="hot cta-final" onclick="goToBot('romance')"></button>
 </section>
 
+<section class="frame" id="section-pets">
+  <div class="frame-inner">
+    <img src="hero-pets.jpg" alt="Cartobi — домашні улюбленці">
+  </div>
+  <button class="hot pet-card-1" onclick="petComingSoon('cats')"></button>
+  <button class="hot pet-card-2" onclick="petComingSoon('dogs')"></button>
+  <button class="hot pet-card-3" onclick="petComingSoon('birds')"></button>
+  <button class="hot pet-card-4" onclick="petComingSoon('small')"></button>
+  <button class="hot pet-card-5" onclick="petComingSoon('exotic')"></button>
+  <div class="pet-label pet-label-1" id="pet-label-1"></div>
+  <div class="pet-label pet-label-2" id="pet-label-2"></div>
+  <div class="pet-label pet-label-3" id="pet-label-3"></div>
+  <div class="pet-label pet-label-4" id="pet-label-4"></div>
+  <div class="pet-label pet-label-5" id="pet-label-5"></div>
+  <button class="pets-cta-final" id="pets-cta-final" onclick="petComingSoon('final')"></button>
+</section>
+
 <!-- Полоска соцмереж, на всю ширину, у фірмових кольорах кожної платформи -->
 <div class="social-bar">
   <a class="sb-youtube" href="https://www.youtube.com/@Cartobistudio" target="_blank" rel="noopener" aria-label="YouTube">
@@ -302,6 +348,43 @@
   ];
   let currentLang = 'ua';
 
+  // Мови, для яких реально є переклад (наразі тільки текст секції
+  // питомців — дитяча/доросла лінійки поки залишаються українською,
+  // бо їхній текст запечений у самій ілюстрації, це окрема майбутня
+  // робота). Ігор явно попросив: питомці + Зоряна — мультимовні вже
+  // зараз, дитяча/доросла — поки ні.
+  const SUPPORTED_LANGS = ['en','ru','it','fr','es'];
+
+  const PET_TRANSLATIONS = {
+    ua: { cats:'Котики', dogs:'Собаки', birds:'Птиці', small:'Гризуни', exotic:'Екзотика',
+      ctaFinal:'★ Створити мультфільм для улюбленця', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
+    en: { cats:'Cats', dogs:'Dogs', birds:'Birds', small:'Small pets', exotic:'Exotic',
+      ctaFinal:'★ Create a cartoon for your pet', comingSoon:'Ordering here is coming soon 🐾' },
+    ru: { cats:'Кошки', dogs:'Собаки', birds:'Птицы', small:'Грызуны', exotic:'Экзотика',
+      ctaFinal:'★ Создать мультфильм для питомца', comingSoon:'Скоро здесь можно будет заказать 🐾' },
+    it: { cats:'Gatti', dogs:'Cani', birds:'Uccelli', small:'Piccoli animali', exotic:'Esotici',
+      ctaFinal:'★ Crea un cartone per il tuo animale', comingSoon:'Presto potrai ordinare qui 🐾' },
+    fr: { cats:'Chats', dogs:'Chiens', birds:'Oiseaux', small:'Petits animaux', exotic:'Exotiques',
+      ctaFinal:'★ Créer un dessin animé pour votre animal', comingSoon:'Vous pourrez bientôt commander ici 🐾' },
+    es: { cats:'Gatos', dogs:'Perros', birds:'Aves', small:'Pequeñas mascotas', exotic:'Exóticos',
+      ctaFinal:'★ Crear un dibujo animado para tu mascota', comingSoon:'Pronto podrás pedir aquí 🐾' },
+  };
+
+  function renderPetLabels(lang) {
+    const t = PET_TRANSLATIONS[lang] || PET_TRANSLATIONS.ua;
+    document.getElementById('pet-label-1').textContent = t.cats;
+    document.getElementById('pet-label-2').textContent = t.dogs;
+    document.getElementById('pet-label-3').textContent = t.birds;
+    document.getElementById('pet-label-4').textContent = t.small;
+    document.getElementById('pet-label-5').textContent = t.exotic;
+    document.getElementById('pets-cta-final').textContent = t.ctaFinal;
+  }
+  function petComingSoon(category) {
+    const t = PET_TRANSLATIONS[currentLang] || PET_TRANSLATIONS.ua;
+    showLangToast(t.comingSoon);
+  }
+  renderPetLabels('ua');
+
   function buildLangDropdown() {
     const el = document.getElementById('lang-dropdown');
     el.innerHTML = LANGUAGES.map(l =>
@@ -316,11 +399,20 @@
     if (lang === 'ua') {
       currentLang = 'ua';
       document.getElementById('lang-current').textContent = 'UA';
+      renderPetLabels('ua');
       buildLangDropdown();
       return;
     }
-    // Переклад контенту ще не підключено (текст запечений у самих
-    // ілюстраціях) — чесно повідомляємо, а не мовчки нічого не робимо.
+    if (SUPPORTED_LANGS.includes(lang)) {
+      currentLang = lang;
+      document.getElementById('lang-current').textContent = lang.toUpperCase();
+      renderPetLabels(lang);
+      buildLangDropdown();
+      return;
+    }
+    // Для решти мов зі списку переклад ще не готовий (і дитяча/доросла
+    // лінійки поки теж лишаються тільки українською — текст запечений
+    // у самій ілюстрації, це окрема майбутня робота) — чесно повідомляємо.
     showLangToast('Ця мова скоро буде доступна 🙌');
   }
   function showLangToast(text) {
