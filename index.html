@@ -136,9 +136,9 @@
   #section-pets .pets-cta-final{
     position:absolute; left:50%; top:91%; transform:translateX(-50%);
     width:78%; padding:13px 10px; border:none; border-radius:100px; cursor:pointer;
-    background:linear-gradient(135deg,#2fe0c8,#12a894); color:#04211f;
+    background:linear-gradient(135deg,#ffd166,#ff9f2e); color:#3a2400;
     font-family:Arial,sans-serif; font-weight:800; font-size:clamp(11px,3vw,15px);
-    box-shadow:0 6px 18px rgba(18,168,148,0.5);
+    box-shadow:0 6px 18px rgba(255,159,46,0.5);
   }
 
   /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
@@ -661,13 +661,35 @@
     body.scrollTop = body.scrollHeight;
     if (speak && who === 'bot') zoryanaSpeak(text);
   }
+  let zoryanaVoices = [];
+  function zoryanaLoadVoices() {
+    zoryanaVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  }
+  zoryanaLoadVoices();
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = zoryanaLoadVoices;
+  }
+  function zoryanaPickVoice(langCode) {
+    if (!zoryanaVoices.length) zoryanaLoadVoices();
+    const prefix = langCode.split('-')[0];
+    const candidates = zoryanaVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+    if (!candidates.length) return null;
+    // Голоси від Google/Microsoft Natural/Online зазвичай звучать м'якше
+    // за системний eSpeak-фолбек — пробуємо знайти саме такий спочатку.
+    const quality = candidates.find(v => /google|natural|online|neural/i.test(v.name));
+    const female = candidates.find(v => /female|жіно|zenska|weiblich/i.test(v.name));
+    return quality || female || candidates[0];
+  }
   function zoryanaSpeak(text) {
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
     try {
+      const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
       const utter = new SpeechSynthesisUtterance(text.replace(/[👋💛🐾👆]/g, ''));
-      utter.lang = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
-      utter.pitch = 1.1;
-      utter.rate = 0.98;
+      utter.lang = langCode;
+      const voice = zoryanaPickVoice(langCode);
+      if (voice) utter.voice = voice;
+      utter.pitch = 1.25;
+      utter.rate = 0.94;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utter);
     } catch (e) { /* тихо ігноруємо — голос це бонус, не критична функція */ }
@@ -705,6 +727,8 @@
     });
   }, { threshold: 0.3 });
   observer.observe(adultSection);
+  const petsSectionEl = document.getElementById('section-pets');
+  if (petsSectionEl) observer.observe(petsSectionEl);
 
   // Ховаємо кнопку "наверх", коли внизу вже видно полоску соцмереж —
   // інакше кнопка лягає прямо на іконку останньої соцмережі.
@@ -717,12 +741,16 @@
 
   // Ховаємо підказку "гортай вниз", щойно доросла секція потрапляє у в'юпорт
   const scrollHint = document.getElementById('scroll-hint-fab');
+  const petsSectionForHint = document.getElementById('section-pets');
   const hintObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      scrollHint.classList.toggle('hidden', entry.isIntersecting);
+      if (entry.isIntersecting) scrollHint.classList.add('hidden');
     });
   }, { threshold: 0.15 });
-  if (scrollHint) hintObserver.observe(adultSection);
+  if (scrollHint) {
+    hintObserver.observe(adultSection);
+    if (petsSectionForHint) hintObserver.observe(petsSectionForHint);
+  }
 </script>
 
 </body>
