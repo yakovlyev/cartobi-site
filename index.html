@@ -166,7 +166,7 @@
 
   /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
   .zoryana-fab{
-    position:fixed; right:16px; bottom:72px; z-index:40;
+    position:fixed; right:16px; bottom:112px; z-index:40;
     width:58px; height:58px; border-radius:100px; cursor:pointer; border:none;
     background:linear-gradient(135deg,#ffd166,#ff8fb1);
     box-shadow:0 6px 20px rgba(255,143,177,0.55), 0 0 0 3px rgba(255,255,255,0.25) inset;
@@ -178,7 +178,7 @@
     50%{box-shadow:0 6px 26px rgba(255,143,177,0.85), 0 0 0 5px rgba(255,255,255,0.35) inset;}
   }
   .zoryana-panel{
-    position:fixed; right:16px; bottom:140px; z-index:41; width:min(320px, calc(100vw - 32px));
+    position:fixed; right:16px; bottom:180px; z-index:41; width:min(320px, calc(100vw - 32px));
     max-height:60vh; background:#1a1440; border-radius:18px; overflow:hidden;
     box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.15);
     display:none; flex-direction:column; font-family:Arial,sans-serif;
@@ -420,7 +420,7 @@
   const SUPPORTED_LANGS = ['en','ru','it','fr','es'];
 
   const PET_TRANSLATIONS = {
-    ua: { cats:'Котики', dogs:'Собаки', birds:'Птиці', small:'Гризуни', exotic:'Екзотика',
+    ua: { cats:'Котики', dogs:'Песики', birds:'Птахи', small:'Гризуни', exotic:'Екзотика',
       ctaFinal:'★ Створити мультфільм для улюбленця', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
     en: { cats:'Cats', dogs:'Dogs', birds:'Birds', small:'Small pets', exotic:'Exotic',
       ctaFinal:'★ Create a cartoon for your pet', comingSoon:'Ordering here is coming soon 🐾' },
@@ -686,20 +686,32 @@
       const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
       const voice = zoryanaPickVoice(langCode);
       const clean = text.replace(/[👋💛🐾👆]/g, '').trim();
-      // Ділимо на речення і промовляємо по одному з паузою між ними —
-      // без цього браузерний голос читає все одним суцільним потоком,
-      // без інтонації і "видихання", звучить наче тараторить.
       const sentences = clean.split(/(?<=[.!?…])\s+/).filter(Boolean);
       window.speechSynthesis.cancel();
       let i = 0;
+      let advanced = false;
       function speakNext() {
         if (i >= sentences.length) return;
-        const utter = new SpeechSynthesisUtterance(sentences[i]);
+        const sentence = sentences[i];
+        advanced = false;
+        const utter = new SpeechSynthesisUtterance(sentence);
         utter.lang = langCode;
         if (voice) utter.voice = voice;
         utter.pitch = 1.08;
-        utter.rate = 0.9;
-        utter.onend = () => { i++; setTimeout(speakNext, 260); };
+        utter.rate = 0.88;
+        const advance = () => {
+          if (advanced) return; // не рухаємось вдруге, якщо і onend, і таймер спрацювали разом
+          advanced = true;
+          i++;
+          setTimeout(speakNext, 320);
+        };
+        utter.onend = advance;
+        // Мобільний Chrome часто НЕ викликає onend для утворень у черзі —
+        // тому паралельно ставимо запасний таймер за орієнтовною
+        // тривалістю фрази (символ ≈ 65мс при повільному темпі), щоб пауза
+        // між реченнями з'являлась гарантовано, а не тільки на десктопі.
+        const estMs = Math.max(600, sentence.length * 65);
+        setTimeout(advance, estMs);
         window.speechSynthesis.speak(utter);
       }
       speakNext();
