@@ -684,14 +684,25 @@
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
     try {
       const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
-      const utter = new SpeechSynthesisUtterance(text.replace(/[👋💛🐾👆]/g, ''));
-      utter.lang = langCode;
       const voice = zoryanaPickVoice(langCode);
-      if (voice) utter.voice = voice;
-      utter.pitch = 1.25;
-      utter.rate = 0.94;
+      const clean = text.replace(/[👋💛🐾👆]/g, '').trim();
+      // Ділимо на речення і промовляємо по одному з паузою між ними —
+      // без цього браузерний голос читає все одним суцільним потоком,
+      // без інтонації і "видихання", звучить наче тараторить.
+      const sentences = clean.split(/(?<=[.!?…])\s+/).filter(Boolean);
       window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
+      let i = 0;
+      function speakNext() {
+        if (i >= sentences.length) return;
+        const utter = new SpeechSynthesisUtterance(sentences[i]);
+        utter.lang = langCode;
+        if (voice) utter.voice = voice;
+        utter.pitch = 1.08;
+        utter.rate = 0.9;
+        utter.onend = () => { i++; setTimeout(speakNext, 260); };
+        window.speechSynthesis.speak(utter);
+      }
+      speakNext();
     } catch (e) { /* тихо ігноруємо — голос це бонус, не критична функція */ }
   }
   function zoryanaAsk(key) {
@@ -744,13 +755,12 @@
   const petsSectionForHint = document.getElementById('section-pets');
   const hintObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) scrollHint.classList.add('hidden');
+      // Ховаємо тільки коли видно ОСТАННЮ секцію (питомці) — на дорослій
+      // підказка має лишатись, бо нижче ще є третя сторінка.
+      scrollHint.classList.toggle('hidden', entry.isIntersecting);
     });
   }, { threshold: 0.15 });
-  if (scrollHint) {
-    hintObserver.observe(adultSection);
-    if (petsSectionForHint) hintObserver.observe(petsSectionForHint);
-  }
+  if (petsSectionForHint) hintObserver.observe(petsSectionForHint);
 </script>
 
 </body>
