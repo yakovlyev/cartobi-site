@@ -164,6 +164,53 @@
   .back-to-top.visible{opacity:1; pointer-events:auto;}
   .back-to-top svg{width:20px; height:20px;}
 
+  /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
+  .zoryana-fab{
+    position:fixed; right:16px; bottom:72px; z-index:40;
+    width:58px; height:58px; border-radius:100px; cursor:pointer; border:none;
+    background:linear-gradient(135deg,#ffd166,#ff8fb1);
+    box-shadow:0 6px 20px rgba(255,143,177,0.55), 0 0 0 3px rgba(255,255,255,0.25) inset;
+    display:flex; align-items:center; justify-content:center; font-size:28px;
+    animation:zoryana-pulse 2.4s infinite;
+  }
+  @keyframes zoryana-pulse{
+    0%,100%{box-shadow:0 6px 20px rgba(255,143,177,0.55), 0 0 0 3px rgba(255,255,255,0.25) inset;}
+    50%{box-shadow:0 6px 26px rgba(255,143,177,0.85), 0 0 0 5px rgba(255,255,255,0.35) inset;}
+  }
+  .zoryana-panel{
+    position:fixed; right:16px; bottom:140px; z-index:41; width:min(320px, calc(100vw - 32px));
+    max-height:60vh; background:#1a1440; border-radius:18px; overflow:hidden;
+    box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.15);
+    display:none; flex-direction:column; font-family:Arial,sans-serif;
+  }
+  .zoryana-panel.open{display:flex;}
+  .zoryana-head{
+    display:flex; align-items:center; gap:10px; padding:12px 14px;
+    background:linear-gradient(135deg,#ff8fb1,#ffd166); color:#3a1420;
+  }
+  .zoryana-head .avatar{width:34px; height:34px; border-radius:100px; background:#fff3; display:flex; align-items:center; justify-content:center; font-size:19px;}
+  .zoryana-head .name{font-weight:800; font-size:14px; flex:1;}
+  .zoryana-head button{background:none; border:none; color:#3a1420; font-size:18px; cursor:pointer; padding:2px 6px;}
+  .zoryana-body{padding:12px 14px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:8px;}
+  .zoryana-msg{max-width:85%; padding:9px 12px; border-radius:14px; font-size:13px; line-height:1.4;}
+  .zoryana-msg.bot{background:#2a2358; color:#fff; align-self:flex-start; border-bottom-left-radius:4px;}
+  .zoryana-msg.user{background:#ff8fb1; color:#3a1420; align-self:flex-end; border-bottom-right-radius:4px;}
+  .zoryana-quick{display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 10px;}
+  .zoryana-quick button{
+    background:#2a2358; color:#e8e5f5; border:1px solid rgba(255,255,255,0.15); border-radius:100px;
+    padding:6px 10px; font-size:11.5px; cursor:pointer;
+  }
+  .zoryana-input{display:flex; gap:8px; padding:10px 12px; border-top:1px solid rgba(255,255,255,0.1);}
+  .zoryana-input input{
+    flex:1; background:#0A0722; border:1px solid rgba(255,255,255,0.2); border-radius:100px;
+    padding:9px 14px; color:#fff; font-size:13px;
+  }
+  .zoryana-input button{
+    background:linear-gradient(135deg,#ff8fb1,#ffd166); border:none; border-radius:100px;
+    width:36px; height:36px; cursor:pointer; font-size:15px;
+  }
+
+
   /* ---------- Полоска соцмереж (внизу сторінки, реальний HTML-шар) ---------- */
   /* П'ять кнопок строго в межах ширини лендингу (flex:1 1 0 + gap замість
      aspect-ratio, який раніше "розпирав" ряд і виштовхував 5-ту іконку за
@@ -331,6 +378,23 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
+<!-- Зоряна — голосовий FAQ-помічник. Портрет поки плейсхолдер (емодзі
+     дівчинки з косою), заміниться на реальну ілюстрацію окремим кроком. -->
+<button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна">👧🏻</button>
+<div class="zoryana-panel" id="zoryana-panel">
+  <div class="zoryana-head">
+    <div class="avatar">👧🏻</div>
+    <div class="name">Зоряна</div>
+    <button onclick="toggleZoryana()">✕</button>
+  </div>
+  <div class="zoryana-body" id="zoryana-body"></div>
+  <div class="zoryana-quick" id="zoryana-quick"></div>
+  <div class="zoryana-input">
+    <input type="text" id="zoryana-input" placeholder="…">
+    <button onclick="zoryanaSend()">➤</button>
+  </div>
+</div>
+
 <script>
   const BOT_USERNAME = 'CartobiBot'; // подтверждено Игорем — @CartobiBot
 
@@ -408,6 +472,7 @@
       document.getElementById('lang-current').textContent = lang.toUpperCase();
       renderPetLabels(lang);
       buildLangDropdown();
+      if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
       return;
     }
     // Для решти мов зі списку переклад ще не готовий (і дитяча/доросла
@@ -466,7 +531,171 @@
     window.location.href = 'https://t.me/' + BOT_USERNAME + '?start=' + payload;
   }
 
-  // Показуємо кнопку "наверх" тільки коли доросла секція у в'юпорті
+  // ---------- Зоряна: голосовий FAQ-помічник ----------
+  // Перша версія — не "справжній ІІ", а живий, теплий FAQ з голосом.
+  // Повноцінний відкритий діалог (окремий бекенд) — наступний крок.
+  const ZORYANA_VOICE_LANG = { ua:'uk-UA', en:'en-US', ru:'ru-RU', it:'it-IT', fr:'fr-FR', es:'es-ES' };
+
+  const ZORYANA_TXT = {
+    ua: {
+      greeting: 'Привіт! Я Зоряна 👋 Розкажу все про Cartobi — жанри, ціни, терміни. Просто напишіть питання або натисніть кнопку нижче.',
+      quick: [
+        { label: 'Які жанри є?', key: 'genres' },
+        { label: 'Скільки коштує?', key: 'price' },
+        { label: 'Як довго чекати?', key: 'timing' },
+        { label: 'Як це працює?', key: 'how' },
+      ],
+      genres: 'Для дітей: Космос, Дракони, Казка, Машинки, Супергерої. Для дорослих: романтика, день народження, весілля, корпоратив, свій сценарій. І скоро — улюбленці 🐾',
+      price: 'Дитяча лінійка — від $129. Дорослі формати вважаються індивідуально під сценарій. Точну ціну назве менеджер після брифу.',
+      timing: 'Дитяча лінійка — 48-72 години. Дорослі формати — 5-7 днів після затвердження сценарію.',
+      how: 'Все просто: обираєте жанр → заповнюєте коротку анкету в Telegram-боті → ми пишемо сценарій → готовий мультфільм приходить вам у той самий чат.',
+      fallback: 'Хм, точної відповіді на це в мене немає — краще запитайте прямо в боті @CartobiBot, там відповість команда Cartobi 💛',
+      order: 'Щоб оформити замовлення, напишіть нашому боту — натисніть кнопку "Створити героя" вище на сторінці 👆',
+    },
+    en: {
+      greeting: "Hi! I'm Зоряна (Zoryana) 👋 Ask me about Cartobi — genres, pricing, timing — or tap a button below.",
+      quick: [
+        { label: 'What genres?', key: 'genres' },
+        { label: 'How much?', key: 'price' },
+        { label: 'How long?', key: 'timing' },
+        { label: 'How does it work?', key: 'how' },
+      ],
+      genres: 'For kids: Space, Dragons, Fairytale, Cars, Superheroes. For adults: romance, birthday, wedding, corporate, custom script. And soon — pets 🐾',
+      price: 'Kids line starts at $129. Adult formats are quoted individually based on the script. Our manager confirms the exact price after your brief.',
+      timing: 'Kids line — 48-72 hours. Adult formats — 5-7 days after the script is approved.',
+      how: "It's simple: pick a genre → fill a short brief in our Telegram bot → we write the script → your finished cartoon arrives in that same chat.",
+      fallback: "I don't have an exact answer for that — best to ask directly in @CartobiBot, our team will help 💛",
+      order: 'To place an order, message our bot — tap the "Create a Hero" button above 👆',
+    },
+    ru: {
+      greeting: 'Привет! Я Зоряна 👋 Расскажу всё про Cartobi — жанры, цены, сроки. Просто напишите вопрос или нажмите кнопку ниже.',
+      quick: [
+        { label: 'Какие жанры?', key: 'genres' },
+        { label: 'Сколько стоит?', key: 'price' },
+        { label: 'Сколько ждать?', key: 'timing' },
+        { label: 'Как это работает?', key: 'how' },
+      ],
+      genres: 'Для детей: Космос, Драконы, Сказка, Машинки, Супергерои. Для взрослых: романтика, день рождения, свадьба, корпоратив, свой сценарий. И скоро — питомцы 🐾',
+      price: 'Детская линейка — от $129. Взрослые форматы считаются индивидуально под сценарий. Точную цену назовёт менеджер после брифа.',
+      timing: 'Детская линейка — 48-72 часа. Взрослые форматы — 5-7 дней после утверждения сценария.',
+      how: 'Всё просто: выбираете жанр → заполняете короткую анкету в Telegram-боте → мы пишем сценарий → готовый мультфильм приходит вам в тот же чат.',
+      fallback: 'Хм, точного ответа на это у меня нет — лучше спросите прямо в боте @CartobiBot, там ответит команда Cartobi 💛',
+      order: 'Чтобы оформить заказ, напишите нашему боту — нажмите кнопку "Создать героя" выше на странице 👆',
+    },
+    it: {
+      greeting: 'Ciao! Sono Зоряна (Zoryana) 👋 Chiedimi tutto su Cartobi — generi, prezzi, tempi — o tocca un pulsante qui sotto.',
+      quick: [
+        { label: 'Quali generi?', key: 'genres' },
+        { label: 'Quanto costa?', key: 'price' },
+        { label: 'Quanto tempo?', key: 'timing' },
+        { label: 'Come funziona?', key: 'how' },
+      ],
+      genres: 'Per bambini: Spazio, Draghi, Fiaba, Auto, Supereroi. Per adulti: romanticismo, compleanno, matrimonio, aziendale, sceneggiatura personalizzata. E presto — animali 🐾',
+      price: "La linea bambini parte da $129. I formati adulti si preventivano individualmente in base alla sceneggiatura. Il nostro manager conferma il prezzo esatto dopo il brief.",
+      timing: 'Linea bambini — 48-72 ore. Formati adulti — 5-7 giorni dopo l\'approvazione della sceneggiatura.',
+      how: 'È semplice: scegli un genere → compili un breve brief nel nostro bot Telegram → scriviamo la sceneggiatura → il tuo cartone arriva nella stessa chat.',
+      fallback: 'Non ho una risposta esatta per questo — chiedi direttamente a @CartobiBot, il nostro team ti aiuterà 💛',
+      order: 'Per ordinare, scrivi al nostro bot — tocca il pulsante "Crea un eroe" qui sopra 👆',
+    },
+    fr: {
+      greeting: 'Salut ! Je suis Зоряна (Zoryana) 👋 Demandez-moi tout sur Cartobi — genres, prix, délais — ou touchez un bouton ci-dessous.',
+      quick: [
+        { label: 'Quels genres ?', key: 'genres' },
+        { label: 'Quel prix ?', key: 'price' },
+        { label: 'Quel délai ?', key: 'timing' },
+        { label: 'Comment ça marche ?', key: 'how' },
+      ],
+      genres: 'Pour les enfants : Espace, Dragons, Conte, Voitures, Super-héros. Pour les adultes : romance, anniversaire, mariage, entreprise, scénario personnalisé. Et bientôt — animaux 🐾',
+      price: "La ligne enfants démarre à 129$. Les formats adultes sont chiffrés individuellement selon le scénario. Notre manager confirme le prix exact après votre brief.",
+      timing: 'Ligne enfants — 48 à 72 heures. Formats adultes — 5 à 7 jours après approbation du scénario.',
+      how: "C'est simple : choisissez un genre → remplissez un court brief dans notre bot Telegram → nous écrivons le scénario → votre dessin animé arrive dans le même chat.",
+      fallback: "Je n'ai pas de réponse exacte à cela — demandez directement à @CartobiBot, notre équipe vous aidera 💛",
+      order: 'Pour commander, écrivez à notre bot — touchez le bouton "Créer un héros" ci-dessus 👆',
+    },
+    es: {
+      greeting: '¡Hola! Soy Зоряна (Zoryana) 👋 Pregúntame sobre Cartobi — géneros, precios, tiempos — o toca un botón abajo.',
+      quick: [
+        { label: '¿Qué géneros?', key: 'genres' },
+        { label: '¿Cuánto cuesta?', key: 'price' },
+        { label: '¿Cuánto tarda?', key: 'timing' },
+        { label: '¿Cómo funciona?', key: 'how' },
+      ],
+      genres: 'Para niños: Espacio, Dragones, Cuento, Coches, Superhéroes. Para adultos: romance, cumpleaños, boda, corporativo, guion personalizado. Y pronto — mascotas 🐾',
+      price: 'La línea infantil parte de $129. Los formatos para adultos se cotizan individualmente según el guion. Nuestro gestor confirma el precio exacto tras tu brief.',
+      timing: 'Línea infantil — 48-72 horas. Formatos para adultos — 5-7 días tras aprobar el guion.',
+      how: 'Es simple: eliges un género → completas un breve brief en nuestro bot de Telegram → escribimos el guion → tu dibujo animado llega al mismo chat.',
+      fallback: 'No tengo una respuesta exacta para eso — pregunta directamente en @CartobiBot, nuestro equipo te ayudará 💛',
+      order: 'Para pedir, escribe a nuestro bot — toca el botón "Crear un héroe" arriba 👆',
+    },
+  };
+
+  const ZORYANA_KEYWORDS = {
+    genres: ['жанр','genre','género','genero','space','космос','казка'],
+    price: ['ціна','цена','price','prezzo','prix','precio','кошту','стоит','cost'],
+    timing: ['термін','срок','time','tempo','délai','tiempo','довго','долго','when','когда','коли'],
+    how: ['працює','работает','work','funziona','marche','funciona','how'],
+    order: ['замовити','заказать','order','ordinare','commander','pedir','купити','купить','buy'],
+  };
+
+  let zoryanaOpened = false;
+  function toggleZoryana() {
+    const panel = document.getElementById('zoryana-panel');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open') && !zoryanaOpened) {
+      zoryanaOpened = true;
+      zoryanaAddMsg(ZORYANA_TXT[currentLang]?.greeting || ZORYANA_TXT.ua.greeting, 'bot', true);
+      zoryanaRenderQuick();
+    }
+  }
+  function zoryanaRenderQuick() {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    const el = document.getElementById('zoryana-quick');
+    el.innerHTML = t.quick.map(q => `<button onclick="zoryanaAsk('${q.key}')">${q.label}</button>`).join('');
+  }
+  function zoryanaAddMsg(text, who, speak) {
+    const body = document.getElementById('zoryana-body');
+    const div = document.createElement('div');
+    div.className = 'zoryana-msg ' + who;
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    if (speak && who === 'bot') zoryanaSpeak(text);
+  }
+  function zoryanaSpeak(text) {
+    if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
+    try {
+      const utter = new SpeechSynthesisUtterance(text.replace(/[👋💛🐾👆]/g, ''));
+      utter.lang = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
+      utter.pitch = 1.1;
+      utter.rate = 0.98;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    } catch (e) { /* тихо ігноруємо — голос це бонус, не критична функція */ }
+  }
+  function zoryanaAsk(key) {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    const qLabel = t.quick.find(q => q.key === key)?.label || key;
+    zoryanaAddMsg(qLabel, 'user', false);
+    zoryanaAddMsg(t[key] || t.fallback, 'bot', true);
+  }
+  function zoryanaSend() {
+    const input = document.getElementById('zoryana-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    zoryanaAddMsg(text, 'user', false);
+    const lower = text.toLowerCase();
+    let matchedKey = null;
+    for (const [key, words] of Object.entries(ZORYANA_KEYWORDS)) {
+      if (words.some(w => lower.includes(w))) { matchedKey = key; break; }
+    }
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    zoryanaAddMsg(matchedKey ? t[matchedKey] : t.fallback, 'bot', true);
+  }
+  document.getElementById('zoryana-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') zoryanaSend();
+  });
+
   const adultSection = document.getElementById('section-adult');
   const backBtn = document.getElementById('back-to-top');
   const socialBar = document.querySelector('.social-bar');
