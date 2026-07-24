@@ -344,7 +344,7 @@
   <div class="frame-inner">
     <img src="hero-pets.jpg" alt="Cartobi — домашні улюбленці">
   </div>
-  <button class="hot pet-card-1" onclick="petComingSoon('cats')"></button>
+  <button class="hot pet-card-1" onclick="openVideo('videos/pets-cats.mp4')"></button>
   <button class="hot pet-card-2" onclick="petComingSoon('dogs')"></button>
   <button class="hot pet-card-3" onclick="petComingSoon('birds')"></button>
   <button class="hot pet-card-4" onclick="petComingSoon('small')"></button>
@@ -694,12 +694,17 @@
   function zoryanaPickVoice(langCode) {
     if (!zoryanaVoices.length) zoryanaLoadVoices();
     const prefix = langCode.split('-')[0];
-    const candidates = zoryanaVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+    let candidates = zoryanaVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
     if (!candidates.length) return null;
+    // Явно чоловічі голоси (за відомими іменами) відсіюємо одразу — Зоряна
+    // має звучати дівчинкою, навіть якщо на пристрої є лише пара голосів.
+    const maleNames = /male|чолов|ostap|dmytro|yuri|pavel|filip|mykyta/i;
+    const notMale = candidates.filter(v => !maleNames.test(v.name));
+    if (notMale.length) candidates = notMale;
     // Голоси від Google/Microsoft Natural/Online зазвичай звучать м'якше
     // за системний eSpeak-фолбек — пробуємо знайти саме такий спочатку.
     const quality = candidates.find(v => /google|natural|online|neural/i.test(v.name));
-    const female = candidates.find(v => /female|жіно|zenska|weiblich/i.test(v.name));
+    const female = candidates.find(v => /female|жіно|zenska|weiblich|milena|lesya|lesia/i.test(v.name));
     return quality || female || candidates[0];
   }
   function zoryanaSpeak(text) {
