@@ -23,16 +23,55 @@
 
   /* ---------- Секція 1: Дитяча лінійка ---------- */
   #section-kids{background:#0A0722;}
-  #section-kids .cta-main{left:33.27%; top:31.5%; width:33.37%; height:4%;}
-  #section-kids .cta-view-example{left:56.63%; top:65.8%; width:29.2%; height:3%;}
-  #section-kids .cta-final{left:30.77%; top:79.3%; width:38.38%; height:4%;}
-  #section-kids .play-btn{left:24.93%; top:59%; width:13.35%; height:7%;}
-  /* Карточки 5 жанрів — попередні координати, звірити з фінальною картинкою завтра */
+  /* Карточки 5 жанрів — попередні координати, звірити з фінальною картинкою */
   #section-kids .genre-1{left:2%; top:40%; width:18%; height:9%;}
   #section-kids .genre-2{left:22%; top:40%; width:18%; height:9%;}
   #section-kids .genre-3{left:42%; top:40%; width:18%; height:9%;}
   #section-kids .genre-4{left:62%; top:40%; width:18%; height:9%;}
   #section-kids .genre-5{left:82%; top:40%; width:16%; height:9%;}
+
+  /* Мовні "заплатки" — реальний HTML-текст поверх картинки без запеченого
+     тексту. Координати узгоджені з Ігорем вживу через макет-лінійку з %:
+     заголовок 57-67%, підписи жанрів 52-55%, "як працює" 67.5-81% (частина
+     картинки, без заплаток), Зоряна та кнопка-круг — окремі елементи. */
+  .patch{position:absolute; display:flex; align-items:center; justify-content:center;
+    text-align:center; font-family:Arial,sans-serif; font-weight:800; color:#fff;
+    line-height:1.15; overflow:visible; pointer-events:none;
+    text-shadow:0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.8);}
+  .patch.bg-dark{background:none;}
+  .patch.bg-orange{background:none; color:#ffcf6b;}
+
+  /* Круглі кнопки-іконки — Зоряна вгорі під кулею, "Замовити" внизу під
+     синім чудиком, праворуч від дракона. Симетрично, як просив Ігор. */
+  .round-icon-btn{
+    position:absolute; border-radius:100px; cursor:pointer; border:2px solid rgba(255,255,255,0.55);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; font-family:Arial,sans-serif; font-weight:800;
+  }
+  #zoryana-top-btn{
+    left:76%; top:17%; width:22%; aspect-ratio:1/1;
+    background:radial-gradient(circle at 35% 30%, #fff3b0, #ffcb3d 45%, #ff9500 100%);
+    box-shadow:0 6px 20px rgba(255,159,46,0.65);
+    color:#3a1e00; font-size:clamp(7px,2vw,9px);
+  }
+  #zoryana-top-btn .icon{font-size:clamp(18px,5vw,26px); line-height:1;}
+  #kids-order-btn{
+    left:71%; top:79%; width:22%; aspect-ratio:1/1;
+    background:linear-gradient(135deg,#ffd166,#ff9f2e);
+    box-shadow:0 6px 20px rgba(255,159,46,0.6);
+    color:#3a1e00; font-size:clamp(7px,2vw,9px);
+  }
+  #kids-order-btn .icon{font-size:clamp(16px,4.5vw,22px); line-height:1;}
+
+  .kids-trust-strip{
+    display:flex; flex-wrap:wrap; gap:8px; padding:14px 12px;
+    background:#0A0722; justify-content:center;
+  }
+  .kids-trust-strip span{
+    flex:1 1 auto; min-width:120px; text-align:center; color:#c8c4e8;
+    font-family:Arial,sans-serif; font-size:11.5px; font-weight:600;
+    padding:8px 10px; background:#150e3a; border-radius:10px;
+  }
 
   /* Підказка "скрольте далі" в кінці першої секції */
   .scroll-hint{
@@ -306,18 +345,24 @@
 <!-- ============ СЕКЦІЯ 1: ДИТЯЧА ЛІНІЙКА ============ -->
 <section class="frame" id="section-kids">
   <div class="frame-inner">
-    <img src="hero-kids.jpg" alt="Cartobi — дитяча лінійка">
+    <img src="hero-kids-notext.jpg" alt="Cartobi — дитяча лінійка">
   </div>
-  <button class="hot cta-main" onclick="goToBot('kids')"></button>
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot genre-2" onclick="openVideo('videos/kids-dragons.mp4','kids','dragons')"></button>
   <button class="hot genre-3" onclick="openVideo('videos/kids-tale.mp4','kids','tale')"></button>
   <button class="hot genre-4" onclick="openVideo('videos/kids-cars.mp4','kids','cars')"></button>
   <button class="hot genre-5" onclick="openVideo('videos/kids-heroes.mp4','kids','heroes')"></button>
-  <button class="hot play-btn" onclick="playPreview()"></button>
-  <button class="hot cta-view-example" onclick="playPreview()"></button>
-  <button class="hot cta-final" onclick="goToBot('kids')"></button>
+  <button class="round-icon-btn" id="zoryana-top-btn" onclick="toggleZoryana()">
+    <span class="icon">👧🏻</span>
+    <span id="zoryana-top-label">Зоряна</span>
+  </button>
+  <button class="round-icon-btn" id="kids-order-btn" onclick="goToBot('kids')">
+    <span class="icon">★</span>
+    <span id="kids-order-label">Замовити</span>
+  </button>
 </section>
+<div class="kids-trust-strip" id="kids-trust-strip"></div>
+
 
 <!-- ============ СЕКЦІЯ 2: ДОРОСЛА ЛІНІЙКА ============ -->
 <section class="frame" id="section-adult">
@@ -346,7 +391,7 @@
   </div>
   <button class="hot pet-card-1" onclick="openVideo('videos/pets-cats.mp4')"></button>
   <button class="hot pet-card-2" onclick="petComingSoon('dogs')"></button>
-  <button class="hot pet-card-3" onclick="petComingSoon('birds')"></button>
+  <button class="hot pet-card-3" onclick="openVideo('videos/pets-birds.mp4')"></button>
   <button class="hot pet-card-4" onclick="petComingSoon('small')"></button>
   <button class="hot pet-card-5" onclick="petComingSoon('exotic')"></button>
   <div class="pet-label pet-label-1" id="pet-label-1"></div>
@@ -434,12 +479,88 @@
   ];
   let currentLang = 'ua';
 
-  // Мови, для яких реально є переклад (наразі тільки текст секції
-  // питомців — дитяча/доросла лінійки поки залишаються українською,
-  // бо їхній текст запечений у самій ілюстрації, це окрема майбутня
-  // робота). Ігор явно попросив: питомці + Зоряна — мультимовні вже
-  // зараз, дитяча/доросла — поки ні.
+  // Мови, для яких реально є переклад. Дитяча секція тепер теж
+  // мультимовна (нова картинка без запеченого тексту) — доросла поки ні,
+  // її черга наступна.
   const SUPPORTED_LANGS = ['en','ru','it','fr','es'];
+
+  const KIDS_TRANSLATIONS = {
+    ua: {
+      headline:'Створюємо мультфільми\nз вашою дитиною в головній ролі!',
+      genre1:'КОСМОС', genre2:'ДРАКОНИ', genre3:'КАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОЇ',
+      zoryanaLabel:'Зоряна', orderLabel:'Замовити',
+      trust1:'Безпечно для дітей', trust2:'48-72 години', trust3:'Унікальний контент', trust4:"З любов'ю",
+    },
+    en: {
+      headline:'We create cartoons\nwith your child in the starring role!',
+      genre1:'SPACE', genre2:'DRAGONS', genre3:'FAIRYTALE', genre4:'CARS', genre5:'SUPERHEROES',
+      zoryanaLabel:'Zoryana', orderLabel:'Order',
+      trust1:'Safe for kids', trust2:'48-72 hours', trust3:'Unique content', trust4:'Made with love',
+    },
+    ru: {
+      headline:'Создаём мультфильмы\nс вашим ребёнком в главной роли!',
+      genre1:'КОСМОС', genre2:'ДРАКОНЫ', genre3:'СКАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОИ',
+      zoryanaLabel:'Зоряна', orderLabel:'Заказать',
+      trust1:'Безопасно для детей', trust2:'48-72 часа', trust3:'Уникальный контент', trust4:'С любовью',
+    },
+    it: {
+      headline:'Creiamo cartoni animati\ncon tuo figlio nel ruolo principale!',
+      genre1:'SPAZIO', genre2:'DRAGHI', genre3:'FIABA', genre4:'AUTO', genre5:'SUPEREROI',
+      zoryanaLabel:'Zoryana', orderLabel:'Ordina',
+      trust1:'Sicuro per i bambini', trust2:'48-72 ore', trust3:'Contenuto unico', trust4:'Fatto con amore',
+    },
+    fr: {
+      headline:'Nous créons des dessins animés\navec votre enfant dans le rôle principal !',
+      genre1:'ESPACE', genre2:'DRAGONS', genre3:'CONTE', genre4:'VOITURES', genre5:'SUPER-HÉROS',
+      zoryanaLabel:'Zoryana', orderLabel:'Commander',
+      trust1:'Sûr pour les enfants', trust2:'48-72 heures', trust3:'Contenu unique', trust4:'Fait avec amour',
+    },
+    es: {
+      headline:'¡Creamos dibujos animados\ncon tu hijo como protagonista!',
+      genre1:'ESPACIO', genre2:'DRAGONES', genre3:'CUENTO', genre4:'COCHES', genre5:'SUPERHÉROES',
+      zoryanaLabel:'Zoryana', orderLabel:'Pedir',
+      trust1:'Seguro para niños', trust2:'48-72 horas', trust3:'Contenido único', trust4:'Hecho con amor',
+    },
+  };
+
+  // Координати узгоджені з Ігором вживу через макет-лінійку (%):
+  // заголовок 57-67%, підписи жанрів 52-55%. "Як це працює" лишається
+  // частиною картинки без підписів — місця для них немає.
+  const KIDS_PATCHES = [
+    {id:'headline', key:'headline', left:8, top:58, width:84, height:8, bg:'bg-dark', fs:'clamp(11px,3.6vw,16px)'},
+    {id:'genre1', key:'genre1', left:2, top:52, width:18, height:2.6, bg:'bg-dark', fs:'clamp(6px,2vw,9px)'},
+    {id:'genre2', key:'genre2', left:22, top:52, width:18, height:2.6, bg:'bg-dark', fs:'clamp(6px,2vw,9px)'},
+    {id:'genre3', key:'genre3', left:42, top:52, width:18, height:2.6, bg:'bg-dark', fs:'clamp(6px,2vw,9px)'},
+    {id:'genre4', key:'genre4', left:62, top:52, width:18, height:2.6, bg:'bg-dark', fs:'clamp(6px,2vw,9px)'},
+    {id:'genre5', key:'genre5', left:81, top:52, width:18, height:2.6, bg:'bg-dark', fs:'clamp(5px,1.7vw,7.5px)'},
+  ];
+
+  function renderKidsPatches(lang) {
+    const host = document.querySelector('#section-kids .frame-inner');
+    host.querySelectorAll('.patch').forEach(p => p.remove());
+    const t = KIDS_TRANSLATIONS[lang] || KIDS_TRANSLATIONS.ua;
+    KIDS_PATCHES.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'patch ' + p.bg;
+      div.style.left = p.left + '%';
+      div.style.top = p.top + '%';
+      div.style.width = p.width + '%';
+      div.style.height = p.height + '%';
+      div.style.fontSize = p.fs;
+      div.style.whiteSpace = 'pre-line';
+      div.textContent = t[p.key] || '';
+      host.appendChild(div);
+    });
+    const zl = document.getElementById('zoryana-top-label');
+    if (zl) zl.textContent = t.zoryanaLabel;
+    const ol = document.getElementById('kids-order-label');
+    if (ol) ol.textContent = t.orderLabel;
+    const trustEl = document.getElementById('kids-trust-strip');
+    if (trustEl) {
+      trustEl.innerHTML = [t.trust1, t.trust2, t.trust3, t.trust4]
+        .map(x => `<span>${x}</span>`).join('');
+    }
+  }
 
   const PET_TRANSLATIONS = {
     ua: { cats:'Котики', dogs:'Песики', birds:'Птахи', small:'Гризуни', exotic:'Екзотика',
@@ -470,6 +591,7 @@
     showLangToast(t.comingSoon);
   }
   renderPetLabels('ua');
+  renderKidsPatches('ua');
 
   function buildLangDropdown() {
     const el = document.getElementById('lang-dropdown');
@@ -486,6 +608,7 @@
       currentLang = 'ua';
       document.getElementById('lang-current').textContent = 'UA';
       renderPetLabels('ua');
+      renderKidsPatches('ua');
       buildLangDropdown();
       return;
     }
@@ -493,13 +616,13 @@
       currentLang = lang;
       document.getElementById('lang-current').textContent = lang.toUpperCase();
       renderPetLabels(lang);
+      renderKidsPatches(lang);
       buildLangDropdown();
       if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
       return;
     }
-    // Для решти мов зі списку переклад ще не готовий (і дитяча/доросла
-    // лінійки поки теж лишаються тільки українською — текст запечений
-    // у самій ілюстрації, це окрема майбутня робота) — чесно повідомляємо.
+    // Доросла лінійка поки залишається тільки українською — текст
+    // запечений у самій ілюстрації, це окрема майбутня робота.
     showLangToast('Ця мова скоро буде доступна 🙌');
   }
   function showLangToast(text) {
