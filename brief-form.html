@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cartobi — Бриф</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0A0722; --card:#150e3a; --card2:#1c1450;
+    --accent:#ffb020; --accent2:#ff8a00; --accent-text:#2a1400;
+    --text:#e8e5f5; --muted:#9b96c4; --border:rgba(255,255,255,0.14);
+    --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    padding:16px 16px 120px;
+  }
+  h1{font-size:19px; margin:4px 0 2px; color:var(--accent);}
+  .intro{font-size:14px; color:var(--muted); margin:0 0 20px; line-height:1.5;}
+  .q{margin-bottom:22px;}
+  .q-label{font-size:14.5px; font-weight:700; margin-bottom:9px; line-height:1.4;}
+  .q-num{color:var(--accent); font-weight:800; margin-right:4px;}
+  .q-hint{font-size:12px; color:var(--muted); margin-top:5px; line-height:1.4;}
+  textarea, input[type=text]{
+    width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:12px;
+    color:var(--text); font-size:14.5px; padding:11px 13px; font-family:inherit;
+    resize:vertical; min-height:44px;
+  }
+  textarea:focus, input[type=text]:focus{outline:none; border-color:var(--accent);}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    background:var(--card); border:1.5px solid var(--border); border-radius:100px;
+    padding:9px 15px; font-size:13.5px; cursor:pointer; color:var(--text); user-select:none;
+    transition:all .15s;
+  }
+  .chip.selected{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--accent-text); border-color:transparent; font-weight:700;}
+  .price-tag{color:var(--accent); font-weight:800;}
+  .total-bar{
+    position:fixed; left:0; right:0; bottom:64px; background:var(--card2);
+    border-top:1px solid var(--border); padding:10px 16px; font-size:14px;
+    display:none; justify-content:space-between; align-items:center;
+  }
+  .total-bar.show{display:flex;}
+  .total-bar b{color:var(--accent); font-size:16px;}
+  .submit-bar{
+    position:fixed; left:0; right:0; bottom:0; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:var(--bg); border-top:1px solid var(--border);
+  }
+  .submit-btn{
+    width:100%; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:800;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--accent-text); cursor:pointer;
+  }
+  .submit-btn:disabled{opacity:0.5;}
+  .err{color:var(--danger); font-size:12.5px; margin-top:5px; display:none;}
+  .err.show{display:block;}
+  .section-title{font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin:26px 0 12px; font-weight:700;}
+</style>
+</head>
+<body>
+
+<h1 id="title">Бриф</h1>
+<p class="intro" id="intro"></p>
+<form id="briefForm"></form>
+
+<div class="total-bar" id="totalBar">
+  <span>Разом до сплати</span>
+  <b id="totalVal">$0</b>
+</div>
+<div class="submit-bar">
+  <button type="button" class="submit-btn" id="submitBtn">Надіслати бриф</button>
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+const params = new URLSearchParams(location.search);
+const track = params.get('track') || 'romance';
+const presetGenre = params.get('genre'); // тільки для kids, якщо жанр обрано на сайті заздалегідь
+
+// ---------- Дорослі лінійки — дзеркало BRIEFS з bot.js ----------
+// ВАЖЛИВО: цей об'єкт треба вручну тримати синхронізованим з BRIEFS у
+// bot/bot.js, якщо там міняються питання — тут теж треба поправити.
+const ADULT_BRIEFS = {
+  romance: {
+    title: '💕 Романтична історія',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'occasion', q: 'Який привід?', hint: 'освідчення, річниця, просто сюрприз, примирення тощо' },
+      { key: 'names', q: 'Імена обох героїв (хто дарує і кому)?' },
+      { key: 'appearance', q: 'Опишіть зовнішність обох', hint: 'колір волосся, приблизний вік, стиль одягу. Або надішліть фото боту після цього брифу.' },
+      { key: 'story', q: 'Коротко історію стосунків або момент, який хочете показати?', hint: 'як познайомились, спільний спогад тощо' },
+      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'конкретна фраза, місце, деталь, подія' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'setting', q: 'Де відбувається дія?', hint: 'конкретне місто/місце, або можна вигадати мальовниче оточення' },
+      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Романтично-ніжний', 'Яскравий/казковий', 'Сучасний реалістичний'] },
+      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права) — використовуємо ліцензійну музику', options: ['Ніжна лірична', 'Енергійна', 'Весела'] },
+      { key: 'platform', type: 'buttons', q: 'Де плануєте показувати відео?', hint: 'впливає на формат кадру', options: ['Особисто на телефоні', 'Instagram/TikTok/Shorts', 'Facebook', 'На великому екрані'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Ваш Telegram або запасний контакт', hint: 'за замовчуванням будемо писати сюди ж' },
+    ],
+  },
+  birthday: {
+    title: '🎉 День народження',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'name', q: 'Ім\'я іменинника/іменинниці?' },
+      { key: 'age', type: 'buttons', q: 'Скільки виповнюється?', options: ['1-3 роки', '4-6 років', '7-12 років', '13-17 років', '18-30 років', '31-50 років', '50+ років'] },
+      { key: 'appearance', q: 'Опишіть зовнішність іменинника', hint: 'колір волосся, стиль. Або надішліть фото боту після цього брифу.' },
+      { key: 'interests', type: 'buttons', q: 'Головна тема захоплень?', options: ['Спорт', 'Музика', 'Подорожі', 'Ігри/технології', 'Кулінарія', 'Тварини', 'Мода/краса', 'Інше — напишу окремо'] },
+      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'внутрішній жарт, конкретна подія, фраза' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/деталі, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'from', q: 'Від кого привітання?', hint: 'ім\'я/імена — що хочете побажати чи сказати' },
+      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Весело й яскраво', 'Тепло і сентиментально', 'З гумором'] },
+      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Весела', 'Святкова', 'Зворушлива', 'Енергійна'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Ваш Telegram або запасний контакт', hint: 'за замовчуванням будемо писати сюди ж' },
+    ],
+  },
+  corporate: {
+    title: '🏢 Корпоративне відео',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'company', q: 'Назва компанії / бренду?' },
+      { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
+      { key: 'audience', type: 'buttons', q: 'Для кого відео?', options: ['Внутрішня команда', 'Клієнти', 'Соцмережі'] },
+      { key: 'keyMessage', q: 'Головна думка/меседж, яку відео має донести?' },
+      { key: 'mustHave', q: 'Які конкретні сцени/моменти ОБОВ\'ЯЗКОВО мають бути показані?' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/образи, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'brand', q: 'Брендбук/логотип/фірмові кольори?', hint: 'опишіть, або надішліть після брифу' },
+      { key: 'onScreenText', type: 'buttons', q: 'Чи потрібен текст на екрані?', options: ['Так, українською', 'Так, англійською', 'Не потрібен'] },
+      { key: 'voiceover', type: 'buttons', q: 'Дикторська озвучка?', options: ['Так, діловий тон', 'Так, дружній тон', 'Не потрібна'] },
+      { key: 'length', type: 'buttons', q: 'Бажана тривалість відео?', options: ['30 сек', '1 хв', '2-3 хв', 'Довше'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Контактна особа — Telegram або запасний контакт' },
+    ],
+  },
+  wedding: {
+    title: '💍 Весільна історія',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'names', q: 'Імена нареченого і нареченої?' },
+      { key: 'appearance', q: 'Опишіть зовнішність обох', hint: 'або надішліть фото боту після цього брифу' },
+      { key: 'story', q: 'Коротко історію пари?', hint: 'як познайомились, скільки разом, особливий момент' },
+      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути показано?', hint: 'освідчення, перший танець, конкретне місце весілля' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'weddingDate', q: 'Дата весілля?' },
+      { key: 'usage', type: 'buttons', q: 'Де плануєте показувати відео?', options: ['На весіллі як сюрприз', 'У соцмережах', 'Як запрошення гостям'] },
+      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Казковий (принцеса/принц)', 'Елегантний реалістичний', 'З гумором'] },
+      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Урочиста', 'Ніжна', 'Романтична'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Ваш Telegram або запасний контакт' },
+    ],
+  },
+  script: {
+    title: '📝 Мультфільм за сценарієм',
+    intro: 'Дам трохи більше питань, ніж зазвичай про ваш сценарій — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'scriptText', q: 'Опишіть сюжет вашого сценарію', hint: 'детальний опис — повний текст сценарію можна надіслати боту окремо після цього брифу' },
+      { key: 'characters', q: 'Скільки персонажів, хто вони і як виглядають?' },
+      { key: 'mustHave', q: 'Які конкретні сцени/репліки ОБОВ\'ЯЗКОВО мають бути присутні дослівно?' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'style', type: 'buttons', q: 'Бажаний візуальний стиль?', options: ['Реалістична 3D-анімація', 'Казковий', 'Сучасний плоский стиль'] },
+      { key: 'voiceover', type: 'buttons', q: 'Озвучка персонажів?', options: ['Так, українською', 'Так, англійською', 'Не потрібна'] },
+      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Відповідно до сюжету', 'Весела', 'Драматична', 'Спокійна'] },
+      { key: 'length', type: 'buttons', q: 'Бажана тривалість відео?', options: ['30 сек', '1 хв', '2-3 хв', 'Довше'] },
+      { key: 'platform', type: 'buttons', q: 'Де плануєте показувати відео?', options: ['Особисто на телефоні', 'Instagram/TikTok/Shorts', 'Facebook', 'На великому екрані'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Ваш Telegram або запасний контакт' },
+    ],
+  },
+  pets: {
+    title: '🐾 Мультфільм про улюбленця',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    questions: [
+      { key: 'petType', type: 'buttons', q: 'Хто ваш улюбленець?', options: ['Котик', 'Песик', 'Птах', 'Гризун (кролик/хом\'як/свинка)', 'Екзотика (рептилія/риба/черепаха)'] },
+      { key: 'petName', q: 'Як звати улюбленця?' },
+      { key: 'petAge', type: 'buttons', q: 'Скільки років улюбленцю?', options: ['До 1 року', '1-3 роки', '4-7 років', '8-12 років', '13-20 років', '20+ років'] },
+      { key: 'appearance', q: 'Опишіть зовнішність улюбленця', hint: 'порода, забарвлення, особливі прикмети. Або надішліть фото боту після цього брифу.' },
+      { key: 'character', type: 'buttons', q: 'Головна риса характеру?', options: ['Грайливий/енергійний', 'Спокійний/лагідний', 'Пустотливий/непосида', 'Гордий/незалежний', 'Боязкий/сором\'язливий'] },
+      { key: 'genre', type: 'buttons', q: 'Який жанр мультфільму?', options: ['Пригоди', 'Казка', 'Космос', 'Супергерой', 'Просто веселий день'] },
+      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'звичка улюбленця, улюблена іграшка/місце, конкретна сценка' },
+      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/деталі, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
+      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Яскраво й весело', 'Тепло і сентиментально', 'З гумором'] },
+      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Весела', 'Спокійна', 'Енергійна', 'Зворушлива'] },
+      { key: 'deadline', type: 'buttons', q: 'Коли потрібне готове відео?', options: ['Терміново (1-2 дні)', 'Цього тижня', 'У межах місяця', 'Немає дедлайну'] },
+      { key: 'contact', q: 'Ваш Telegram або запасний контакт' },
+    ],
+  },
+};
+
+// ---------- Дитяча лінійка — окрема логіка (ціни/ключі для боту) ----------
+const KIDS_TARIFFS = [
+  { key: 'first', label: 'Перша історія', price: 129, desc: '1–2 хвилини, 2–3 сцени — ідеально для першого мультфільму' },
+  { key: 'full', label: 'Настоящий мультфільм', price: 299, desc: 'більше емоцій, озвучка, "як у кіно"' },
+];
+const KIDS_ADDONS = [
+  { key: 'voice', label: '🎤 Озвучка імені', price: 25 },
+  { key: 'second', label: '👨‍👩‍👧 Другий персонаж', price: 30 },
+  { key: 'rush', label: '⚡ Терміново', price: 20 },
+];
+const KIDS_GENRES = ['Космос', 'Дракони', 'Казка', 'Машинки', 'Супергерої'];
+
+const form = document.getElementById('briefForm');
+const titleEl = document.getElementById('title');
+const introEl = document.getElementById('intro');
+const submitBtn = document.getElementById('submitBtn');
+const totalBar = document.getElementById('totalBar');
+const totalVal = document.getElementById('totalVal');
+
+const answers = {}; // key -> value, зібрані тут і надсилаються боту одним payload
+
+function chipsField(container, key, options, multi) {
+  const wrap = document.createElement('div');
+  wrap.className = 'chips';
+  const selected = new Set();
+  options.forEach((opt) => {
+    const label = typeof opt === 'string' ? opt : opt.label;
+    const value = typeof opt === 'string' ? opt : opt.key;
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = label;
+    chip.onclick = () => {
+      if (multi) {
+        if (selected.has(value)) { selected.delete(value); chip.classList.remove('selected'); }
+        else { selected.add(value); chip.classList.add('selected'); }
+        answers[key] = Array.from(selected);
+      } else {
+        wrap.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        selected.clear(); selected.add(value);
+        answers[key] = value;
+      }
+      updateTotals();
+      validateForm();
+    };
+    wrap.appendChild(chip);
+  });
+  container.appendChild(wrap);
+}
+
+function textField(container, key, placeholder) {
+  const el = document.createElement('textarea');
+  el.placeholder = placeholder || 'Ваша відповідь…';
+  el.rows = 2;
+  el.oninput = () => { answers[key] = el.value.trim(); validateForm(); };
+  container.appendChild(el);
+}
+
+function addQuestion(idx, total, q) {
+  const wrap = document.createElement('div');
+  wrap.className = 'q';
+  wrap.dataset.key = q.key;
+  const label = document.createElement('div');
+  label.className = 'q-label';
+  label.innerHTML = `<span class="q-num">${idx}/${total}</span>${q.q}`;
+  wrap.appendChild(label);
+  if (q.type === 'buttons') chipsField(wrap, q.key, q.options, false);
+  else textField(wrap, q.key);
+  if (q.hint) {
+    const hint = document.createElement('div');
+    hint.className = 'q-hint';
+    hint.textContent = q.hint;
+    wrap.appendChild(hint);
+  }
+  const err = document.createElement('div');
+  err.className = 'err';
+  err.textContent = 'Це поле обов\'язкове';
+  wrap.appendChild(err);
+  form.appendChild(wrap);
+}
+
+let allQuestions = [];
+let isKids = track === 'kids';
+
+if (isKids) {
+  titleEl.textContent = '🎬 Персональний мультфільм';
+  introEl.textContent = 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.';
+
+  allQuestions = [{ key: 'name', q: 'Ім\'я героя?' }];
+  if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: 'Який жанр?', options: KIDS_GENRES });
+  allQuestions.push({ key: 'gender', type: 'buttons', q: 'Хлопчик чи дівчинка?', options: ['Хлопчик', 'Дівчинка'] });
+
+  allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length + 2, q));
+
+  if (presetGenre) answers.interest = presetGenre;
+
+  // Тариф — окремим блоком, з реальною ціною і живим підрахунком
+  const tariffWrap = document.createElement('div');
+  tariffWrap.className = 'q';
+  tariffWrap.dataset.key = 'tariff';
+  tariffWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 1}/${allQuestions.length + 2}</span>Оберіть тариф</div>`;
+  const tariffChips = document.createElement('div');
+  tariffChips.className = 'chips';
+  KIDS_TARIFFS.forEach((t) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}</span>`;
+    chip.onclick = () => {
+      tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      answers.tariff = t.key;
+      updateTotals(); validateForm();
+    };
+    tariffChips.appendChild(chip);
+  });
+  tariffWrap.appendChild(tariffChips);
+  const tariffHint = document.createElement('div');
+  tariffHint.className = 'q-hint';
+  tariffHint.textContent = KIDS_TARIFFS.map((t) => `${t.label}: ${t.desc}`).join(' · ');
+  tariffWrap.appendChild(tariffHint);
+  form.appendChild(tariffWrap);
+
+  // Допродажі — мультивибір
+  const addonsWrap = document.createElement('div');
+  addonsWrap.className = 'q';
+  addonsWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 2}/${allQuestions.length + 2}</span>Додати трохи магії? (необов'язково)</div>`;
+  const addonsChips = document.createElement('div');
+  addonsChips.className = 'chips';
+  answers.addons = [];
+  KIDS_ADDONS.forEach((a) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${a.label} — <span class="price-tag">+$${a.price}</span>`;
+    chip.onclick = () => {
+      const idx = answers.addons.indexOf(a.key);
+      if (idx >= 0) { answers.addons.splice(idx, 1); chip.classList.remove('selected'); }
+      else { answers.addons.push(a.key); chip.classList.add('selected'); }
+      updateTotals();
+    };
+    addonsChips.appendChild(chip);
+  });
+  addonsWrap.appendChild(addonsChips);
+  form.appendChild(addonsWrap);
+
+  totalBar.classList.add('show');
+} else {
+  const brief = ADULT_BRIEFS[track] || ADULT_BRIEFS.romance;
+  titleEl.textContent = brief.title;
+  introEl.textContent = brief.intro;
+  allQuestions = brief.questions;
+  allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
+}
+
+function updateTotals() {
+  if (!isKids) return;
+  const t = KIDS_TARIFFS.find((x) => x.key === answers.tariff);
+  let total = t ? t.price : 0;
+  (answers.addons || []).forEach((k) => {
+    const a = KIDS_ADDONS.find((x) => x.key === k);
+    if (a) total += a.price;
+  });
+  totalVal.textContent = '$' + total;
+}
+
+function requiredKeys() {
+  if (isKids) {
+    const keys = ['name', 'gender', 'tariff'];
+    if (!presetGenre) keys.push('interest');
+    return keys;
+  }
+  // усі текстові поля обов'язкові; для полів-кнопок теж (крім явно
+  // необов'язкових — тут таких немає, кожне питання варте відповіді)
+  return allQuestions.map((q) => q.key);
+}
+
+function validateForm() {
+  const missing = requiredKeys().filter((k) => {
+    const v = answers[k];
+    return v === undefined || v === null || v === '';
+  });
+  submitBtn.disabled = missing.length > 0;
+  return missing;
+}
+
+submitBtn.addEventListener('click', () => {
+  const missing = validateForm();
+  if (missing.length) {
+    missing.forEach((k) => {
+      const wrap = form.querySelector(`[data-key="${k}"]`);
+      if (wrap) wrap.querySelector('.err').classList.add('show');
+    });
+    const firstBad = form.querySelector(`[data-key="${missing[0]}"]`);
+    if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const payload = { track, answers, presetGenre: presetGenre || null };
+  if (tg) {
+    tg.sendData(JSON.stringify(payload));
+    tg.close();
+  } else {
+    // локальний перегляд поза Telegram — просто показуємо, що зібралось
+    alert('Поза Telegram WebApp — дані для перевірки:\n\n' + JSON.stringify(payload, null, 2));
+  }
+});
+
+validateForm();
+</script>
+</body>
+</html>
