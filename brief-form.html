@@ -129,7 +129,7 @@ const ADULT_BRIEFS = {
   },
   corporate: {
     title: '🏢 Корпоративне відео',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    intro: 'Орієнтовна вартість: від $199 (просте привітання) до $799+ (преміум з повним брендуванням) — залежно від складності сценарію, точну суму порахуємо разом після брифу. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
     questions: [
       { key: 'company', q: 'Назва компанії / бренду?' },
       { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
@@ -201,8 +201,14 @@ const ADULT_BRIEFS = {
 
 // ---------- Дитяча лінійка — окрема логіка (ціни/ключі для боту) ----------
 const KIDS_TARIFFS = [
-  { key: 'first', label: 'Перша історія', price: 129, desc: '1–2 хвилини, 2–3 сцени — ідеально для першого мультфільму' },
-  { key: 'full', label: 'Настоящий мультфільм', price: 299, desc: 'більше емоцій, озвучка, "як у кіно"' },
+  { key: 'start', label: 'Старт', price: 99, desc: 'Перший подарунок-казка — коротка щира історія' },
+  { key: 'popular', label: 'Популярний', price: 199, desc: 'Більше сцен, справжня пригода — улюблений вибір батьків' },
+  { key: 'premium', label: 'Premium', price: 399, desc: 'Кінематографічна історія у стилі великих студій' },
+];
+const PET_TARIFFS = [
+  { key: 'start', label: 'Старт', price: 79, desc: 'Коротка тепла історія про улюбленця' },
+  { key: 'popular', label: 'Популярний', price: 149, desc: 'Справжня пригода — більше сцен і емоцій' },
+  { key: 'premium', label: 'Premium', price: 299, desc: 'Кінематографічна історія про чотирилапого героя' },
 ];
 const KIDS_ADDONS = [
   { key: 'voice', label: '🎤 Озвучка імені', price: 25 },
@@ -359,17 +365,52 @@ if (isKids) {
   introEl.textContent = brief.intro;
   allQuestions = brief.questions;
   allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
+
+  if (track === 'pets') {
+    const tariffWrap = document.createElement('div');
+    tariffWrap.className = 'q';
+    tariffWrap.dataset.key = 'tariff';
+    tariffWrap.innerHTML = '<div class="q-label">Оберіть рівень</div>';
+    const tariffChips = document.createElement('div');
+    tariffChips.className = 'chips';
+    PET_TARIFFS.forEach((t) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}</span>`;
+      chip.onclick = () => {
+        tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        answers.tariff = t.key;
+        updateTotals(); validateForm();
+      };
+      tariffChips.appendChild(chip);
+    });
+    tariffWrap.appendChild(tariffChips);
+    const tariffHint = document.createElement('div');
+    tariffHint.className = 'q-hint';
+    tariffHint.textContent = PET_TARIFFS.map((t) => `${t.label}: ${t.desc}`).join(' · ');
+    tariffWrap.appendChild(tariffHint);
+    form.appendChild(tariffWrap);
+    totalBar.classList.add('show');
+  }
 }
 
 function updateTotals() {
-  if (!isKids) return;
-  const t = KIDS_TARIFFS.find((x) => x.key === answers.tariff);
-  let total = t ? t.price : 0;
-  (answers.addons || []).forEach((k) => {
-    const a = KIDS_ADDONS.find((x) => x.key === k);
-    if (a) total += a.price;
-  });
-  totalVal.textContent = '$' + total;
+  if (isKids) {
+    const t = KIDS_TARIFFS.find((x) => x.key === answers.tariff);
+    let total = t ? t.price : 0;
+    (answers.addons || []).forEach((k) => {
+      const a = KIDS_ADDONS.find((x) => x.key === k);
+      if (a) total += a.price;
+    });
+    totalVal.textContent = '$' + total;
+    return;
+  }
+  if (track === 'pets') {
+    const t = PET_TARIFFS.find((x) => x.key === answers.tariff);
+    totalVal.textContent = '$' + (t ? t.price : 0);
+    return;
+  }
 }
 
 function requiredKeys() {
@@ -380,7 +421,9 @@ function requiredKeys() {
   }
   // усі текстові поля обов'язкові; для полів-кнопок теж (крім явно
   // необов'язкових — тут таких немає, кожне питання варте відповіді)
-  return allQuestions.map((q) => q.key);
+  const keys = allQuestions.map((q) => q.key);
+  if (track === 'pets') keys.push('tariff');
+  return keys;
 }
 
 function validateForm() {
@@ -397,7 +440,8 @@ submitBtn.addEventListener('click', () => {
   if (missing.length) {
     missing.forEach((k) => {
       const wrap = form.querySelector(`[data-key="${k}"]`);
-      if (wrap) wrap.querySelector('.err').classList.add('show');
+      const errEl = wrap && wrap.querySelector('.err');
+      if (errEl) errEl.classList.add('show');
     });
     const firstBad = form.querySelector(`[data-key="${missing[0]}"]`);
     if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
