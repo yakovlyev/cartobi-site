@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Cartobi — Бриф</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 <style>
   :root{
     --bg:#0A0722; --card:#150e3a; --card2:#1c1450;
@@ -20,6 +20,11 @@
   }
   h1{font-size:19px; margin:4px 0 2px; color:var(--accent);}
   .intro{font-size:14px; color:var(--muted); margin:0 0 20px; line-height:1.5;}
+  .photo-notice{
+    background:rgba(255,176,32,0.12); border:1.5px solid rgba(255,176,32,0.4); border-radius:12px;
+    padding:11px 13px; font-size:13px; color:var(--text); margin:0 0 22px; line-height:1.5;
+  }
+  .photo-notice b{color:var(--accent);}
   .q{margin-bottom:22px;}
   .q-label{font-size:14.5px; font-weight:700; margin-bottom:9px; line-height:1.4;}
   .q-num{color:var(--accent); font-weight:800; margin-right:4px;}
@@ -63,6 +68,7 @@
 
 <h1 id="title">Бриф</h1>
 <p class="intro" id="intro"></p>
+<div class="photo-notice" id="photoNotice"></div>
 <form id="briefForm"></form>
 
 <div class="total-bar" id="totalBar">
@@ -74,6 +80,7 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
@@ -276,6 +283,15 @@ function addQuestion(idx, total, q) {
 let allQuestions = [];
 let isKids = track === 'kids';
 
+const photoNoticeEl = document.getElementById('photoNotice');
+if (isKids) {
+  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото дитини</b> — це обов\'язковий крок, без нього не можемо зробити персонажа.';
+} else if (track === 'pets') {
+  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов\'язковий крок, без нього не можемо зробити персонажа схожим.';
+} else {
+  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов\'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.';
+}
+
 if (isKids) {
   titleEl.textContent = '🎬 Персональний мультфільм';
   introEl.textContent = 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.';
@@ -398,6 +414,7 @@ submitBtn.addEventListener('click', () => {
 });
 
 validateForm();
+});
 </script>
 </body>
 </html>
