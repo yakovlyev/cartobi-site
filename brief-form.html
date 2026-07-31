@@ -129,7 +129,7 @@ const ADULT_BRIEFS = {
   },
   corporate: {
     title: '🏢 Корпоративне відео',
-    intro: 'Орієнтовна вартість: від $199 (просте привітання) до $799+ (преміум з повним брендуванням) — залежно від складності сценарію, точну суму порахуємо разом після брифу. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
+    intro: 'Орієнтовна вартість: від $199 (просте привітання, базова анімація) до $399 (сценарний ролик з брендуванням і логотипом) до $799+ (преміум 3D для великих презентацій) — залежно від складності сценарію, точну суму порахуємо разом після брифу. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.',
     questions: [
       { key: 'company', q: 'Назва компанії / бренду?' },
       { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
@@ -201,14 +201,14 @@ const ADULT_BRIEFS = {
 
 // ---------- Дитяча лінійка — окрема логіка (ціни/ключі для боту) ----------
 const KIDS_TARIFFS = [
-  { key: 'start', label: 'Старт', price: 99, desc: 'Перший подарунок-казка — коротка щира історія' },
-  { key: 'popular', label: 'Популярний', price: 199, desc: 'Більше сцен, справжня пригода — улюблений вибір батьків' },
-  { key: 'premium', label: 'Premium', price: 399, desc: 'Кінематографічна історія у стилі великих студій' },
+  { key: 'start', label: 'Старт', price: 99, desc: '1 персонаж, 3-5 сцен, проста анімація, фонова музика — ідеальний перший подарунок' },
+  { key: 'popular', label: 'Популярний', price: 199, desc: '6-8 сцен, авторський сюжет, до 2 персонажів у кадрі, синхронізація мовлення' },
+  { key: 'premium', label: 'Premium', price: 399, desc: 'Кінематографічна 3D-якість, складна анімація, повна озвучка персонажів, розширена історія' },
 ];
 const PET_TARIFFS = [
-  { key: 'start', label: 'Старт', price: 79, desc: 'Коротка тепла історія про улюбленця' },
-  { key: 'popular', label: 'Популярний', price: 149, desc: 'Справжня пригода — більше сцен і емоцій' },
-  { key: 'premium', label: 'Premium', price: 299, desc: 'Кінематографічна історія про чотирилапого героя' },
+  { key: 'start', label: 'Старт', price: 79, desc: '1 улюбленець, 3-5 сцен, проста анімація, фонова музика' },
+  { key: 'popular', label: 'Популярний', price: 149, desc: '6-8 сцен, власний сюжет, до 2 тварин у кадрі, елементи озвучки' },
+  { key: 'premium', label: 'Premium', price: 299, desc: 'Кінематографічна якість, складна анімація, повна озвучка, розширена історія' },
 ];
 const KIDS_ADDONS = [
   { key: 'voice', label: '🎤 Озвучка імені', price: 25 },
@@ -332,7 +332,7 @@ if (isKids) {
   tariffWrap.appendChild(tariffChips);
   const tariffHint = document.createElement('div');
   tariffHint.className = 'q-hint';
-  tariffHint.textContent = KIDS_TARIFFS.map((t) => `${t.label}: ${t.desc}`).join(' · ');
+  tariffHint.innerHTML = KIDS_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}):</b> ${t.desc}`).join('<br>');
   tariffWrap.appendChild(tariffHint);
   form.appendChild(tariffWrap);
 
@@ -388,7 +388,7 @@ if (isKids) {
     tariffWrap.appendChild(tariffChips);
     const tariffHint = document.createElement('div');
     tariffHint.className = 'q-hint';
-    tariffHint.textContent = PET_TARIFFS.map((t) => `${t.label}: ${t.desc}`).join(' · ');
+    tariffHint.innerHTML = PET_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}):</b> ${t.desc}`).join('<br>');
     tariffWrap.appendChild(tariffHint);
     form.appendChild(tariffWrap);
     totalBar.classList.add('show');
