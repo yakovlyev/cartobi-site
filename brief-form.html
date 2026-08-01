@@ -74,7 +74,7 @@
 <div class="total-bar" id="totalBar">
   <div>
     <span>Разом до сплати</span>
-    <div style="font-size:10.5px; color:var(--muted); margin-top:2px;">Оплата в гривнях за курсом НБУ на день оплати, без ПДВ</div>
+    <div style="font-size:10px; color:var(--muted); margin-top:1px;">Оплата в гривнях за курсом НБУ на день оплати, без ПДВ</div>
   </div>
   <b id="totalVal">$0</b>
 </div>
@@ -130,7 +130,7 @@ const ADULT_BRIEFS = {
   },
   corporate: {
     title: '🏢 Корпоративне відео',
-    intro: 'Орієнтовна вартість: від $199 (просте привітання, базова анімація) до $399 (сценарний ролик з брендуванням і логотипом) до $799+ (преміум 3D для великих презентацій) — залежно від складності сценарію, точну суму порахуємо разом після брифу. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію.',
+    intro: 'Вартість за хвилину готового відео: $199/хв (просте привітання, базова анімація), $399/хв (сценарний ролик з брендуванням і логотипом), $799+/хв (преміум 3D для великих презентацій) — залежно від складності сценарію. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію (складність — через кількість персонажів/сцен).',
     questions: [
       { key: 'company', q: 'Назва компанії / бренду?' },
       { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
@@ -316,7 +316,7 @@ if (isKids) {
   KIDS_TARIFFS.forEach((t) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
-    chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}</span>`;
+    chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}/хв</span>`;
     chip.onclick = () => {
       tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
       chip.classList.add('selected');
@@ -328,7 +328,7 @@ if (isKids) {
   tariffWrap.appendChild(tariffChips);
   const tariffHint = document.createElement('div');
   tariffHint.className = 'q-hint';
-  tariffHint.innerHTML = KIDS_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}):</b> ${t.desc}`).join('<br>');
+  tariffHint.innerHTML = KIDS_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
   tariffWrap.appendChild(tariffHint);
   form.appendChild(tariffWrap);
 
@@ -372,7 +372,7 @@ if (isKids) {
     PET_TARIFFS.forEach((t) => {
       const chip = document.createElement('div');
       chip.className = 'chip';
-      chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}</span>`;
+      chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}/хв</span>`;
       chip.onclick = () => {
         tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
         chip.classList.add('selected');
@@ -384,7 +384,7 @@ if (isKids) {
     tariffWrap.appendChild(tariffChips);
     const tariffHint = document.createElement('div');
     tariffHint.className = 'q-hint';
-    tariffHint.innerHTML = PET_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}):</b> ${t.desc}`).join('<br>');
+    tariffHint.innerHTML = PET_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
     tariffWrap.appendChild(tariffHint);
     form.appendChild(tariffWrap);
     totalBar.classList.add('show');
