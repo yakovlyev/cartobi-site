@@ -88,7 +88,7 @@ const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
 const params = new URLSearchParams(location.search);
-const track = params.get('track') || 'romance';
+let track = params.get('track') || 'romance';
 const presetGenre = params.get('genre'); // тільки для kids, якщо жанр обрано на сайті заздалегідь
 
 // ---------- Аналітика: яку саме форму відкрили (лійка сайт → бриф) ----------
@@ -112,7 +112,7 @@ const presetGenre = params.get('genre'); // тільки для kids, якщо �
 const ADULT_BRIEFS = {
   romance: {
     title: '💕 Романтична історія',
-    intro: 'Вартість за хвилину готового відео: $199/хв (базовий рівень), $399/хв (розширений сценарій), $799+/хв (преміум) — залежно від складності. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
     questions: [
       { key: 'occasion', q: 'Який привід?', hint: 'освідчення, річниця, просто сюрприз, примирення тощо' },
       { key: 'names', q: 'Імена обох героїв (хто дарує і кому)?' },
@@ -128,7 +128,7 @@ const ADULT_BRIEFS = {
   },
   birthday: {
     title: '🎉 День народження',
-    intro: 'Вартість за хвилину готового відео: $199/хв (базовий рівень), $399/хв (розширений сценарій), $799+/хв (преміум) — залежно від складності. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
     questions: [
       { key: 'name', q: 'Ім\'я іменинника/іменинниці?' },
       { key: 'age', type: 'buttons', q: 'Скільки виповнюється?', options: ['1-3 роки', '4-6 років', '7-12 років', '13-17 років', '18-30 років', '31-50 років', '50+ років'] },
@@ -143,7 +143,7 @@ const ADULT_BRIEFS = {
   },
   corporate: {
     title: '🏢 Корпоративне відео',
-    intro: 'Вартість за хвилину готового відео: $199/хв (просте привітання, базова анімація), $399/хв (сценарний ролик з брендуванням і логотипом), $799+/хв (преміум 3D для великих презентацій) — залежно від складності сценарію. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію (складність — через кількість персонажів/сцен).',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію.',
     questions: [
       { key: 'company', q: 'Назва компанії / бренду?' },
       { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
@@ -159,7 +159,7 @@ const ADULT_BRIEFS = {
   },
   wedding: {
     title: '💍 Весільна історія',
-    intro: 'Вартість за хвилину готового відео: $199/хв (базовий рівень), $399/хв (розширений сценарій), $799+/хв (преміум) — залежно від складності. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.',
+    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
     questions: [
       { key: 'names', q: 'Імена нареченого і нареченої?' },
       { key: 'appearance', q: 'Опишіть зовнішність обох', hint: 'або надішліть фото боту після цього брифу' },
@@ -174,7 +174,7 @@ const ADULT_BRIEFS = {
   },
   script: {
     title: '📝 Мультфільм за сценарієм',
-    intro: 'Вартість за хвилину готового відео: $199/хв (базовий рівень), $399/хв (розширений сценарій), $799+/хв (преміум) — залежно від складності. Оплата в гривнях за курсом НБУ на день оплати, без ПДВ. Дам трохи більше питань, ніж зазвичай про ваш сценарій — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.',
+    intro: 'Дам трохи більше питань, ніж зазвичай про ваш сценарій — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
     questions: [
       { key: 'scriptText', q: 'Опишіть сюжет вашого сценарію', hint: 'детальний опис — повний текст сценарію можна надіслати боту окремо після цього брифу' },
       { key: 'characters', q: 'Скільки персонажів, хто вони і як виглядають?' },
@@ -215,6 +215,17 @@ const PET_TARIFFS = [
   { key: 'start', label: 'Старт', price: 79, desc: '1 улюбленець, 3-5 сцен, проста анімація, фонова музика' },
   { key: 'popular', label: 'Популярний', price: 149, desc: '6-8 сцен, власний сюжет, до 2 тварин у кадрі, елементи озвучки' },
   { key: 'premium', label: 'Premium', price: 299, desc: 'Кінематографічна якість, складна анімація, повна озвучка, розширена історія' },
+];
+const ADULT_TARIFFS = [
+  { key: 'start', label: 'Базовий', price: 199, desc: '1-2 персонажі, одна сцена, проста анімація — компактна, але щира історія' },
+  { key: 'expanded', label: 'Розширений', price: 399, desc: 'Кілька сцен, деталізований сюжет, більше персонажів у кадрі, синхронізація мовлення' },
+  { key: 'premium', label: 'Преміум', price: 799, desc: 'Кінематографічна якість, складна анімація, багато персонажів і сцен, повна озвучка — для особливих випадків' },
+];
+const ADULT_GENRES = [
+  { key: 'romance', label: '💕 Романтична історія' },
+  { key: 'birthday', label: '🎉 День народження' },
+  { key: 'corporate', label: '🏢 Корпоративне відео' },
+  { key: 'wedding', label: '💍 Весільна історія' },
 ];
 const KIDS_ADDONS = [
   { key: 'voice', label: '🎤 Озвучка імені', price: 25 },
@@ -291,38 +302,14 @@ function addQuestion(idx, total, q) {
   form.appendChild(wrap);
 }
 
-let allQuestions = [];
-let isKids = track === 'kids';
-
-const photoNoticeEl = document.getElementById('photoNotice');
-if (isKids) {
-  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото дитини</b> — це обов\'язковий крок, без нього не можемо зробити персонажа.';
-} else if (track === 'pets') {
-  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов\'язковий крок, без нього не можемо зробити персонажа схожим.';
-} else {
-  photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов\'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.';
-}
-
-if (isKids) {
-  titleEl.textContent = '🎬 Персональний мультфільм';
-  introEl.textContent = 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.';
-
-  allQuestions = [{ key: 'name', q: 'Ім\'я героя?' }];
-  if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: 'Який жанр?', options: KIDS_GENRES });
-  allQuestions.push({ key: 'gender', type: 'buttons', q: 'Хлопчик чи дівчинка?', options: ['Хлопчик', 'Дівчинка'] });
-
-  allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length + 2, q));
-
-  if (presetGenre) answers.interest = presetGenre;
-
-  // Тариф — окремим блоком, з реальною ціною і живим підрахунком
+function renderTariffBlock(tariffs, label) {
   const tariffWrap = document.createElement('div');
   tariffWrap.className = 'q';
   tariffWrap.dataset.key = 'tariff';
-  tariffWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 1}/${allQuestions.length + 2}</span>Оберіть тариф</div>`;
+  tariffWrap.innerHTML = `<div class="q-label">${label}</div>`;
   const tariffChips = document.createElement('div');
   tariffChips.className = 'chips';
-  KIDS_TARIFFS.forEach((t) => {
+  tariffs.forEach((t) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
     chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}/хв</span>`;
@@ -337,67 +324,112 @@ if (isKids) {
   tariffWrap.appendChild(tariffChips);
   const tariffHint = document.createElement('div');
   tariffHint.className = 'q-hint';
-  tariffHint.innerHTML = KIDS_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
+  tariffHint.innerHTML = tariffs.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
   tariffWrap.appendChild(tariffHint);
   form.appendChild(tariffWrap);
+  totalBar.classList.add('show');
+}
 
-  // Допродажі — мультивибір
-  const addonsWrap = document.createElement('div');
-  addonsWrap.className = 'q';
-  addonsWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 2}/${allQuestions.length + 2}</span>Додати трохи магії? (необов'язково)</div>`;
-  const addonsChips = document.createElement('div');
-  addonsChips.className = 'chips';
-  answers.addons = [];
-  KIDS_ADDONS.forEach((a) => {
+function renderGenrePicker() {
+  titleEl.textContent = '💌 Дорослі формати';
+  introEl.textContent = 'Оберіть, що саме хочете створити — далі покажемо питання саме під цей формат.';
+  photoNoticeEl.style.display = 'none';
+  const wrap = document.createElement('div');
+  wrap.className = 'q';
+  wrap.innerHTML = '<div class="q-label">Який жанр?</div>';
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  ADULT_GENRES.forEach((g) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
-    chip.innerHTML = `${a.label} — <span class="price-tag">+$${a.price}</span>`;
+    chip.textContent = g.label;
     chip.onclick = () => {
-      const idx = answers.addons.indexOf(a.key);
-      if (idx >= 0) { answers.addons.splice(idx, 1); chip.classList.remove('selected'); }
-      else { answers.addons.push(a.key); chip.classList.add('selected'); }
-      updateTotals();
+      track = g.key;
+      form.innerHTML = '';
+      photoNoticeEl.style.display = '';
+      answers.tariff = undefined;
+      renderForm();
     };
-    addonsChips.appendChild(chip);
+    chips.appendChild(chip);
   });
-  addonsWrap.appendChild(addonsChips);
-  form.appendChild(addonsWrap);
+  wrap.appendChild(chips);
+  form.appendChild(wrap);
+  submitBtn.style.display = 'none';
+}
 
-  totalBar.classList.add('show');
-} else {
-  const brief = ADULT_BRIEFS[track] || ADULT_BRIEFS.romance;
-  titleEl.textContent = brief.title;
-  introEl.textContent = brief.intro;
-  allQuestions = brief.questions;
-  allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
+function renderForm() {
+  isKids = track === 'kids';
 
-  if (track === 'pets') {
-    const tariffWrap = document.createElement('div');
-    tariffWrap.className = 'q';
-    tariffWrap.dataset.key = 'tariff';
-    tariffWrap.innerHTML = '<div class="q-label">Оберіть рівень</div>';
-    const tariffChips = document.createElement('div');
-    tariffChips.className = 'chips';
-    PET_TARIFFS.forEach((t) => {
+  if (isKids) {
+    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото дитини</b> — це обов\'язковий крок, без нього не можемо зробити персонажа.';
+  } else if (track === 'pets') {
+    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов\'язковий крок, без нього не можемо зробити персонажа схожим.';
+  } else {
+    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов\'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.';
+  }
+
+  if (isKids) {
+    titleEl.textContent = '🎬 Персональний мультфільм';
+    introEl.textContent = 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.';
+
+    allQuestions = [{ key: 'name', q: 'Ім\'я героя?' }];
+    if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: 'Який жанр?', options: KIDS_GENRES });
+    allQuestions.push({ key: 'gender', type: 'buttons', q: 'Хлопчик чи дівчинка?', options: ['Хлопчик', 'Дівчинка'] });
+
+    allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length + 2, q));
+
+    if (presetGenre) answers.interest = presetGenre;
+
+    renderTariffBlock(KIDS_TARIFFS, 'Оберіть тариф');
+
+    // Допродажі — мультивибір
+    const addonsWrap = document.createElement('div');
+    addonsWrap.className = 'q';
+    addonsWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 2}/${allQuestions.length + 2}</span>Додати трохи магії? (необов'язково)</div>`;
+    const addonsChips = document.createElement('div');
+    addonsChips.className = 'chips';
+    answers.addons = [];
+    KIDS_ADDONS.forEach((a) => {
       const chip = document.createElement('div');
       chip.className = 'chip';
-      chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}/хв</span>`;
+      chip.innerHTML = `${a.label} — <span class="price-tag">+$${a.price}</span>`;
       chip.onclick = () => {
-        tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
-        chip.classList.add('selected');
-        answers.tariff = t.key;
-        updateTotals(); validateForm();
+        const idx = answers.addons.indexOf(a.key);
+        if (idx >= 0) { answers.addons.splice(idx, 1); chip.classList.remove('selected'); }
+        else { answers.addons.push(a.key); chip.classList.add('selected'); }
+        updateTotals();
       };
-      tariffChips.appendChild(chip);
+      addonsChips.appendChild(chip);
     });
-    tariffWrap.appendChild(tariffChips);
-    const tariffHint = document.createElement('div');
-    tariffHint.className = 'q-hint';
-    tariffHint.innerHTML = PET_TARIFFS.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
-    tariffWrap.appendChild(tariffHint);
-    form.appendChild(tariffWrap);
-    totalBar.classList.add('show');
+    addonsWrap.appendChild(addonsChips);
+    form.appendChild(addonsWrap);
+  } else {
+    const brief = ADULT_BRIEFS[track] || ADULT_BRIEFS.romance;
+    titleEl.textContent = brief.title;
+    introEl.textContent = brief.intro;
+    allQuestions = brief.questions;
+    allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
+
+    if (track === 'pets') {
+      renderTariffBlock(PET_TARIFFS, 'Оберіть рівень');
+    } else {
+      // романтика / день народження / корпоратив / весілля / сценарій —
+      // єдина сітка рівнів, як домовились з Ігорем
+      renderTariffBlock(ADULT_TARIFFS, 'Оберіть рівень');
+    }
   }
+  submitBtn.style.display = '';
+  validateForm();
+}
+
+let allQuestions = [];
+let isKids = track === 'kids';
+const photoNoticeEl = document.getElementById('photoNotice');
+
+if (track === 'adult') {
+  renderGenrePicker();
+} else {
+  renderForm();
 }
 
 function updateTotals() {
@@ -416,6 +448,11 @@ function updateTotals() {
     totalVal.textContent = '$' + (t ? t.price : 0);
     return;
   }
+  if (ADULT_BRIEFS[track]) {
+    const t = ADULT_TARIFFS.find((x) => x.key === answers.tariff);
+    totalVal.textContent = '$' + (t ? t.price : 0);
+    return;
+  }
 }
 
 function requiredKeys() {
@@ -427,7 +464,7 @@ function requiredKeys() {
   // усі текстові поля обов'язкові; для полів-кнопок теж (крім явно
   // необов'язкових — тут таких немає, кожне питання варте відповіді)
   const keys = allQuestions.map((q) => q.key);
-  if (track === 'pets') keys.push('tariff');
+  if (track === 'pets' || ADULT_BRIEFS[track]) keys.push('tariff');
   return keys;
 }
 
