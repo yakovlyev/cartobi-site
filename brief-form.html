@@ -91,6 +91,21 @@ const params = new URLSearchParams(location.search);
 const track = params.get('track') || 'romance';
 const presetGenre = params.get('genre'); // тільки для kids, якщо жанр обрано на сайті заздалегідь
 
+// ---------- Аналітика: яку саме форму відкрили (лійка сайт → бриф) ----------
+(function trackFormOpen() {
+  try {
+    fetch('https://hfrkqdursauhndzmfepc.supabase.co/rest/v1/cartobi_visits', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'sb_publishable_Ff-561WRrgTunEISE0arzA_ZCVrFpSZ',
+        'Authorization': 'Bearer sb_publishable_Ff-561WRrgTunEISE0arzA_ZCVrFpSZ',
+      },
+      body: JSON.stringify({ source: 'telegram_bot', page: `brief_${track}` }),
+    }).catch(() => {});
+  } catch (e) { /* тихо ігноруємо */ }
+})();
+
 // ---------- Дорослі лінійки — дзеркало BRIEFS з bot.js ----------
 // ВАЖЛИВО: цей об'єкт треба вручну тримати синхронізованим з BRIEFS у
 // bot/bot.js, якщо там міняються питання — тут теж треба поправити.
