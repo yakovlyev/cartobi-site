@@ -170,6 +170,31 @@
     50%{transform:scale(1.08); box-shadow:0 6px 30px rgba(255,138,0,1);}
   }
 
+  /* ---------- Дитяча/доросла секції: текст тепер реальний HTML (мультимовний),
+     картинка очищена від напису — той самий підхід, що і pet-label вище. ---------- */
+  .ov{
+    position:absolute; text-align:center; color:#fff; font-family:Arial,sans-serif;
+    text-shadow:0 1px 6px rgba(0,0,0,0.8); pointer-events:none; line-height:1.25;
+  }
+  .ov-accent{color:#ffcb3d;}
+  .ov-heading{font-weight:800; font-size:clamp(13px,3.6vw,20px);}
+  .ov-body{font-weight:600; font-size:clamp(10px,2.6vw,14px);}
+  .ov-caption{font-weight:700; font-size:clamp(9px,2.3vw,12px);}
+  .ov-small{font-weight:600; font-size:clamp(8px,2vw,11px); opacity:0.85;}
+  .ov-badge{font-weight:700; font-size:clamp(8px,2.1vw,11px);}
+  .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(9px,2.3vw,12px);}
+
+  /* Реальні CTA-кнопки замість запечених помаранчевих плашок — та сама
+     позиція, що й раніше в невидимого .hot, тепер видима і з текстом. */
+  .real-btn{
+    position:absolute; border:none; border-radius:100px; cursor:pointer;
+    background:linear-gradient(180deg,#ffb84d,#ff8a00); color:#3a1e00;
+    font-family:Arial,sans-serif; font-weight:800; font-size:clamp(11px,3vw,16px);
+    box-shadow:0 6px 20px rgba(255,138,0,0.6); display:flex; align-items:center;
+    justify-content:center; gap:6px; padding:0;
+  }
+  .real-btn:active{transform:scale(0.97);}
+
   /* Кнопка "наверх" на другій секції — щоб повернутись до дитячої без довгого скролу */
   /* Плаваюча підказка "гортай вниз" — видно тільки поки не долистали до
      дорослої секції. Не запечена в картинку, окремий шар. */
@@ -363,14 +388,42 @@
   <div class="frame-inner">
     <img src="hero-kids.jpg" alt="Персоналізований мультфільм на замовлення для дитини — Cartobi">
   </div>
-  <button class="hot cta-main" onclick="goToBot('kids')"></button>
+
+  <div class="ov ov-body" id="k-tagline" style="left:8%; top:17.3%; width:56%; height:6%;"></div>
+  <button class="real-btn" id="k-cta-main" onclick="goToBot('kids')" style="left:20%; top:25%; width:60%; height:5%;"></button>
+  <div class="ov ov-small" id="k-startnow" style="left:10%; top:31.3%; width:80%; height:2%;"></div>
+  <div class="ov ov-heading" id="k-genreheading" style="left:5%; top:35.4%; width:90%; height:2.5%;"></div>
+
+  <div class="ov ov-caption" id="k-genre-1" style="left:2%; top:49.2%; width:18%; height:2.4%;"></div>
+  <div class="ov ov-caption" id="k-genre-2" style="left:22%; top:49.2%; width:18%; height:2.4%;"></div>
+  <div class="ov ov-caption" id="k-genre-3" style="left:42%; top:49.2%; width:18%; height:2.4%;"></div>
+  <div class="ov ov-caption" id="k-genre-4" style="left:62%; top:49.2%; width:18%; height:2.4%;"></div>
+  <div class="ov ov-caption" id="k-genre-5" style="left:82%; top:49.2%; width:16%; height:2.4%;"></div>
+
+  <div class="ov ov-heading" id="k-space-heading" style="left:59%; top:55.5%; width:38%; height:3%; text-align:left;"></div>
+  <div class="ov ov-body" id="k-space-desc" style="left:59%; top:59.5%; width:38%; height:9%; text-align:left;"></div>
+
+  <div class="ov ov-heading" id="k-how-heading" style="left:5%; top:74.3%; width:90%; height:2.5%;"></div>
+  <div class="ov ov-caption" id="k-step-1" style="left:2%; top:83.3%; width:26%; height:3.5%;"></div>
+  <div class="ov ov-caption" id="k-step-2" style="left:36%; top:83.3%; width:26%; height:3.5%;"></div>
+  <div class="ov ov-caption" id="k-step-3" style="left:70%; top:83.3%; width:26%; height:3.5%;"></div>
+
+  <div class="ov ov-heading" id="k-banner-h" style="left:12%; top:86.4%; width:76%; height:3%;"></div>
+  <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90%; width:70%; height:2.5%;"></button>
+  <div class="ov ov-small" id="k-banner-sub" style="left:10%; top:92.9%; width:80%; height:1.6%;"></div>
+
+  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:95.3%; width:23%; height:3%;"></div>
+  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:95.3%; width:23%; height:3%;"></div>
+  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:95.3%; width:23%; height:3%;"></div>
+  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:95.3%; width:23%; height:3%;"></div>
+  <div class="ov ov-small" id="k-copyright" style="left:10%; top:98.6%; width:80%; height:1.2%;"></div>
+
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot play-btn" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot genre-2" onclick="openVideo('videos/kids-dragons.mp4','kids','dragons')"></button>
   <button class="hot genre-3" onclick="openVideo('videos/kids-tale.mp4','kids','tale')"></button>
   <button class="hot genre-4" onclick="openVideo('videos/kids-cars.mp4','kids','cars')"></button>
   <button class="hot genre-5" onclick="openVideo('videos/kids-heroes.mp4','kids','heroes')"></button>
-  <button class="hot cta-final" onclick="goToBot('kids')"></button>
 </section>
 
 <!-- ============ СЕКЦІЯ 2: ДОРОСЛА ЛІНІЙКА ============ -->
@@ -378,7 +431,43 @@
   <div class="frame-inner">
     <img src="hero-adult.jpg" alt="Персоналізована анімація на замовлення для дорослих — подарунок, весілля, корпоратив — Cartobi">
   </div>
-  <button class="hot cta-main" onclick="goToBot('adult')"></button>
+
+  <div class="ov ov-heading" id="a-tagline" style="left:4%; top:14.3%; width:54%; height:8%; text-align:left;"></div>
+  <button class="real-btn" id="a-cta-main" onclick="goToBot('adult')" style="left:6%; top:25%; width:40%; height:2%;"></button>
+  <div class="ov ov-small" id="a-startnow" style="left:4%; top:28%; width:55%; height:1.8%; text-align:left;"></div>
+  <div class="ov ov-heading" id="a-format-heading" style="left:5%; top:31.1%; width:90%; height:2%;"></div>
+
+  <div class="ov ov-caption" id="a-format-1" style="left:2%; top:47.6%; width:23%; height:2%;"></div>
+  <div class="ov ov-caption" id="a-format-2" style="left:27%; top:47.6%; width:23%; height:2%;"></div>
+  <div class="ov ov-caption" id="a-format-3" style="left:52%; top:47.6%; width:23%; height:2%;"></div>
+  <div class="ov ov-caption" id="a-format-4" style="left:77%; top:47.6%; width:21%; height:2%;"></div>
+
+  <div class="ov ov-heading" id="a-how-heading" style="left:5%; top:50.1%; width:90%; height:2%;"></div>
+  <div class="ov ov-small" id="a-step-1" style="left:1%; top:57.4%; width:24%; height:3.2%;"></div>
+  <div class="ov ov-small" id="a-step-2" style="left:26%; top:57.4%; width:24%; height:3.2%;"></div>
+  <div class="ov ov-small" id="a-step-3" style="left:51%; top:57.4%; width:24%; height:3.2%;"></div>
+  <div class="ov ov-small" id="a-step-4" style="left:76%; top:57.4%; width:23%; height:3.2%;"></div>
+  <div class="ov ov-small" id="a-timing" style="left:8%; top:61.3%; width:84%; height:1.8%;"></div>
+
+  <div class="ov ov-heading" id="a-examples-heading" style="left:5%; top:62.3%; width:90%; height:1.5%;"></div>
+  <div class="ov ov-caption" id="a-tc-1" style="left:3%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-2" style="left:28%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-3" style="left:53%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-4" style="left:78%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-1" style="left:2%; top:74.9%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-2" style="left:27%; top:74.9%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-3" style="left:52%; top:74.9%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-4" style="left:77%; top:74.9%; width:21%; height:2.3%;"></div>
+
+  <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:78.6%; width:58%; height:4.5%; text-align:left;"></div>
+  <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:85%; width:65%; height:2%;"></button>
+
+  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:88.4%; width:23%; height:3.5%;"></div>
+  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:88.4%; width:23%; height:3.5%;"></div>
+  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:88.4%; width:23%; height:3.5%;"></div>
+  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:88.4%; width:23%; height:3.5%;"></div>
+  <div class="ov ov-small" id="a-copyright" style="left:10%; top:92.7%; width:80%; height:1%;"></div>
+
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
   <button class="hot arrow-right-1" onclick="shiftFormats(1)"></button>
   <button class="hot card-1" onclick="openVideo('videos/romance-1-park-bouquet.mp4','romance')"></button>
@@ -391,7 +480,6 @@
   <button class="hot ex-2" onclick="openVideo('videos/romance-1-park-bouquet.mp4','romance')"></button>
   <button class="hot ex-3" onclick="openVideo('videos/corporate-mike-store.mp4','corporate')"></button>
   <button class="hot ex-4" onclick="openVideo('videos/romance-5-rollsroyce.mp4','romance')"></button>
-  <button class="hot cta-final" onclick="goToBot('adult')"></button>
 </section>
 
 <section class="frame" id="section-pets">
@@ -513,11 +601,9 @@
   ];
   let currentLang = 'ua';
 
-  // Мови, для яких реально є переклад (наразі тільки текст секції
-  // питомців — дитяча/доросла лінійки поки залишаються українською,
-  // бо їхній текст запечений у самій ілюстрації, це окрема майбутня
-  // робота). Ігор явно попросив: питомці + Зоряна — мультимовні вже
-  // зараз, дитяча/доросла — поки ні.
+  // Мови, для яких реально є переклад — з 06.08 дитяча й доросла лінійки
+  // теж мультимовні (картинки очищені від тексту, весь напис тепер
+  // реальний HTML поверх, як і секція питомців).
   const SUPPORTED_LANGS = ['en','ru','it','fr','es'];
 
   const PET_TRANSLATIONS = {
@@ -550,6 +636,187 @@
   }
   renderPetLabels('ua');
 
+  // ---------- Дитяча лінійка — текст (раніше запечений в картинці) ----------
+  const KIDS_TXT = {
+    ua: { tagline:'Створюємо мультфільми з вашою дитиною в головній ролі!', startnow:'Почніть свою історію прямо зараз!',
+      genreheading:'✦ Оберіть жанр мультфільму ✦', genre1:'КОСМОС', genre2:'ДРАКОНИ', genre3:'КАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОЇ',
+      spaceHeading:'КОСМОС 🚀', spaceDesc:'Захоплюючі пригоди у відкритому космосі, далекі планети, яскраві прибульці та неймовірні відкриття!',
+      howheading:'✦ Як це працює? ✦', step1:'Завантажте фото дитини', step2:'Оберіть сюжет та жанр', step3:'Отримайте свій мультфільм!',
+      bannerH:'Готові створити щось неймовірне разом?', bannerSub:'Це легко, швидко і дуже весело!',
+      badge1t:'Безпечно для дітей', badge1s:'Ми дбаємо про вашу конфіденційність', badge2t:'Готовий мультфільм', badge2s:'вже за 48-72 години',
+      badge3t:'Унікальний контент', badge3s:'Жодних шаблонів — тільки ваша унікальна історія', badge4t:'З любов\u2019ю', badge4s:'Ми створюємо мультфільми, які дарують радість',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СТВОРИТИ ГЕРОЯ', ctaFinal:'★ СТВОРИТИ МУЛЬТ ЗАРАЗ' },
+    en: { tagline:'We create cartoons starring your child!', startnow:'Start your story right now!',
+      genreheading:'✦ Choose your cartoon genre ✦', genre1:'SPACE', genre2:'DRAGONS', genre3:'FAIRYTALE', genre4:'CARS', genre5:'SUPERHEROES',
+      spaceHeading:'SPACE 🚀', spaceDesc:'Thrilling adventures in outer space, distant planets, bright aliens and incredible discoveries!',
+      howheading:'✦ How does it work? ✦', step1:'Upload your child\u2019s photo', step2:'Pick a story and genre', step3:'Get your cartoon!',
+      bannerH:'Ready to create something amazing together?', bannerSub:'It\u2019s easy, fast and lots of fun!',
+      badge1t:'Safe for kids', badge1s:'We care about your privacy', badge2t:'Finished cartoon', badge2s:'in just 48-72 hours',
+      badge3t:'Unique content', badge3s:'No templates — only your one-of-a-kind story', badge4t:'Made with love', badge4s:'We create cartoons that bring joy',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREATE A HERO', ctaFinal:'★ CREATE A CARTOON NOW' },
+    ru: { tagline:'Создаём мультфильмы, где ваш ребёнок — главный герой!', startnow:'Начните свою историю прямо сейчас!',
+      genreheading:'✦ Выберите жанр мультфильма ✦', genre1:'КОСМОС', genre2:'ДРАКОНЫ', genre3:'СКАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОИ',
+      spaceHeading:'КОСМОС 🚀', spaceDesc:'Захватывающие приключения в открытом космосе, далёкие планеты, яркие пришельцы и невероятные открытия!',
+      howheading:'✦ Как это работает? ✦', step1:'Загрузите фото ребёнка', step2:'Выберите сюжет и жанр', step3:'Получите свой мультфильм!',
+      bannerH:'Готовы создать что-то невероятное вместе?', bannerSub:'Это легко, быстро и очень весело!',
+      badge1t:'Безопасно для детей', badge1s:'Мы заботимся о вашей конфиденциальности', badge2t:'Готовый мультфильм', badge2s:'уже за 48-72 часа',
+      badge3t:'Уникальный контент', badge3s:'Никаких шаблонов — только ваша уникальная история', badge4t:'С любовью', badge4s:'Мы создаём мультфильмы, которые дарят радость',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СОЗДАТЬ ГЕРОЯ', ctaFinal:'★ СОЗДАТЬ МУЛЬТФИЛЬМ' },
+    it: { tagline:'Creiamo cartoni animati con il tuo bambino come protagonista!', startnow:'Inizia subito la tua storia!',
+      genreheading:'✦ Scegli il genere del cartone ✦', genre1:'SPAZIO', genre2:'DRAGHI', genre3:'FIABA', genre4:'AUTO', genre5:'SUPEREROI',
+      spaceHeading:'SPAZIO 🚀', spaceDesc:'Avventure emozionanti nello spazio aperto, pianeti lontani, alieni sorprendenti e scoperte incredibili!',
+      howheading:'✦ Come funziona? ✦', step1:'Carica la foto del bambino', step2:'Scegli trama e genere', step3:'Ricevi il tuo cartone!',
+      bannerH:'Pronti a creare qualcosa di incredibile insieme?', bannerSub:'È facile, veloce e molto divertente!',
+      badge1t:'Sicuro per i bambini', badge1s:'Ci prendiamo cura della tua privacy', badge2t:'Cartone pronto', badge2s:'in sole 48-72 ore',
+      badge3t:'Contenuto unico', badge3s:'Nessun modello — solo la tua storia unica', badge4t:'Con amore', badge4s:'Creiamo cartoni che regalano gioia',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREA UN EROE', ctaFinal:'★ CREA IL CARTONE ORA' },
+    fr: { tagline:'Nous créons des dessins animés avec votre enfant en héros !', startnow:'Commencez votre histoire dès maintenant !',
+      genreheading:'✦ Choisissez le genre du dessin animé ✦', genre1:'ESPACE', genre2:'DRAGONS', genre3:'CONTE', genre4:'VOITURES', genre5:'SUPER-HÉROS',
+      spaceHeading:'ESPACE 🚀', spaceDesc:'Aventures palpitantes dans l\u2019espace, planètes lointaines, extraterrestres colorés et découvertes incroyables !',
+      howheading:'✦ Comment ça marche ? ✦', step1:'Téléchargez la photo de l\u2019enfant', step2:'Choisissez l\u2019histoire et le genre', step3:'Recevez votre dessin animé !',
+      bannerH:'Prêts à créer quelque chose d\u2019incroyable ensemble ?', bannerSub:'C\u2019est facile, rapide et très amusant !',
+      badge1t:'Sûr pour les enfants', badge1s:'Nous protégeons votre confidentialité', badge2t:'Dessin animé prêt', badge2s:'en seulement 48 à 72 heures',
+      badge3t:'Contenu unique', badge3s:'Aucun modèle — seulement votre histoire unique', badge4t:'Avec amour', badge4s:'Nous créons des dessins animés qui apportent de la joie',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CRÉER UN HÉROS', ctaFinal:'★ CRÉER LE DESSIN ANIMÉ' },
+    es: { tagline:'¡Creamos dibujos animados con tu hijo como protagonista!', startnow:'¡Comienza tu historia ahora mismo!',
+      genreheading:'✦ Elige el género del dibujo animado ✦', genre1:'ESPACIO', genre2:'DRAGONES', genre3:'CUENTO', genre4:'COCHES', genre5:'SUPERHÉROES',
+      spaceHeading:'ESPACIO 🚀', spaceDesc:'¡Aventuras emocionantes en el espacio exterior, planetas lejanos, alienígenas coloridos y descubrimientos increíbles!',
+      howheading:'✦ ¿Cómo funciona? ✦', step1:'Sube la foto del niño', step2:'Elige la historia y el género', step3:'¡Recibe tu dibujo animado!',
+      bannerH:'¿Listos para crear algo increíble juntos?', bannerSub:'¡Es fácil, rápido y muy divertido!',
+      badge1t:'Seguro para niños', badge1s:'Cuidamos tu privacidad', badge2t:'Dibujo animado listo', badge2s:'en solo 48-72 horas',
+      badge3t:'Contenido único', badge3s:'Sin plantillas — solo tu historia única', badge4t:'Con amor', badge4s:'Creamos dibujos animados que traen alegría',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREAR UN HÉROE', ctaFinal:'★ CREAR EL DIBUJO YA' },
+  };
+
+  function renderKidsText(lang) {
+    const t = KIDS_TXT[lang] || KIDS_TXT.ua;
+    document.getElementById('k-tagline').textContent = t.tagline;
+    document.getElementById('k-startnow').textContent = t.startnow;
+    document.getElementById('k-genreheading').textContent = t.genreheading;
+    document.getElementById('k-genre-1').textContent = t.genre1;
+    document.getElementById('k-genre-2').textContent = t.genre2;
+    document.getElementById('k-genre-3').textContent = t.genre3;
+    document.getElementById('k-genre-4').textContent = t.genre4;
+    document.getElementById('k-genre-5').textContent = t.genre5;
+    document.getElementById('k-space-heading').textContent = t.spaceHeading;
+    document.getElementById('k-space-desc').textContent = t.spaceDesc;
+    document.getElementById('k-how-heading').textContent = t.howheading;
+    document.getElementById('k-step-1').textContent = t.step1;
+    document.getElementById('k-step-2').textContent = t.step2;
+    document.getElementById('k-step-3').textContent = t.step3;
+    document.getElementById('k-banner-h').textContent = t.bannerH;
+    document.getElementById('k-banner-sub').textContent = t.bannerSub;
+    document.getElementById('k-badge-1').innerHTML = `<b>${t.badge1t}</b>${t.badge1s}`;
+    document.getElementById('k-badge-2').innerHTML = `<b>${t.badge2t}</b>${t.badge2s}`;
+    document.getElementById('k-badge-3').innerHTML = `<b>${t.badge3t}</b>${t.badge3s}`;
+    document.getElementById('k-badge-4').innerHTML = `<b>${t.badge4t}</b>${t.badge4s}`;
+    document.getElementById('k-copyright').textContent = t.copyright;
+    document.getElementById('k-cta-main').textContent = t.ctaMain;
+    document.getElementById('k-cta-final').textContent = t.ctaFinal;
+  }
+  renderKidsText('ua');
+
+  // ---------- Доросла лінійка — текст (раніше запечений в картинці) ----------
+  const ADULT_TXT = {
+    ua: { tagline:'Мультфільми для важливих моментів життя', startnow:'Романтика, свята, корпоративні історії — оживляємо емоції. Почніть свою унікальну історію прямо зараз!',
+      formatheading:'✦ Оберіть формат мультфільму ✦', format1:'РОМАНТИЧНІ ІСТОРІЇ', format2:'ДЕНЬ НАРОДЖЕННЯ', format3:'КОРПОРАТИВНІ', format4:'ВЕСІЛЬНІ ІСТОРІЇ',
+      howheading:'✦ Як це працює? ✦', step1:'Розкажіть свою ідею — заповніть бриф або напишіть нам', step2:'Сценарій — пишемо і надсилаємо на затвердження',
+      step3:'Анімація — професійна анімація та озвучка', step4:'Ви отримаєте емоції — готовий мультфільм, який зворушує',
+      timing:'Виготовлення від 5-7 днів після затвердження сценарію', examplesheading:'✦ Приклади наших робіт ✦',
+      exCap1:'Історія нашого кохання', exCap2:'Привітання для друга', exCap3:'Презентаційний ролик', exCap4:'Наша весільна казка',
+      bannerH:'Подаруйте емоції, які залишаються назавжди', badge1t:'Конфіденційно', badge1s:'Ваші історії під повним захистом',
+      badge2t:'Швидко та якісно', badge2s:'Готовий мультфільм від 5 до 7 днів', badge3t:'Унікальний контент', badge3s:'Індивідуальний сценарій та стиль',
+      badge4t:'З любов\u2019ю до деталей', badge4s:'Ми створюємо історії, які торкаються серця',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ СТВОРИТИ ІСТОРІЮ', ctaFinal:'♡ СТВОРИТИ МУЛЬТФІЛЬМ ЗАРАЗ' },
+    en: { tagline:'Cartoons for life\u2019s important moments', startnow:'Romance, celebrations, corporate stories — we bring emotions to life. Start your unique story right now!',
+      formatheading:'✦ Choose your cartoon format ✦', format1:'ROMANTIC STORIES', format2:'BIRTHDAY', format3:'CORPORATE', format4:'WEDDING STORIES',
+      howheading:'✦ How does it work? ✦', step1:'Tell us your idea — fill a brief or message us', step2:'Script — we write it and send it for approval',
+      step3:'Animation — professional animation and voiceover', step4:'You get the emotion — a finished cartoon that moves you',
+      timing:'Production takes 5-7 days after script approval', examplesheading:'✦ Examples of our work ✦',
+      exCap1:'Our love story', exCap2:'A greeting for a friend', exCap3:'Presentation video', exCap4:'Our wedding tale',
+      bannerH:'Give emotions that last forever', badge1t:'Confidential', badge1s:'Your stories are fully protected',
+      badge2t:'Fast and high-quality', badge2s:'Finished cartoon in 5 to 7 days', badge3t:'Unique content', badge3s:'Custom script and style',
+      badge4t:'Made with attention to detail', badge4s:'We create stories that touch the heart',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREATE A STORY', ctaFinal:'♡ CREATE A CARTOON NOW' },
+    ru: { tagline:'Мультфильмы для важных моментов жизни', startnow:'Романтика, праздники, корпоративные истории — оживляем эмоции. Начните свою уникальную историю прямо сейчас!',
+      formatheading:'✦ Выберите формат мультфильма ✦', format1:'РОМАНТИЧЕСКИЕ ИСТОРИИ', format2:'ДЕНЬ РОЖДЕНИЯ', format3:'КОРПОРАТИВНЫЕ', format4:'СВАДЕБНЫЕ ИСТОРИИ',
+      howheading:'✦ Как это работает? ✦', step1:'Расскажите свою идею — заполните бриф или напишите нам', step2:'Сценарий — пишем и отправляем на утверждение',
+      step3:'Анимация — профессиональная анимация и озвучка', step4:'Вы получаете эмоции — готовый мультфильм, который трогает',
+      timing:'Изготовление от 5-7 дней после утверждения сценария', examplesheading:'✦ Примеры наших работ ✦',
+      exCap1:'История нашей любви', exCap2:'Поздравление для друга', exCap3:'Презентационный ролик', exCap4:'Наша свадебная сказка',
+      bannerH:'Подарите эмоции, которые остаются навсегда', badge1t:'Конфиденциально', badge1s:'Ваши истории под полной защитой',
+      badge2t:'Быстро и качественно', badge2s:'Готовый мультфильм за 5-7 дней', badge3t:'Уникальный контент', badge3s:'Индивидуальный сценарий и стиль',
+      badge4t:'С любовью к деталям', badge4s:'Мы создаём истории, которые трогают сердце',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ СОЗДАТЬ ИСТОРИЮ', ctaFinal:'♡ СОЗДАТЬ МУЛЬТФИЛЬМ' },
+    it: { tagline:'Cartoni animati per i momenti importanti della vita', startnow:'Romanticismo, feste, storie aziendali — diamo vita alle emozioni. Inizia subito la tua storia unica!',
+      formatheading:'✦ Scegli il formato del cartone ✦', format1:'STORIE ROMANTICHE', format2:'COMPLEANNO', format3:'AZIENDALE', format4:'STORIE DI MATRIMONIO',
+      howheading:'✦ Come funziona? ✦', step1:'Raccontaci la tua idea — compila il brief o scrivici', step2:'Sceneggiatura — la scriviamo e la inviamo per l\u2019approvazione',
+      step3:'Animazione — animazione professionale e doppiaggio', step4:'Ricevi le emozioni — un cartone finito che commuove',
+      timing:'Realizzazione in 5-7 giorni dopo l\u2019approvazione della sceneggiatura', examplesheading:'✦ Esempi dei nostri lavori ✦',
+      exCap1:'La nostra storia d\u2019amore', exCap2:'Un augurio per un amico', exCap3:'Video di presentazione', exCap4:'La nostra favola di matrimonio',
+      bannerH:'Regala emozioni che durano per sempre', badge1t:'Riservato', badge1s:'Le tue storie sono pienamente protette',
+      badge2t:'Veloce e di qualità', badge2s:'Cartone pronto in 5-7 giorni', badge3t:'Contenuto unico', badge3s:'Sceneggiatura e stile personalizzati',
+      badge4t:'Con cura per i dettagli', badge4s:'Creiamo storie che toccano il cuore',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREA UNA STORIA', ctaFinal:'♡ CREA IL CARTONE ORA' },
+    fr: { tagline:'Des dessins animés pour les moments importants de la vie', startnow:'Romance, fêtes, histoires d\u2019entreprise — nous donnons vie aux émotions. Commencez votre histoire unique dès maintenant !',
+      formatheading:'✦ Choisissez le format du dessin animé ✦', format1:'HISTOIRES ROMANTIQUES', format2:'ANNIVERSAIRE', format3:'ENTREPRISE', format4:'HISTOIRES DE MARIAGE',
+      howheading:'✦ Comment ça marche ? ✦', step1:'Racontez-nous votre idée — remplissez le brief ou écrivez-nous', step2:'Scénario — nous l\u2019écrivons et l\u2019envoyons pour validation',
+      step3:'Animation — animation professionnelle et voix off', step4:'Vous recevez l\u2019émotion — un dessin animé fini qui touche',
+      timing:'Réalisation en 5 à 7 jours après validation du scénario', examplesheading:'✦ Exemples de nos réalisations ✦',
+      exCap1:'Notre histoire d\u2019amour', exCap2:'Un message pour un ami', exCap3:'Vidéo de présentation', exCap4:'Notre conte de mariage',
+      bannerH:'Offrez des émotions qui durent toujours', badge1t:'Confidentiel', badge1s:'Vos histoires sont entièrement protégées',
+      badge2t:'Rapide et de qualité', badge2s:'Dessin animé prêt en 5 à 7 jours', badge3t:'Contenu unique', badge3s:'Scénario et style personnalisés',
+      badge4t:'Avec le souci du détail', badge4s:'Nous créons des histoires qui touchent le cœur',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CRÉER UNE HISTOIRE', ctaFinal:'♡ CRÉER LE DESSIN ANIMÉ' },
+    es: { tagline:'Dibujos animados para los momentos importantes de la vida', startnow:'Romance, celebraciones, historias corporativas — damos vida a las emociones. ¡Comienza tu historia única ahora mismo!',
+      formatheading:'✦ Elige el formato del dibujo animado ✦', format1:'HISTORIAS ROMÁNTICAS', format2:'CUMPLEAÑOS', format3:'CORPORATIVO', format4:'HISTORIAS DE BODA',
+      howheading:'✦ ¿Cómo funciona? ✦', step1:'Cuéntanos tu idea — completa el brief o escríbenos', step2:'Guion — lo escribimos y lo enviamos para su aprobación',
+      step3:'Animación — animación profesional y locución', step4:'Recibes la emoción — un dibujo animado terminado que conmueve',
+      timing:'La producción tarda de 5 a 7 días tras la aprobación del guion', examplesheading:'✦ Ejemplos de nuestros trabajos ✦',
+      exCap1:'Nuestra historia de amor', exCap2:'Un saludo para un amigo', exCap3:'Video de presentación', exCap4:'Nuestro cuento de boda',
+      bannerH:'Regala emociones que duran para siempre', badge1t:'Confidencial', badge1s:'Tus historias están totalmente protegidas',
+      badge2t:'Rápido y de calidad', badge2s:'Dibujo animado listo en 5 a 7 días', badge3t:'Contenido único', badge3s:'Guion y estilo personalizados',
+      badge4t:'Con amor por los detalles', badge4s:'Creamos historias que tocan el corazón',
+      copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREAR UNA HISTORIA', ctaFinal:'♡ CREAR EL DIBUJO YA' },
+  };
+  const ADULT_TIMECODES = ['02:15','01:40','02:30','03:10'];
+
+  function renderAdultText(lang) {
+    const t = ADULT_TXT[lang] || ADULT_TXT.ua;
+    document.getElementById('a-tagline').textContent = t.tagline;
+    document.getElementById('a-startnow').textContent = t.startnow;
+    document.getElementById('a-format-heading').textContent = t.formatheading;
+    document.getElementById('a-format-1').textContent = t.format1;
+    document.getElementById('a-format-2').textContent = t.format2;
+    document.getElementById('a-format-3').textContent = t.format3;
+    document.getElementById('a-format-4').textContent = t.format4;
+    document.getElementById('a-how-heading').textContent = t.howheading;
+    document.getElementById('a-step-1').textContent = t.step1;
+    document.getElementById('a-step-2').textContent = t.step2;
+    document.getElementById('a-step-3').textContent = t.step3;
+    document.getElementById('a-step-4').textContent = t.step4;
+    document.getElementById('a-timing').textContent = t.timing;
+    document.getElementById('a-examples-heading').textContent = t.examplesheading;
+    document.getElementById('a-tc-1').textContent = ADULT_TIMECODES[0];
+    document.getElementById('a-tc-2').textContent = ADULT_TIMECODES[1];
+    document.getElementById('a-tc-3').textContent = ADULT_TIMECODES[2];
+    document.getElementById('a-tc-4').textContent = ADULT_TIMECODES[3];
+    document.getElementById('a-ex-cap-1').textContent = t.exCap1;
+    document.getElementById('a-ex-cap-2').textContent = t.exCap2;
+    document.getElementById('a-ex-cap-3').textContent = t.exCap3;
+    document.getElementById('a-ex-cap-4').textContent = t.exCap4;
+    document.getElementById('a-banner-h').textContent = t.bannerH;
+    document.getElementById('a-badge-1').innerHTML = `<b>${t.badge1t}</b>${t.badge1s}`;
+    document.getElementById('a-badge-2').innerHTML = `<b>${t.badge2t}</b>${t.badge2s}`;
+    document.getElementById('a-badge-3').innerHTML = `<b>${t.badge3t}</b>${t.badge3s}`;
+    document.getElementById('a-badge-4').innerHTML = `<b>${t.badge4t}</b>${t.badge4s}`;
+    document.getElementById('a-copyright').textContent = t.copyright;
+    document.getElementById('a-cta-main').textContent = t.ctaMain;
+    document.getElementById('a-cta-final').textContent = t.ctaFinal;
+  }
+  renderAdultText('ua');
+
+
   function buildLangDropdown() {
     const el = document.getElementById('lang-dropdown');
     el.innerHTML = LANGUAGES.map(l =>
@@ -565,6 +832,8 @@
       currentLang = 'ua';
       document.getElementById('lang-current').textContent = 'UA';
       renderPetLabels('ua');
+      renderKidsText('ua');
+      renderAdultText('ua');
       buildLangDropdown();
       return;
     }
@@ -572,13 +841,13 @@
       currentLang = lang;
       document.getElementById('lang-current').textContent = lang.toUpperCase();
       renderPetLabels(lang);
+      renderKidsText(lang);
+      renderAdultText(lang);
       buildLangDropdown();
       if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
       return;
     }
-    // Для решти мов зі списку переклад ще не готовий (і дитяча/доросла
-    // лінійки поки теж лишаються тільки українською — текст запечений
-    // у самій ілюстрації, це окрема майбутня робота) — чесно повідомляємо.
+    // Для решти мов зі списку (pl/de/pt/tr) переклад ще не готовий.
     showLangToast('Ця мова скоро буде доступна 🙌');
   }
   function showLangToast(text) {
@@ -661,8 +930,8 @@
         { label: 'How long?', key: 'timing' },
         { label: 'How does it work?', key: 'how' },
       ],
-      genres: 'For kids: Space, Dragons, Fairytale, Cars, Superheroes. For adults: romance, birthday, wedding, corporate, custom script. And soon — pets 🐾',
-      price: 'Kids line: $129 for the first story (1-2 minutes, 2-3 scenes), $299 for the full cartoon with voiceover (more scenes). Longer or custom formats are quoted individually. Adult formats are also quoted individually based on the script. Our manager confirms the exact price once the brief is confirmed.',
+      genres: 'For kids: Space, Dragons, Fairytale, Cars, Superheroes. For adults: romance, birthday, wedding, corporate, custom script. We also do pets 🐾',
+      price: "I don't quote exact prices here — you'll see every tier and detail right in the order form when you pick one. It's all laid out clearly there.",
       timing: 'Kids line — from 48 to 72 hours. Adult formats — from 5 to 7 days after the script is approved.',
       how: "It's simple: pick a genre. Fill a short brief in our Telegram bot. We write the script. Your finished cartoon arrives in that same chat.",
       fallback: "I don't have an exact answer for that — best to ask directly in @CartobiBot, our team will help 💛",
@@ -676,8 +945,8 @@
         { label: 'Сколько ждать?', key: 'timing' },
         { label: 'Как это работает?', key: 'how' },
       ],
-      genres: 'Для детей: Космос, Драконы, Сказка, Машинки, Супергерои. Для взрослых: романтика, день рождения, свадьба, корпоратив, свой сценарий. И скоро — питомцы 🐾',
-      price: 'Детская линейка: $129 — первая история на 1-2 минуты (2-3 сцены), $299 — полный мультфильм с озвучкой (больше сцен). Более длинные или особые форматы — считаются индивидуально. Взрослые форматы тоже считаются индивидуально под сценарий. Точную цену назовёт менеджер после согласования брифа.',
+      genres: 'Для детей: Космос, Драконы, Сказка, Машинки, Супергерои. Для взрослых: романтика, день рождения, свадьба, корпоратив, свой сценарий. А ещё — питомцы 🐾',
+      price: 'Точную цену я не называю — все уровни и детали вы увидите прямо в форме заказа, когда будете выбирать. Там всё наглядно.',
       timing: 'Детская линейка — от 48 до 72 часов. Взрослые форматы — от 5 до 7 дней после утверждения сценария.',
       how: 'Всё просто: выбираете жанр. Заполняете короткую анкету в Telegram-боте. Мы пишем сценарий. Готовый мультфильм приходит вам в тот же чат.',
       fallback: 'Хм, точного ответа на это у меня нет — лучше спросите прямо в боте @CartobiBot, там ответит команда Карто́бі 💛',
@@ -691,8 +960,8 @@
         { label: 'Quanto tempo?', key: 'timing' },
         { label: 'Come funziona?', key: 'how' },
       ],
-      genres: 'Per bambini: Spazio, Draghi, Fiaba, Auto, Supereroi. Per adulti: romanticismo, compleanno, matrimonio, aziendale, sceneggiatura personalizzata. E presto — animali 🐾',
-      price: "Linea bambini: $129 per la prima storia (1-2 minuti, 2-3 scene), $299 per il cartone completo con doppiaggio (più scene). Formati più lunghi o speciali vengono preventivati individualmente. I formati adulti si preventivano individualmente in base alla sceneggiatura. Il nostro manager conferma il prezzo esatto dopo la conferma del brief.",
+      genres: 'Per bambini: Spazio, Draghi, Fiaba, Auto, Supereroi. Per adulti: romanticismo, compleanno, matrimonio, aziendale, sceneggiatura personalizzata. Anche animali 🐾',
+      price: "Non indico il prezzo esatto qui — vedrai tutti i livelli e i dettagli direttamente nel modulo d'ordine quando sceglierai. Lì è tutto chiaro.",
       timing: 'Linea bambini — da 48 a 72 ore. Formati adulti — da 5 a 7 giorni dopo l\'approvazione della sceneggiatura.',
       how: 'È semplice: scegli un genere. Compili un breve brief nel nostro bot Telegram. Scriviamo la sceneggiatura. Il tuo cartone arriva nella stessa chat.',
       fallback: 'Non ho una risposta esatta per questo — chiedi direttamente a @CartobiBot, il nostro team ti aiuterà 💛',
@@ -706,8 +975,8 @@
         { label: 'Quel délai ?', key: 'timing' },
         { label: 'Comment ça marche ?', key: 'how' },
       ],
-      genres: 'Pour les enfants : Espace, Dragons, Conte, Voitures, Super-héros. Pour les adultes : romance, anniversaire, mariage, entreprise, scénario personnalisé. Et bientôt — animaux 🐾',
-      price: "Ligne enfants : 129$ pour la première histoire (1-2 minutes, 2-3 scènes), 299$ pour le dessin animé complet avec voix off (plus de scènes). Les formats plus longs ou spéciaux sont chiffrés individuellement. Les formats adultes sont aussi chiffrés individuellement selon le scénario. Notre manager confirme le prix exact après validation du brief.",
+      genres: 'Pour les enfants : Espace, Dragons, Conte, Voitures, Super-héros. Pour les adultes : romance, anniversaire, mariage, entreprise, scénario personnalisé. Aussi les animaux 🐾',
+      price: "Je ne donne pas le prix exact ici — vous verrez tous les niveaux et les détails directement dans le formulaire de commande au moment de choisir. Tout y est clair.",
       timing: 'Ligne enfants — 48 à 72 heures. Formats adultes — 5 à 7 jours après approbation du scénario.',
       how: "C'est simple : choisissez un genre. Remplissez un court brief dans notre bot Telegram. Nous écrivons le scénario. Votre dessin animé arrive dans le même chat.",
       fallback: "Je n'ai pas de réponse exacte à cela — demandez directement à @CartobiBot, notre équipe vous aidera 💛",
@@ -721,8 +990,8 @@
         { label: '¿Cuánto tarda?', key: 'timing' },
         { label: '¿Cómo funciona?', key: 'how' },
       ],
-      genres: 'Para niños: Espacio, Dragones, Cuento, Coches, Superhéroes. Para adultos: romance, cumpleaños, boda, corporativo, guion personalizado. Y pronto — mascotas 🐾',
-      price: 'Línea infantil: $129 por la primera historia (1-2 minutos, 2-3 escenas), $299 por el dibujo animado completo con voz (más escenas). Formatos más largos o especiales se cotizan individualmente. Los formatos para adultos también se cotizan individualmente según el guion. Nuestro gestor confirma el precio exacto tras la confirmación del brief.',
+      genres: 'Para niños: Espacio, Dragones, Cuento, Coches, Superhéroes. Para adultos: romance, cumpleaños, boda, corporativo, guion personalizado. También mascotas 🐾',
+      price: 'No indico el precio exacto aquí — verás todos los niveles y detalles directamente en el formulario de pedido al elegir. Todo queda claro allí.',
       timing: 'Línea infantil — de 48 a 72 horas. Formatos para adultos — de 5 a 7 días tras aprobar el guion.',
       how: 'Es simple: eliges un género. Completas un breve brief en nuestro bot de Telegram. Escribimos el guion. Tu dibujo animado llega al mismo chat.',
       fallback: 'No tengo una respuesta exacta para eso — pregunta directamente en @CartobiBot, nuestro equipo te ayudará 💛',
