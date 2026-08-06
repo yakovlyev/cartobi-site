@@ -1,13 +1,36 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk-UA">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cartobi — мультфільми на замовлення</title>
+<meta name="description" content="Замовляйте персоналізований мультфільм на замовлення для дітей та дорослих. Унікальна анімація, де ваша дитина — головний герой. Найкращий подарунок дитині від Cartobi!">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Cartobi",
+  "url": "https://cartobi.com/",
+  "logo": "https://cartobi.com/assets/cartobi-logo.png",
+  "sameAs": [
+    "https://www.youtube.com/@Cartobistudio",
+    "https://www.tiktok.com/@cartobi.studio",
+    "https://www.instagram.com/cartobi_studio",
+    "https://www.facebook.com/profile.php?id=61592096181146",
+    "https://www.threads.net/@cartobi_studio"
+  ]
+}
+</script>
 <style>
   *{margin:0; padding:0; box-sizing:border-box; -webkit-text-size-adjust:100%;}
   html{scroll-behavior:smooth;}
   body{background:#0A0722;}
+
+  /* SEO: реальні заголовки H1-H6 для пошукових роботів — весь видимий
+     текст на лендингу запечений у картинки (design-рішення), тому цей
+     блок дублює ключові фрази в DOM, лишаючись невидимим для користувача. */
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
 
   /* Кожна секція підлаштовується під реальне співвідношення сторін СВОЄЇ
      картинки (img задає висоту сам, через height:auto) — це важливо, бо
@@ -293,9 +316,39 @@
 </head>
 <body>
 
+<!-- SEO: невидимий для користувача, але доступний пошуковим роботам заголовковий
+     блок — весь видимий контент лендингу запечений у зображення (design-рішення),
+     тому реальні H1-H6 з ключовими фразами дублюються тут окремо. -->
+<div class="sr-only">
+  <h1>Персоналізований мультфільм на замовлення: ваша дитина у головній ролі</h1>
+
+  <h2>Створюємо унікальні мультфільми для дітей</h2>
+  <h3>Оберіть жанр вашої майбутньої історії:</h3>
+  <h4>Космічні пригоди</h4>
+  <h4>Світ драконів та магії</h4>
+  <h4>Казкове королівство</h4>
+  <h4>Перегони на машинках</h4>
+  <h4>Супергеройські місії</h4>
+  <h3>Як створити персоналізований мультфільм за 3 кроки?</h3>
+
+  <h2>Анімація для особливих моментів дорослого життя</h2>
+  <h3>Формати мультфільмів для будь-якої події:</h3>
+  <h4>Романтичні історії кохання</h4>
+  <h4>Оригінальне привітання з Днем народження</h4>
+  <h4>Корпоративна анімація та презентації</h4>
+  <h4>Весільні мультфільми-історії</h4>
+
+  <h2>Мультфільми про ваших домашніх улюбленців</h2>
+  <h3>Оживіть історію вашого пухнастого друга:</h3>
+  <h4>Мультфільми про котиків</h4>
+  <h4>Пригоди для песиків</h4>
+  <h4>Історії про птахів та гризунів</h4>
+  <h4>Екзотичні тварини в анімації</h4>
+</div>
+
 <!-- Плаваючий бренд-лого Cartobi, замінює "три палички" з макету -->
 <div class="brand-logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-  <img src="assets/cartobi-logo.png" alt="Cartobi">
+  <img src="assets/cartobi-logo.png" alt="Cartobi Animation Studio — персоналізовані мультфільми">
 </div>
 
 <!-- Плаваючий перемикач мов, видно завжди -->
@@ -308,7 +361,7 @@
 <!-- ============ СЕКЦІЯ 1: ДИТЯЧА ЛІНІЙКА ============ -->
 <section class="frame" id="section-kids">
   <div class="frame-inner">
-    <img src="hero-kids.jpg" alt="Cartobi — дитяча лінійка">
+    <img src="hero-kids.jpg" alt="Персоналізований мультфільм на замовлення для дитини — Cartobi">
   </div>
   <button class="hot cta-main" onclick="goToBot('kids')"></button>
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
@@ -323,7 +376,7 @@
 <!-- ============ СЕКЦІЯ 2: ДОРОСЛА ЛІНІЙКА ============ -->
 <section class="frame" id="section-adult">
   <div class="frame-inner">
-    <img src="hero-adult.jpg" alt="Cartobi — доросла лінійка">
+    <img src="hero-adult.jpg" alt="Персоналізована анімація на замовлення для дорослих — подарунок, весілля, корпоратив — Cartobi">
   </div>
   <button class="hot cta-main" onclick="goToBot('adult')"></button>
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
@@ -343,7 +396,7 @@
 
 <section class="frame" id="section-pets">
   <div class="frame-inner">
-    <img src="hero-pets.jpg" alt="Cartobi — домашні улюбленці">
+    <img src="hero-pets.jpg" alt="Мультфільм про домашнього улюбленця на замовлення — Cartobi">
   </div>
   <button class="hot pet-card-1" onclick="openVideo('videos/pets-cats.mp4')"></button>
   <button class="hot pet-card-2" onclick="openVideo('videos/pets-dogs.mp4')"></button>

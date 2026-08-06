@@ -201,6 +201,7 @@ const ADULT_BRIEFS = {
       { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/деталі, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
       { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Яскраво й весело', 'Тепло і сентиментально', 'З гумором'] },
       { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Весела', 'Спокійна', 'Енергійна', 'Зворушлива'] },
+      { key: 'promoConsent', type: 'buttons', q: 'Чи згодні ви, щоб ми показали вашого улюбленця (фото/фрагмент відео) у нашій рекламі чи портфоліо Cartobi?', hint: 'Не обов\'язково — можна відмовитись.', options: ['Так, згоден(на)', 'Ні, не показувати'] },
     ],
   },
 };
@@ -302,7 +303,8 @@ function addQuestion(idx, total, q) {
   form.appendChild(wrap);
 }
 
-function renderTariffBlock(tariffs, label) {
+function renderTariffBlock(tariffs, label, unit) {
+  unit = unit || '';
   const tariffWrap = document.createElement('div');
   tariffWrap.className = 'q';
   tariffWrap.dataset.key = 'tariff';
@@ -312,7 +314,7 @@ function renderTariffBlock(tariffs, label) {
   tariffs.forEach((t) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
-    chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}/хв</span>`;
+    chip.innerHTML = `${t.label} — <span class="price-tag">$${t.price}${unit}</span>`;
     chip.onclick = () => {
       tariffChips.querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
       chip.classList.add('selected');
@@ -324,7 +326,7 @@ function renderTariffBlock(tariffs, label) {
   tariffWrap.appendChild(tariffChips);
   const tariffHint = document.createElement('div');
   tariffHint.className = 'q-hint';
-  tariffHint.innerHTML = tariffs.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}/хв):</b> ${t.desc}`).join('<br>');
+  tariffHint.innerHTML = tariffs.map((t) => `<b style="color:var(--accent)">${t.label} ($${t.price}${unit}):</b> ${t.desc}`).join('<br>');
   tariffWrap.appendChild(tariffHint);
   form.appendChild(tariffWrap);
   totalBar.classList.add('show');
@@ -415,7 +417,7 @@ function renderForm() {
     } else {
       // романтика / день народження / корпоратив / весілля / сценарій —
       // єдина сітка рівнів, як домовились з Ігорем
-      renderTariffBlock(ADULT_TARIFFS, 'Оберіть рівень');
+      renderTariffBlock(ADULT_TARIFFS, 'Оберіть рівень', '/1.5 хв');
     }
   }
   submitBtn.style.display = '';
