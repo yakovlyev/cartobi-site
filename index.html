@@ -148,8 +148,9 @@
      робили з genre-hotspot'ами на дитячій секції. */
   .pet-label{
     position:absolute; text-align:center; color:#fff; font-family:Arial,sans-serif;
-    font-weight:800; font-size:clamp(9px,2.6vw,13px); text-shadow:0 1px 5px rgba(0,0,0,0.7);
-    pointer-events:none;
+    font-weight:800; font-size:clamp(7px,1.9vw,10px); text-shadow:0 1px 5px rgba(0,0,0,0.7);
+    pointer-events:none; line-height:1.15; white-space:normal; overflow-wrap:break-word;
+    word-break:break-word; overflow:hidden; height:9%;
   }
   #section-pets .pet-label-1{left:2%; top:46.5%; width:18.4%;}
   #section-pets .pet-label-2{left:21.6%; top:46.5%; width:18.4%;}
@@ -221,26 +222,26 @@
 
   /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
   .zoryana-fab{
-    position:absolute; z-index:5;
-    width:19%; aspect-ratio:1; border-radius:100px; cursor:pointer; border:none;
-    background:radial-gradient(circle at 35% 30%, #fff3b0, #ffcb3d 45%, #ff9500 100%);
-    box-shadow:0 6px 22px rgba(255,149,0,0.65), 0 0 0 4px rgba(255,214,102,0.35) inset;
+    position:fixed; right:20px; top:90px; z-index:40;
+    width:64px; height:64px; border-radius:100px; cursor:pointer; border:none;
+    background:radial-gradient(circle at 35% 30%, #bfe3ff, #4aa3ff 45%, #1560c9 100%);
+    box-shadow:0 6px 22px rgba(21,96,201,0.65), 0 0 0 4px rgba(74,163,255,0.35) inset;
     display:flex; align-items:center; justify-content:center; font-size:30px;
     animation:zoryana-pulse 1.8s infinite; padding:5px;
   }
   .zoryana-fab img{width:100%; height:100%; object-fit:cover; border-radius:100px;}
   .zoryana-fab::before{
     content:''; position:absolute; inset:-10px; border-radius:100px; z-index:-1;
-    background:conic-gradient(from 0deg, transparent 0deg, rgba(255,203,61,0.55) 10deg, transparent 24deg,
-      transparent 36deg, rgba(255,203,61,0.55) 46deg, transparent 60deg,
-      transparent 72deg, rgba(255,203,61,0.55) 82deg, transparent 96deg,
-      transparent 108deg, rgba(255,203,61,0.55) 118deg, transparent 132deg,
-      transparent 144deg, rgba(255,203,61,0.55) 154deg, transparent 168deg,
-      transparent 180deg, rgba(255,203,61,0.55) 190deg, transparent 204deg,
-      transparent 216deg, rgba(255,203,61,0.55) 226deg, transparent 240deg,
-      transparent 252deg, rgba(255,203,61,0.55) 262deg, transparent 276deg,
-      transparent 288deg, rgba(255,203,61,0.55) 298deg, transparent 312deg,
-      transparent 324deg, rgba(255,203,61,0.55) 334deg, transparent 348deg);
+    background:conic-gradient(from 0deg, transparent 0deg, rgba(74,163,255,0.55) 10deg, transparent 24deg,
+      transparent 36deg, rgba(74,163,255,0.55) 46deg, transparent 60deg,
+      transparent 72deg, rgba(74,163,255,0.55) 82deg, transparent 96deg,
+      transparent 108deg, rgba(74,163,255,0.55) 118deg, transparent 132deg,
+      transparent 144deg, rgba(74,163,255,0.55) 154deg, transparent 168deg,
+      transparent 180deg, rgba(74,163,255,0.55) 190deg, transparent 204deg,
+      transparent 216deg, rgba(74,163,255,0.55) 226deg, transparent 240deg,
+      transparent 252deg, rgba(74,163,255,0.55) 262deg, transparent 276deg,
+      transparent 288deg, rgba(74,163,255,0.55) 298deg, transparent 312deg,
+      transparent 324deg, rgba(74,163,255,0.55) 334deg, transparent 348deg);
     animation:zoryana-rays 6s linear infinite;
   }
   @keyframes zoryana-rays{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
@@ -401,8 +402,6 @@
   <div class="ov ov-caption" id="k-genre-4" style="left:62%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-5" style="left:82%; top:49.2%; width:16%; height:2.4%;"></div>
 
-  <button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:64%; top:69.4%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
-
   <!-- "Як це працює?" і кроки прибрані з картинки 06.08 — це FAQ-контент,
        тепер його розповідає тільки Зоряна (голосом), щоб не дублювати і
        не перевантажувати лендинг дрібним текстом. -->
@@ -430,8 +429,6 @@
   <div class="frame-inner">
     <img src="hero-adult.jpg" alt="Персоналізована анімація на замовлення для дорослих — подарунок, весілля, корпоратив — Cartobi">
   </div>
-
-  <button class="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:2%; top:2.5%; width:13%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 
   <div class="ov ov-heading" id="a-tagline" style="left:4%; top:14.3%; width:54%; height:8%; text-align:left;"></div>
   <button class="real-btn" id="a-cta-main" onclick="goToBot('adult')" style="left:6%; top:25%; width:40%; height:2%;"></button>
@@ -484,7 +481,6 @@
     <img src="hero-pets.jpg" alt="Мультфільм про домашнього улюбленця на замовлення — Cartobi">
   </div>
 
-  <button class="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:83%; top:2%; width:14%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
   <button class="hot pet-card-1" onclick="openVideo('videos/pets-cats.mp4')"></button>
   <button class="hot pet-card-2" onclick="openVideo('videos/pets-dogs.mp4')"></button>
   <button class="hot pet-card-3" onclick="openVideo('videos/pets-birds.mp4')"></button>
@@ -541,8 +537,12 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
-<!-- Зоряна — голосовий FAQ-помічник. Кнопка-тригер тепер живе в дитячій
-     секції, у звільненому місці біля космонавта (не фіксована зверху). -->
+<!-- Зоряна — голосовий FAQ-помічник. ОДНА кнопка, фіксована (position:fixed),
+     видна поверх усіх трьох секцій під час скролу — синій колір, щоб
+     виділятись на будь-якому фоні. Виправлено 06.08 після невдалої спроби
+     "вбудувати" три окремі копії в кожну секцію (виглядало абсурдно, коли
+     дві-три потрапляли в один кадр одночасно при скролі). -->
+<button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 <div class="zoryana-panel" id="zoryana-panel">
   <div class="zoryana-head">
     <div class="avatar"><img src="zoryana-portrait.png" alt="Зоряна"></div>
@@ -641,7 +641,7 @@
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захоплюючі пригоди у відкритому космосі, далекі планети, яскраві прибульці та неймовірні відкриття!',
       howheading:'✦ Як це працює? ✦', step1:'Завантажте фото дитини', step2:'Оберіть сюжет та жанр', step3:'Отримайте свій мультфільм!',
       bannerH:'Готові створити щось неймовірне разом?', bannerSub:'Це легко, швидко і дуже весело!',
-      badge1t:'Безпечно для дітей', badge1s:'Ми дбаємо про вашу конфіденційність', badge2t:'Готовий мультфільм', badge2s:'вже за 48-72 години',
+      badge1t:'Безпечно для дітей', badge1s:'Ми дбаємо про вашу конфіденційність', badge2t:'Готовий мультфільм', badge2s:'Професійна якість без затримок',
       badge3t:'Унікальний контент', badge3s:'Жодних шаблонів — тільки ваша унікальна історія', badge4t:'З любов\u2019ю', badge4s:'Ми створюємо мультфільми, які дарують радість',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СТВОРИТИ ГЕРОЯ', ctaFinal:'★ СТВОРИТИ МУЛЬТ ЗАРАЗ' },
     en: { tagline:'We create cartoons starring your child!', startnow:'Start your story right now!',
@@ -649,7 +649,7 @@
       spaceHeading:'SPACE 🚀', spaceDesc:'Thrilling adventures in outer space, distant planets, bright aliens and incredible discoveries!',
       howheading:'✦ How does it work? ✦', step1:'Upload your child\u2019s photo', step2:'Pick a story and genre', step3:'Get your cartoon!',
       bannerH:'Ready to create something amazing together?', bannerSub:'It\u2019s easy, fast and lots of fun!',
-      badge1t:'Safe for kids', badge1s:'We care about your privacy', badge2t:'Finished cartoon', badge2s:'in just 48-72 hours',
+      badge1t:'Safe for kids', badge1s:'We care about your privacy', badge2t:'Finished cartoon', badge2s:'Professional quality, no delays',
       badge3t:'Unique content', badge3s:'No templates — only your one-of-a-kind story', badge4t:'Made with love', badge4s:'We create cartoons that bring joy',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREATE A HERO', ctaFinal:'★ CREATE A CARTOON NOW' },
     ru: { tagline:'Создаём мультфильмы, где ваш ребёнок — главный герой!', startnow:'Начните свою историю прямо сейчас!',
@@ -657,7 +657,7 @@
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захватывающие приключения в открытом космосе, далёкие планеты, яркие пришельцы и невероятные открытия!',
       howheading:'✦ Как это работает? ✦', step1:'Загрузите фото ребёнка', step2:'Выберите сюжет и жанр', step3:'Получите свой мультфильм!',
       bannerH:'Готовы создать что-то невероятное вместе?', bannerSub:'Это легко, быстро и очень весело!',
-      badge1t:'Безопасно для детей', badge1s:'Мы заботимся о вашей конфиденциальности', badge2t:'Готовый мультфильм', badge2s:'уже за 48-72 часа',
+      badge1t:'Безопасно для детей', badge1s:'Мы заботимся о вашей конфиденциальности', badge2t:'Готовый мультфильм', badge2s:'Профессиональное качество без задержек',
       badge3t:'Уникальный контент', badge3s:'Никаких шаблонов — только ваша уникальная история', badge4t:'С любовью', badge4s:'Мы создаём мультфильмы, которые дарят радость',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СОЗДАТЬ ГЕРОЯ', ctaFinal:'★ СОЗДАТЬ МУЛЬТФИЛЬМ' },
     it: { tagline:'Creiamo cartoni animati con il tuo bambino come protagonista!', startnow:'Inizia subito la tua storia!',
@@ -665,7 +665,7 @@
       spaceHeading:'SPAZIO 🚀', spaceDesc:'Avventure emozionanti nello spazio aperto, pianeti lontani, alieni sorprendenti e scoperte incredibili!',
       howheading:'✦ Come funziona? ✦', step1:'Carica la foto del bambino', step2:'Scegli trama e genere', step3:'Ricevi il tuo cartone!',
       bannerH:'Pronti a creare qualcosa di incredibile insieme?', bannerSub:'È facile, veloce e molto divertente!',
-      badge1t:'Sicuro per i bambini', badge1s:'Ci prendiamo cura della tua privacy', badge2t:'Cartone pronto', badge2s:'in sole 48-72 ore',
+      badge1t:'Sicuro per i bambini', badge1s:'Ci prendiamo cura della tua privacy', badge2t:'Cartone pronto', badge2s:'Qualità professionale, senza ritardi',
       badge3t:'Contenuto unico', badge3s:'Nessun modello — solo la tua storia unica', badge4t:'Con amore', badge4s:'Creiamo cartoni che regalano gioia',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREA UN EROE', ctaFinal:'★ CREA IL CARTONE ORA' },
     fr: { tagline:'Nous créons des dessins animés avec votre enfant en héros !', startnow:'Commencez votre histoire dès maintenant !',
@@ -673,7 +673,7 @@
       spaceHeading:'ESPACE 🚀', spaceDesc:'Aventures palpitantes dans l\u2019espace, planètes lointaines, extraterrestres colorés et découvertes incroyables !',
       howheading:'✦ Comment ça marche ? ✦', step1:'Téléchargez la photo de l\u2019enfant', step2:'Choisissez l\u2019histoire et le genre', step3:'Recevez votre dessin animé !',
       bannerH:'Prêts à créer quelque chose d\u2019incroyable ensemble ?', bannerSub:'C\u2019est facile, rapide et très amusant !',
-      badge1t:'Sûr pour les enfants', badge1s:'Nous protégeons votre confidentialité', badge2t:'Dessin animé prêt', badge2s:'en seulement 48 à 72 heures',
+      badge1t:'Sûr pour les enfants', badge1s:'Nous protégeons votre confidentialité', badge2t:'Dessin animé prêt', badge2s:'Qualité professionnelle, sans délai',
       badge3t:'Contenu unique', badge3s:'Aucun modèle — seulement votre histoire unique', badge4t:'Avec amour', badge4s:'Nous créons des dessins animés qui apportent de la joie',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CRÉER UN HÉROS', ctaFinal:'★ CRÉER LE DESSIN ANIMÉ' },
     es: { tagline:'¡Creamos dibujos animados con tu hijo como protagonista!', startnow:'¡Comienza tu historia ahora mismo!',
@@ -681,7 +681,7 @@
       spaceHeading:'ESPACIO 🚀', spaceDesc:'¡Aventuras emocionantes en el espacio exterior, planetas lejanos, alienígenas coloridos y descubrimientos increíbles!',
       howheading:'✦ ¿Cómo funciona? ✦', step1:'Sube la foto del niño', step2:'Elige la historia y el género', step3:'¡Recibe tu dibujo animado!',
       bannerH:'¿Listos para crear algo increíble juntos?', bannerSub:'¡Es fácil, rápido y muy divertido!',
-      badge1t:'Seguro para niños', badge1s:'Cuidamos tu privacidad', badge2t:'Dibujo animado listo', badge2s:'en solo 48-72 horas',
+      badge1t:'Seguro para niños', badge1s:'Cuidamos tu privacidad', badge2t:'Dibujo animado listo', badge2s:'Calidad profesional, sin demoras',
       badge3t:'Contenido único', badge3s:'Sin plantillas — solo tu historia única', badge4t:'Con amor', badge4s:'Creamos dibujos animados que traen alegría',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREAR UN HÉROE', ctaFinal:'★ CREAR EL DIBUJO YA' },
   };
@@ -717,7 +717,7 @@
       timing:'Виготовлення від 5-7 днів після затвердження сценарію', examplesheading:'✦ Приклади наших робіт ✦',
       exCap1:'Історія нашого кохання', exCap2:'Привітання для друга', exCap3:'Презентаційний ролик', exCap4:'Наша весільна казка',
       bannerH:'Подаруйте емоції, які залишаються назавжди', badge1t:'Конфіденційно', badge1s:'Ваші історії під повним захистом',
-      badge2t:'Швидко та якісно', badge2s:'Готовий мультфільм від 5 до 7 днів', badge3t:'Унікальний контент', badge3s:'Індивідуальний сценарій та стиль',
+      badge2t:'Швидко та якісно', badge2s:'Професійна анімація та озвучка', badge3t:'Унікальний контент', badge3s:'Індивідуальний сценарій та стиль',
       badge4t:'З любов\u2019ю до деталей', badge4s:'Ми створюємо історії, які торкаються серця',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ СТВОРИТИ ІСТОРІЮ', ctaFinal:'♡ СТВОРИТИ МУЛЬТФІЛЬМ ЗАРАЗ' },
     en: { tagline:'Cartoons for life\u2019s important moments', startnow:'Romance, celebrations, corporate stories — we bring emotions to life. Start your unique story right now!',
@@ -727,7 +727,7 @@
       timing:'Production takes 5-7 days after script approval', examplesheading:'✦ Examples of our work ✦',
       exCap1:'Our love story', exCap2:'A greeting for a friend', exCap3:'Presentation video', exCap4:'Our wedding tale',
       bannerH:'Give emotions that last forever', badge1t:'Confidential', badge1s:'Your stories are fully protected',
-      badge2t:'Fast and high-quality', badge2s:'Finished cartoon in 5 to 7 days', badge3t:'Unique content', badge3s:'Custom script and style',
+      badge2t:'Fast and high-quality', badge2s:'Professional animation and voiceover', badge3t:'Unique content', badge3s:'Custom script and style',
       badge4t:'Made with attention to detail', badge4s:'We create stories that touch the heart',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREATE A STORY', ctaFinal:'♡ CREATE A CARTOON NOW' },
     ru: { tagline:'Мультфильмы для важных моментов жизни', startnow:'Романтика, праздники, корпоративные истории — оживляем эмоции. Начните свою уникальную историю прямо сейчас!',
@@ -737,7 +737,7 @@
       timing:'Изготовление от 5-7 дней после утверждения сценария', examplesheading:'✦ Примеры наших работ ✦',
       exCap1:'История нашей любви', exCap2:'Поздравление для друга', exCap3:'Презентационный ролик', exCap4:'Наша свадебная сказка',
       bannerH:'Подарите эмоции, которые остаются навсегда', badge1t:'Конфиденциально', badge1s:'Ваши истории под полной защитой',
-      badge2t:'Быстро и качественно', badge2s:'Готовый мультфильм за 5-7 дней', badge3t:'Уникальный контент', badge3s:'Индивидуальный сценарий и стиль',
+      badge2t:'Быстро и качественно', badge2s:'Профессиональная анимация и озвучка', badge3t:'Уникальный контент', badge3s:'Индивидуальный сценарий и стиль',
       badge4t:'С любовью к деталям', badge4s:'Мы создаём истории, которые трогают сердце',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ СОЗДАТЬ ИСТОРИЮ', ctaFinal:'♡ СОЗДАТЬ МУЛЬТФИЛЬМ' },
     it: { tagline:'Cartoni animati per i momenti importanti della vita', startnow:'Romanticismo, feste, storie aziendali — diamo vita alle emozioni. Inizia subito la tua storia unica!',
@@ -747,7 +747,7 @@
       timing:'Realizzazione in 5-7 giorni dopo l\u2019approvazione della sceneggiatura', examplesheading:'✦ Esempi dei nostri lavori ✦',
       exCap1:'La nostra storia d\u2019amore', exCap2:'Un augurio per un amico', exCap3:'Video di presentazione', exCap4:'La nostra favola di matrimonio',
       bannerH:'Regala emozioni che durano per sempre', badge1t:'Riservato', badge1s:'Le tue storie sono pienamente protette',
-      badge2t:'Veloce e di qualità', badge2s:'Cartone pronto in 5-7 giorni', badge3t:'Contenuto unico', badge3s:'Sceneggiatura e stile personalizzati',
+      badge2t:'Veloce e di qualità', badge2s:'Animazione e doppiaggio professionali', badge3t:'Contenuto unico', badge3s:'Sceneggiatura e stile personalizzati',
       badge4t:'Con cura per i dettagli', badge4s:'Creiamo storie che toccano il cuore',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREA UNA STORIA', ctaFinal:'♡ CREA IL CARTONE ORA' },
     fr: { tagline:'Des dessins animés pour les moments importants de la vie', startnow:'Romance, fêtes, histoires d\u2019entreprise — nous donnons vie aux émotions. Commencez votre histoire unique dès maintenant !',
@@ -757,7 +757,7 @@
       timing:'Réalisation en 5 à 7 jours après validation du scénario', examplesheading:'✦ Exemples de nos réalisations ✦',
       exCap1:'Notre histoire d\u2019amour', exCap2:'Un message pour un ami', exCap3:'Vidéo de présentation', exCap4:'Notre conte de mariage',
       bannerH:'Offrez des émotions qui durent toujours', badge1t:'Confidentiel', badge1s:'Vos histoires sont entièrement protégées',
-      badge2t:'Rapide et de qualité', badge2s:'Dessin animé prêt en 5 à 7 jours', badge3t:'Contenu unique', badge3s:'Scénario et style personnalisés',
+      badge2t:'Rapide et de qualité', badge2s:'Animation et voix off professionnelles', badge3t:'Contenu unique', badge3s:'Scénario et style personnalisés',
       badge4t:'Avec le souci du détail', badge4s:'Nous créons des histoires qui touchent le cœur',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CRÉER UNE HISTOIRE', ctaFinal:'♡ CRÉER LE DESSIN ANIMÉ' },
     es: { tagline:'Dibujos animados para los momentos importantes de la vida', startnow:'Romance, celebraciones, historias corporativas — damos vida a las emociones. ¡Comienza tu historia única ahora mismo!',
@@ -767,7 +767,7 @@
       timing:'La producción tarda de 5 a 7 días tras la aprobación del guion', examplesheading:'✦ Ejemplos de nuestros trabajos ✦',
       exCap1:'Nuestra historia de amor', exCap2:'Un saludo para un amigo', exCap3:'Video de presentación', exCap4:'Nuestro cuento de boda',
       bannerH:'Regala emociones que duran para siempre', badge1t:'Confidencial', badge1s:'Tus historias están totalmente protegidas',
-      badge2t:'Rápido y de calidad', badge2s:'Dibujo animado listo en 5 a 7 días', badge3t:'Contenido único', badge3s:'Guion y estilo personalizados',
+      badge2t:'Rápido y de calidad', badge2s:'Animación y locución profesionales', badge3t:'Contenido único', badge3s:'Guion y estilo personalizados',
       badge4t:'Con amor por los detalles', badge4s:'Creamos historias que tocan el corazón',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ CREAR UNA HISTORIA', ctaFinal:'♡ CREAR EL DIBUJO YA' },
   };
