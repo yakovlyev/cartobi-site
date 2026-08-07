@@ -183,8 +183,8 @@
   .ov-body{font-weight:600; font-size:clamp(9px,2.3vw,13px);}
   .ov-caption{font-weight:700; font-size:clamp(8px,2vw,11px);}
   .ov-small{font-weight:600; font-size:clamp(7px,1.8vw,10px); opacity:0.85;}
-  .ov-badge{font-weight:700; font-size:clamp(7px,1.9vw,10px);}
-  .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(8px,2.1vw,11px);}
+  .ov-badge{font-weight:700; font-size:clamp(6px,1.7vw,9px); overflow:hidden; line-height:1.15;}
+  .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(7px,1.9vw,10px);}
 
   /* Реальні CTA-кнопки замість запечених помаранчевих плашок — та сама
      позиція, що й раніше в невидимого .hot, тепер видима і з текстом. */
@@ -223,8 +223,8 @@
 
   /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
   .zoryana-fab{
-    position:absolute; z-index:5;
-    width:19%; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
+    position:fixed; left:50%; top:10px; transform:translateX(-50%); z-index:40;
+    width:56px; height:56px; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
     background:#1560c9;
     box-shadow:0 4px 16px rgba(0,0,0,0.5), 0 0 0 3px rgba(74,163,255,0.4);
     display:flex; align-items:center; justify-content:center; font-size:26px;
@@ -394,16 +394,13 @@
 
   <div class="ov ov-body" id="k-tagline" style="left:8%; top:17.3%; width:56%; height:6%;"></div>
   <button class="real-btn" id="k-cta-main" onclick="goToBot('kids')" style="left:20%; top:25%; width:60%; height:5%;"></button>
-  <div class="ov ov-small" id="k-startnow" style="left:10%; top:31.3%; width:80%; height:2%;"></div>
-  <div class="ov ov-heading" id="k-genreheading" style="left:5%; top:35.4%; width:90%; height:2.5%;"></div>
+  <div class="ov ov-heading" id="k-genreheading" style="left:5%; top:32.0%; width:90%; height:2.5%;"></div>
 
   <div class="ov ov-caption" id="k-genre-1" style="left:2%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-2" style="left:22%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-3" style="left:42%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-4" style="left:62%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-5" style="left:82%; top:49.2%; width:16%; height:2.4%;"></div>
-
-  <button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:64%; top:69.4%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 
   <!-- "Як це працює?" і кроки прибрані з картинки 06.08 — це FAQ-контент,
        тепер його розповідає тільки Зоряна (голосом), щоб не дублювати і
@@ -413,11 +410,11 @@
   <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90.0%; width:70%; height:2.3%;"></button>
   <div class="ov ov-small" id="k-banner-sub" style="left:8%; top:92.6%; width:84%; height:1.5%;"></div>
 
-  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:94.6%; width:23%; height:4.5%;"></div>
-  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:94.6%; width:23%; height:4.5%;"></div>
-  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:94.6%; width:23%; height:4.5%;"></div>
-  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:94.6%; width:23%; height:4.5%;"></div>
-  <div class="ov ov-small" id="k-copyright" style="left:10%; top:99.3%; width:80%; height:0.8%;"></div>
+  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:94.3%; width:23%; height:4.0%;"></div>
+  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:94.3%; width:23%; height:4.0%;"></div>
+  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:94.3%; width:23%; height:4.0%;"></div>
+  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:94.3%; width:23%; height:4.0%;"></div>
+  <div class="ov ov-small" id="k-copyright" style="left:5%; top:98.7%; width:90%; height:1.1%; font-size:7px;"></div>
 
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot play-btn" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
@@ -459,11 +456,11 @@
   <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:79.5%; width:58%; height:4.6%; text-align:left;"></div>
   <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:84.4%; width:65%; height:2.5%;"></button>
 
-  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:89.9%; width:23%; height:5.2%;"></div>
-  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:89.9%; width:23%; height:5.2%;"></div>
-  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:89.9%; width:23%; height:5.2%;"></div>
-  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:89.9%; width:23%; height:5.2%;"></div>
-  <div class="ov ov-small" id="a-copyright" style="left:10%; top:95.5%; width:80%; height:1.2%;"></div>
+  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:89.7%; width:23%; height:4.6%;"></div>
+  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:89.7%; width:23%; height:4.6%;"></div>
+  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:89.7%; width:23%; height:4.6%;"></div>
+  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:89.7%; width:23%; height:4.6%;"></div>
+  <div class="ov ov-small" id="a-copyright" style="left:5%; top:94.9%; width:90%; height:1%; font-size:7px;"></div>
 
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
   <button class="hot arrow-right-1" onclick="shiftFormats(1)"></button>
@@ -540,9 +537,10 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
-<!-- Зоряна — голосовий FAQ-помічник. Кнопка живе саме в дитячій секції,
-     у звільненому синьому місці біля космонавта (не глобальна/фіксована) —
-     так, як і було задумано з самого початку. -->
+<!-- Зоряна — голосовий FAQ-помічник. Фіксована по центру зверху (position:fixed,
+     left:50%), тому видна поверх усіх трьох секцій під час скролу — це і є
+     "по центру" + "скролиться по всіх трьох лендингах" одночасно. -->
+<button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 <div class="zoryana-panel" id="zoryana-panel">
   <div class="zoryana-head">
     <div class="avatar"><img src="zoryana-portrait.png" alt="Зоряна"></div>
@@ -689,7 +687,7 @@
   function renderKidsText(lang) {
     const t = KIDS_TXT[lang] || KIDS_TXT.ua;
     document.getElementById('k-tagline').textContent = t.tagline;
-    document.getElementById('k-startnow').textContent = t.startnow;
+    // k-startnow прибрано 06.08 — дублювало сенс кнопки "Створити героя"
     document.getElementById('k-genreheading').textContent = t.genreheading;document.getElementById('k-genre-1').textContent = t.genre1;
     document.getElementById('k-genre-2').textContent = t.genre2;
     document.getElementById('k-genre-3').textContent = t.genre3;
