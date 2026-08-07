@@ -177,12 +177,12 @@
     text-shadow:0 1px 6px rgba(0,0,0,0.8); pointer-events:none; line-height:1.25;
   }
   .ov-accent{color:#ffcb3d;}
-  .ov-heading{font-weight:800; font-size:clamp(13px,3.6vw,20px);}
-  .ov-body{font-weight:600; font-size:clamp(10px,2.6vw,14px);}
-  .ov-caption{font-weight:700; font-size:clamp(9px,2.3vw,12px);}
-  .ov-small{font-weight:600; font-size:clamp(8px,2vw,11px); opacity:0.85;}
-  .ov-badge{font-weight:700; font-size:clamp(8px,2.1vw,11px);}
-  .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(9px,2.3vw,12px);}
+  .ov-heading{font-weight:800; font-size:clamp(11px,3.1vw,17px);}
+  .ov-body{font-weight:600; font-size:clamp(9px,2.3vw,13px);}
+  .ov-caption{font-weight:700; font-size:clamp(8px,2vw,11px);}
+  .ov-small{font-weight:600; font-size:clamp(7px,1.8vw,10px); opacity:0.85;}
+  .ov-badge{font-weight:700; font-size:clamp(7px,1.9vw,10px);}
+  .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(8px,2.1vw,11px);}
 
   /* Реальні CTA-кнопки замість запечених помаранчевих плашок — та сама
      позиція, що й раніше в невидимого .hot, тепер видима і з текстом. */
@@ -400,23 +400,20 @@
   <div class="ov ov-caption" id="k-genre-4" style="left:62%; top:49.2%; width:18%; height:2.4%;"></div>
   <div class="ov ov-caption" id="k-genre-5" style="left:82%; top:49.2%; width:16%; height:2.4%;"></div>
 
-  <div class="ov ov-heading" id="k-space-heading" style="left:59%; top:55.5%; width:38%; height:3%; text-align:left;"></div>
-  <div class="ov ov-body" id="k-space-desc" style="left:59%; top:59.5%; width:38%; height:9%; text-align:left;"></div>
+  <div class="ov ov-heading" id="k-how-heading" style="left:5%; top:73.0%; width:90%; height:1.6%;"></div>
+  <div class="ov ov-caption" id="k-step-1" style="left:1%; top:82.4%; width:28%; height:4.2%;"></div>
+  <div class="ov ov-caption" id="k-step-2" style="left:35%; top:82.4%; width:28%; height:4.2%;"></div>
+  <div class="ov ov-caption" id="k-step-3" style="left:69%; top:82.4%; width:30%; height:4.2%;"></div>
 
-  <div class="ov ov-heading" id="k-how-heading" style="left:5%; top:74.3%; width:90%; height:2.5%;"></div>
-  <div class="ov ov-caption" id="k-step-1" style="left:2%; top:83.3%; width:26%; height:3.5%;"></div>
-  <div class="ov ov-caption" id="k-step-2" style="left:36%; top:83.3%; width:26%; height:3.5%;"></div>
-  <div class="ov ov-caption" id="k-step-3" style="left:70%; top:83.3%; width:26%; height:3.5%;"></div>
+  <div class="ov ov-heading" id="k-banner-h" style="left:10%; top:86.6%; width:80%; height:3.2%;"></div>
+  <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90.3%; width:70%; height:2.2%;"></button>
+  <div class="ov ov-small" id="k-banner-sub" style="left:8%; top:92.7%; width:84%; height:1.6%;"></div>
 
-  <div class="ov ov-heading" id="k-banner-h" style="left:12%; top:86.4%; width:76%; height:3%;"></div>
-  <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90%; width:70%; height:2.5%;"></button>
-  <div class="ov ov-small" id="k-banner-sub" style="left:10%; top:92.9%; width:80%; height:1.6%;"></div>
-
-  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:95.3%; width:23%; height:3%;"></div>
-  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:95.3%; width:23%; height:3%;"></div>
-  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:95.3%; width:23%; height:3%;"></div>
-  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:95.3%; width:23%; height:3%;"></div>
-  <div class="ov ov-small" id="k-copyright" style="left:10%; top:98.6%; width:80%; height:1.2%;"></div>
+  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:95.3%; width:23%; height:3.6%;"></div>
+  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:95.3%; width:23%; height:3.6%;"></div>
+  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:95.3%; width:23%; height:3.6%;"></div>
+  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:95.3%; width:23%; height:3.6%;"></div>
+  <div class="ov ov-small" id="k-copyright" style="left:10%; top:99.0%; width:80%; height:1%;"></div>
 
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot play-btn" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
@@ -437,36 +434,36 @@
   <div class="ov ov-small" id="a-startnow" style="left:4%; top:28%; width:55%; height:1.8%; text-align:left;"></div>
   <div class="ov ov-heading" id="a-format-heading" style="left:5%; top:31.1%; width:90%; height:2%;"></div>
 
-  <div class="ov ov-caption" id="a-format-1" style="left:2%; top:47.6%; width:23%; height:2%;"></div>
-  <div class="ov ov-caption" id="a-format-2" style="left:27%; top:47.6%; width:23%; height:2%;"></div>
-  <div class="ov ov-caption" id="a-format-3" style="left:52%; top:47.6%; width:23%; height:2%;"></div>
-  <div class="ov ov-caption" id="a-format-4" style="left:77%; top:47.6%; width:21%; height:2%;"></div>
+  <div class="ov ov-caption" id="a-format-1" style="left:2%; top:44.0%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-format-2" style="left:27%; top:44.0%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-format-3" style="left:52%; top:44.0%; width:23%; height:2.3%;"></div>
+  <div class="ov ov-caption" id="a-format-4" style="left:77%; top:44.0%; width:21%; height:2.3%;"></div>
 
-  <div class="ov ov-heading" id="a-how-heading" style="left:5%; top:50.1%; width:90%; height:2%;"></div>
-  <div class="ov ov-small" id="a-step-1" style="left:1%; top:57.4%; width:24%; height:3.2%;"></div>
-  <div class="ov ov-small" id="a-step-2" style="left:26%; top:57.4%; width:24%; height:3.2%;"></div>
-  <div class="ov ov-small" id="a-step-3" style="left:51%; top:57.4%; width:24%; height:3.2%;"></div>
-  <div class="ov ov-small" id="a-step-4" style="left:76%; top:57.4%; width:23%; height:3.2%;"></div>
-  <div class="ov ov-small" id="a-timing" style="left:8%; top:61.3%; width:84%; height:1.8%;"></div>
+  <div class="ov ov-heading" id="a-how-heading" style="left:5%; top:48.2%; width:90%; height:1.5%;"></div>
+  <div class="ov ov-small" id="a-step-1" style="left:1%; top:56.0%; width:24%; height:4.4%;"></div>
+  <div class="ov ov-small" id="a-step-2" style="left:26%; top:56.0%; width:24%; height:4.4%;"></div>
+  <div class="ov ov-small" id="a-step-3" style="left:51%; top:56.0%; width:24%; height:4.4%;"></div>
+  <div class="ov ov-small" id="a-step-4" style="left:76%; top:56.0%; width:23%; height:4.4%;"></div>
+  <div class="ov ov-small" id="a-timing" style="left:8%; top:61.5%; width:84%; height:1.6%;"></div>
 
-  <div class="ov ov-heading" id="a-examples-heading" style="left:5%; top:62.3%; width:90%; height:1.5%;"></div>
-  <div class="ov ov-caption" id="a-tc-1" style="left:3%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
-  <div class="ov ov-caption" id="a-tc-2" style="left:28%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
-  <div class="ov ov-caption" id="a-tc-3" style="left:53%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
-  <div class="ov ov-caption" id="a-tc-4" style="left:78%; top:71.3%; width:12%; height:1.8%; text-align:left;"></div>
-  <div class="ov ov-caption" id="a-ex-cap-1" style="left:2%; top:74.9%; width:23%; height:2.3%;"></div>
-  <div class="ov ov-caption" id="a-ex-cap-2" style="left:27%; top:74.9%; width:23%; height:2.3%;"></div>
-  <div class="ov ov-caption" id="a-ex-cap-3" style="left:52%; top:74.9%; width:23%; height:2.3%;"></div>
-  <div class="ov ov-caption" id="a-ex-cap-4" style="left:77%; top:74.9%; width:21%; height:2.3%;"></div>
+  <div class="ov ov-heading" id="a-examples-heading" style="left:5%; top:64.1%; width:90%; height:1.5%;"></div>
+  <div class="ov ov-caption" id="a-tc-1" style="left:3%; top:72.9%; width:12%; height:1.6%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-2" style="left:28%; top:72.9%; width:12%; height:1.6%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-3" style="left:53%; top:72.9%; width:12%; height:1.6%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-tc-4" style="left:78%; top:72.9%; width:12%; height:1.6%; text-align:left;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-1" style="left:2%; top:74.7%; width:23%; height:2.5%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-2" style="left:27%; top:74.7%; width:23%; height:2.5%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-3" style="left:52%; top:74.7%; width:23%; height:2.5%;"></div>
+  <div class="ov ov-caption" id="a-ex-cap-4" style="left:77%; top:74.7%; width:21%; height:2.5%;"></div>
 
-  <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:78.6%; width:58%; height:4.5%; text-align:left;"></div>
-  <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:85%; width:65%; height:2%;"></button>
+  <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:80.0%; width:58%; height:4.3%; text-align:left;"></div>
+  <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:85.3%; width:65%; height:2.4%;"></button>
 
-  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:88.4%; width:23%; height:3.5%;"></div>
-  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:88.4%; width:23%; height:3.5%;"></div>
-  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:88.4%; width:23%; height:3.5%;"></div>
-  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:88.4%; width:23%; height:3.5%;"></div>
-  <div class="ov ov-small" id="a-copyright" style="left:10%; top:92.7%; width:80%; height:1%;"></div>
+  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:92.1%; width:23%; height:3.8%;"></div>
+  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:92.1%; width:23%; height:3.8%;"></div>
+  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:92.1%; width:23%; height:3.8%;"></div>
+  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:92.1%; width:23%; height:3.8%;"></div>
+  <div class="ov ov-small" id="a-copyright" style="left:10%; top:96.3%; width:80%; height:1%;"></div>
 
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
   <button class="hot arrow-right-1" onclick="shiftFormats(1)"></button>
@@ -607,17 +604,17 @@
   const SUPPORTED_LANGS = ['en','ru','it','fr','es'];
 
   const PET_TRANSLATIONS = {
-    ua: { cats:'Котики', dogs:'Песики', birds:'Птахи', small:'Гризуни', exotic:'Екзотика',
+    ua: { cats:'Мультик про котика', dogs:'Мультик про песика', birds:'Мультик про пташку', small:'Мультик про гризуна', exotic:'Мультик про екзотичного улюбленця',
       ctaFinal:'★ Замовити', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
-    en: { cats:'Cats', dogs:'Dogs', birds:'Birds', small:'Small pets', exotic:'Exotic',
+    en: { cats:'Cartoon about a cat', dogs:'Cartoon about a dog', birds:'Cartoon about a bird', small:'Cartoon about a small pet', exotic:'Cartoon about an exotic pet',
       ctaFinal:'★ Order', comingSoon:'Ordering here is coming soon 🐾' },
-    ru: { cats:'Кошки', dogs:'Собаки', birds:'Птицы', small:'Грызуны', exotic:'Экзотика',
+    ru: { cats:'Мультфильм про котика', dogs:'Мультфильм про песика', birds:'Мультфильм про птичку', small:'Мультфильм про грызуна', exotic:'Мультфильм про экзотического питомца',
       ctaFinal:'★ Заказать', comingSoon:'Скоро здесь можно будет заказать 🐾' },
-    it: { cats:'Gatti', dogs:'Cani', birds:'Uccelli', small:'Piccoli animali', exotic:'Esotici',
+    it: { cats:'Cartone sul tuo gatto', dogs:'Cartone sul tuo cane', birds:'Cartone sul tuo uccellino', small:'Cartone sul tuo animaletto', exotic:'Cartone sul tuo animale esotico',
       ctaFinal:'★ Ordina', comingSoon:'Presto potrai ordinare qui 🐾' },
-    fr: { cats:'Chats', dogs:'Chiens', birds:'Oiseaux', small:'Petits animaux', exotic:'Exotiques',
+    fr: { cats:'Dessin animé sur ton chat', dogs:'Dessin animé sur ton chien', birds:'Dessin animé sur ton oiseau', small:'Dessin animé sur ton petit animal', exotic:'Dessin animé sur ton animal exotique',
       ctaFinal:'★ Commander', comingSoon:'Vous pourrez bientôt commander ici 🐾' },
-    es: { cats:'Gatos', dogs:'Perros', birds:'Aves', small:'Pequeñas mascotas', exotic:'Exóticos',
+    es: { cats:'Dibujo animado sobre tu gato', dogs:'Dibujo animado sobre tu perro', birds:'Dibujo animado sobre tu ave', small:'Dibujo animado sobre tu mascota', exotic:'Dibujo animado sobre tu mascota exótica',
       ctaFinal:'★ Pedir', comingSoon:'Pronto podrás pedir aquí 🐾' },
   };
 
@@ -639,7 +636,7 @@
   // ---------- Дитяча лінійка — текст (раніше запечений в картинці) ----------
   const KIDS_TXT = {
     ua: { tagline:'Створюємо мультфільми з вашою дитиною в головній ролі!', startnow:'Почніть свою історію прямо зараз!',
-      genreheading:'✦ Оберіть жанр мультфільму ✦', genre1:'КОСМОС', genre2:'ДРАКОНИ', genre3:'КАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОЇ',
+      genreheading:'✦ Оберіть жанр мультфільму ✦', genre1:'Мультик про космос', genre2:'Мультик про дракона', genre3:'Казкова історія', genre4:'Перегони на машинках', genre5:'Мультик про супергероя',
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захоплюючі пригоди у відкритому космосі, далекі планети, яскраві прибульці та неймовірні відкриття!',
       howheading:'✦ Як це працює? ✦', step1:'Завантажте фото дитини', step2:'Оберіть сюжет та жанр', step3:'Отримайте свій мультфільм!',
       bannerH:'Готові створити щось неймовірне разом?', bannerSub:'Це легко, швидко і дуже весело!',
@@ -647,7 +644,7 @@
       badge3t:'Унікальний контент', badge3s:'Жодних шаблонів — тільки ваша унікальна історія', badge4t:'З любов\u2019ю', badge4s:'Ми створюємо мультфільми, які дарують радість',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СТВОРИТИ ГЕРОЯ', ctaFinal:'★ СТВОРИТИ МУЛЬТ ЗАРАЗ' },
     en: { tagline:'We create cartoons starring your child!', startnow:'Start your story right now!',
-      genreheading:'✦ Choose your cartoon genre ✦', genre1:'SPACE', genre2:'DRAGONS', genre3:'FAIRYTALE', genre4:'CARS', genre5:'SUPERHEROES',
+      genreheading:'✦ Choose your cartoon genre ✦', genre1:'Cartoon about space', genre2:'Cartoon about a dragon', genre3:'Fairytale story', genre4:'Car racing fun', genre5:'Cartoon about a superhero',
       spaceHeading:'SPACE 🚀', spaceDesc:'Thrilling adventures in outer space, distant planets, bright aliens and incredible discoveries!',
       howheading:'✦ How does it work? ✦', step1:'Upload your child\u2019s photo', step2:'Pick a story and genre', step3:'Get your cartoon!',
       bannerH:'Ready to create something amazing together?', bannerSub:'It\u2019s easy, fast and lots of fun!',
@@ -655,7 +652,7 @@
       badge3t:'Unique content', badge3s:'No templates — only your one-of-a-kind story', badge4t:'Made with love', badge4s:'We create cartoons that bring joy',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREATE A HERO', ctaFinal:'★ CREATE A CARTOON NOW' },
     ru: { tagline:'Создаём мультфильмы, где ваш ребёнок — главный герой!', startnow:'Начните свою историю прямо сейчас!',
-      genreheading:'✦ Выберите жанр мультфильма ✦', genre1:'КОСМОС', genre2:'ДРАКОНЫ', genre3:'СКАЗКА', genre4:'МАШИНКИ', genre5:'СУПЕРГЕРОИ',
+      genreheading:'✦ Выберите жанр мультфильма ✦', genre1:'Мультфильм про космос', genre2:'Мультфильм про дракона', genre3:'Сказочная история', genre4:'Гонки на машинках', genre5:'Мультфильм про супергероя',
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захватывающие приключения в открытом космосе, далёкие планеты, яркие пришельцы и невероятные открытия!',
       howheading:'✦ Как это работает? ✦', step1:'Загрузите фото ребёнка', step2:'Выберите сюжет и жанр', step3:'Получите свой мультфильм!',
       bannerH:'Готовы создать что-то невероятное вместе?', bannerSub:'Это легко, быстро и очень весело!',
@@ -663,7 +660,7 @@
       badge3t:'Уникальный контент', badge3s:'Никаких шаблонов — только ваша уникальная история', badge4t:'С любовью', badge4s:'Мы создаём мультфильмы, которые дарят радость',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СОЗДАТЬ ГЕРОЯ', ctaFinal:'★ СОЗДАТЬ МУЛЬТФИЛЬМ' },
     it: { tagline:'Creiamo cartoni animati con il tuo bambino come protagonista!', startnow:'Inizia subito la tua storia!',
-      genreheading:'✦ Scegli il genere del cartone ✦', genre1:'SPAZIO', genre2:'DRAGHI', genre3:'FIABA', genre4:'AUTO', genre5:'SUPEREROI',
+      genreheading:'✦ Scegli il genere del cartone ✦', genre1:'Cartone sullo spazio', genre2:'Cartone su un drago', genre3:'Storia da favola', genre4:'Corse di auto', genre5:'Cartone su un supereroe',
       spaceHeading:'SPAZIO 🚀', spaceDesc:'Avventure emozionanti nello spazio aperto, pianeti lontani, alieni sorprendenti e scoperte incredibili!',
       howheading:'✦ Come funziona? ✦', step1:'Carica la foto del bambino', step2:'Scegli trama e genere', step3:'Ricevi il tuo cartone!',
       bannerH:'Pronti a creare qualcosa di incredibile insieme?', bannerSub:'È facile, veloce e molto divertente!',
@@ -671,7 +668,7 @@
       badge3t:'Contenuto unico', badge3s:'Nessun modello — solo la tua storia unica', badge4t:'Con amore', badge4s:'Creiamo cartoni che regalano gioia',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREA UN EROE', ctaFinal:'★ CREA IL CARTONE ORA' },
     fr: { tagline:'Nous créons des dessins animés avec votre enfant en héros !', startnow:'Commencez votre histoire dès maintenant !',
-      genreheading:'✦ Choisissez le genre du dessin animé ✦', genre1:'ESPACE', genre2:'DRAGONS', genre3:'CONTE', genre4:'VOITURES', genre5:'SUPER-HÉROS',
+      genreheading:'✦ Choisissez le genre du dessin animé ✦', genre1:'Dessin animé sur l\u2019espace', genre2:'Dessin animé sur un dragon', genre3:'Histoire de conte de fées', genre4:'Course de voitures', genre5:'Dessin animé sur un super-héros',
       spaceHeading:'ESPACE 🚀', spaceDesc:'Aventures palpitantes dans l\u2019espace, planètes lointaines, extraterrestres colorés et découvertes incroyables !',
       howheading:'✦ Comment ça marche ? ✦', step1:'Téléchargez la photo de l\u2019enfant', step2:'Choisissez l\u2019histoire et le genre', step3:'Recevez votre dessin animé !',
       bannerH:'Prêts à créer quelque chose d\u2019incroyable ensemble ?', bannerSub:'C\u2019est facile, rapide et très amusant !',
@@ -679,7 +676,7 @@
       badge3t:'Contenu unique', badge3s:'Aucun modèle — seulement votre histoire unique', badge4t:'Avec amour', badge4s:'Nous créons des dessins animés qui apportent de la joie',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CRÉER UN HÉROS', ctaFinal:'★ CRÉER LE DESSIN ANIMÉ' },
     es: { tagline:'¡Creamos dibujos animados con tu hijo como protagonista!', startnow:'¡Comienza tu historia ahora mismo!',
-      genreheading:'✦ Elige el género del dibujo animado ✦', genre1:'ESPACIO', genre2:'DRAGONES', genre3:'CUENTO', genre4:'COCHES', genre5:'SUPERHÉROES',
+      genreheading:'✦ Elige el género del dibujo animado ✦', genre1:'Dibujo animado sobre el espacio', genre2:'Dibujo animado sobre un dragón', genre3:'Historia de cuento', genre4:'Carrera de coches', genre5:'Dibujo animado sobre un superhéroe',
       spaceHeading:'ESPACIO 🚀', spaceDesc:'¡Aventuras emocionantes en el espacio exterior, planetas lejanos, alienígenas coloridos y descubrimientos increíbles!',
       howheading:'✦ ¿Cómo funciona? ✦', step1:'Sube la foto del niño', step2:'Elige la historia y el género', step3:'¡Recibe tu dibujo animado!',
       bannerH:'¿Listos para crear algo increíble juntos?', bannerSub:'¡Es fácil, rápido y muy divertido!',
@@ -698,8 +695,6 @@
     document.getElementById('k-genre-3').textContent = t.genre3;
     document.getElementById('k-genre-4').textContent = t.genre4;
     document.getElementById('k-genre-5').textContent = t.genre5;
-    document.getElementById('k-space-heading').textContent = t.spaceHeading;
-    document.getElementById('k-space-desc').textContent = t.spaceDesc;
     document.getElementById('k-how-heading').textContent = t.howheading;
     document.getElementById('k-step-1').textContent = t.step1;
     document.getElementById('k-step-2').textContent = t.step2;
