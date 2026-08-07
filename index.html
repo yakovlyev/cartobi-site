@@ -51,11 +51,11 @@
   #section-kids .cta-final{left:15%; top:90%; width:70%; height:2.5%;}
   #section-kids .play-btn{left:24.93%; top:59%; width:13.35%; height:7%;}
   /* Карточки 5 жанрів — попередні координати, звірити з фінальною картинкою завтра */
-  #section-kids .genre-1{left:2%; top:40%; width:18%; height:9%;}
-  #section-kids .genre-2{left:22%; top:40%; width:18%; height:9%;}
-  #section-kids .genre-3{left:42%; top:40%; width:18%; height:9%;}
-  #section-kids .genre-4{left:62%; top:40%; width:18%; height:9%;}
-  #section-kids .genre-5{left:82%; top:40%; width:16%; height:9%;}
+  #section-kids .genre-1{left:6.4%; top:40%; width:16.8%; height:9%;}
+  #section-kids .genre-2{left:24.1%; top:40%; width:16.8%; height:9%;}
+  #section-kids .genre-3{left:41.6%; top:40%; width:16.8%; height:9%;}
+  #section-kids .genre-4{left:59%; top:40%; width:16.8%; height:9%;}
+  #section-kids .genre-5{left:76.8%; top:40%; width:16.8%; height:9%;}
 
   /* Підказка "скрольте далі" в кінці першої секції */
   .scroll-hint{
@@ -181,7 +181,8 @@
   .ov-accent{color:#ffcb3d;}
   .ov-heading{font-weight:800; font-size:clamp(11px,3.1vw,17px);}
   .ov-body{font-weight:600; font-size:clamp(9px,2.3vw,13px);}
-  .ov-caption{font-weight:700; font-size:clamp(8px,2vw,11px);}
+  .ov-caption{font-weight:700; font-size:clamp(8px,2vw,11px); overflow:hidden; line-height:1.2;
+    white-space:pre-line; text-shadow:0 1px 2px rgba(0,0,0,0.95);}
   .ov-small{font-weight:600; font-size:clamp(7px,1.8vw,10px); opacity:0.85;}
   .ov-badge{font-weight:700; font-size:clamp(6px,1.7vw,9px); overflow:hidden; line-height:1.15;}
   .ov-badge b{display:block; color:#ffcb3d; font-size:clamp(7px,1.9vw,10px);}
@@ -223,8 +224,9 @@
 
   /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
   .zoryana-fab{
-    position:absolute; z-index:5;
-    width:15%; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
+    position:fixed; z-index:15;
+    width:20vw; max-width:78px; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
+    left:66%; top:44vh;
     background:#1560c9;
     box-shadow:0 4px 16px rgba(0,0,0,0.5), 0 0 0 3px rgba(74,163,255,0.4);
     display:flex; align-items:center; justify-content:center; font-size:22px;
@@ -392,31 +394,29 @@
     <img src="hero-kids.jpg" alt="Персоналізований мультфільм на замовлення для дитини — Cartobi">
   </div>
 
-  <div class="ov ov-body" id="k-tagline" style="left:8%; top:17.3%; width:56%; height:6%;"></div>
-  <button class="real-btn" id="k-cta-main" onclick="goToBot('kids')" style="left:20%; top:25%; width:60%; height:5%;"></button>
+  <div class="ov ov-body" id="k-tagline" style="left:22%; top:16.5%; width:56%; height:9%; font-size:clamp(11px,3vw,16px); line-height:1.15; white-space:pre-line; display:flex; align-items:center; justify-content:center;"></div>
+  <button class="real-btn" id="k-cta-main" onclick="goToBot('kids')" style="left:50%; top:26.8%; width:auto; height:auto; min-width:0; transform:translateX(-50%); padding:9px 22px; white-space:nowrap;"></button>
   <div class="ov ov-heading" id="k-genreheading" style="left:5%; top:32.0%; width:90%; height:2.5%;"></div>
 
-  <div class="ov ov-caption" id="k-genre-1" style="left:2%; top:49.2%; width:18%; height:2.4%;"></div>
-  <div class="ov ov-caption" id="k-genre-2" style="left:22%; top:49.2%; width:18%; height:2.4%;"></div>
-  <div class="ov ov-caption" id="k-genre-3" style="left:42%; top:49.2%; width:18%; height:2.4%;"></div>
-  <div class="ov ov-caption" id="k-genre-4" style="left:62%; top:49.2%; width:18%; height:2.4%;"></div>
-  <div class="ov ov-caption" id="k-genre-5" style="left:82%; top:49.2%; width:16%; height:2.4%;"></div>
+  <div class="ov ov-caption" id="k-genre-1" style="left:8.3%; top:49.4%; width:13%; height:5%;"></div>
+  <div class="ov ov-caption" id="k-genre-2" style="left:26%; top:49.4%; width:13%; height:5%;"></div>
+  <div class="ov ov-caption" id="k-genre-3" style="left:43.5%; top:49.4%; width:13%; height:5%;"></div>
+  <div class="ov ov-caption" id="k-genre-4" style="left:60.9%; top:49.4%; width:13%; height:5%;"></div>
+  <div class="ov ov-caption" id="k-genre-5" style="left:78.7%; top:49.4%; width:13%; height:5%;"></div>
 
-  <button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:68%; top:60.5%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
+  <button class="zoryana-fab" id="zoryana-fab-kids" onclick="toggleZoryana()" aria-label="Зоряна"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 
   <!-- "Як це працює?" і кроки прибрані з картинки 06.08 — це FAQ-контент,
        тепер його розповідає тільки Зоряна (голосом), щоб не дублювати і
        не перевантажувати лендинг дрібним текстом. -->
 
-  <div class="ov ov-heading" id="k-banner-h" style="left:9%; top:85.9%; width:82%; height:3.6%;"></div>
-  <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90.0%; width:70%; height:2.3%;"></button>
-  <div class="ov ov-small" id="k-banner-sub" style="left:8%; top:92.6%; width:84%; height:1.5%;"></div>
+  <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:50%; top:90%; width:auto; height:auto; min-width:0; transform:translate(-50%,-50%); padding:9px 22px; white-space:nowrap;"></button>
 
-  <div class="ov ov-badge" id="k-badge-1" style="left:1%; top:95.5%; width:23%; height:2.2%;"></div>
-  <div class="ov ov-badge" id="k-badge-2" style="left:26%; top:95.5%; width:23%; height:2.2%;"></div>
-  <div class="ov ov-badge" id="k-badge-3" style="left:51%; top:95.5%; width:23%; height:2.2%;"></div>
-  <div class="ov ov-badge" id="k-badge-4" style="left:76%; top:95.5%; width:23%; height:2.2%;"></div>
-  <div class="ov ov-small" id="k-copyright" style="left:5%; top:98.2%; width:90%; height:1.5%; font-size:7px;"></div>
+  <div class="ov ov-badge" id="k-badge-1" style="left:10.3%; top:96.3%; width:13.2%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
+  <div class="ov ov-badge" id="k-badge-2" style="left:32.3%; top:96.3%; width:16.2%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
+  <div class="ov ov-badge" id="k-badge-3" style="left:56.5%; top:96.3%; width:17%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
+  <div class="ov ov-badge" id="k-badge-4" style="left:81.3%; top:96.3%; width:17.2%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
+  <div class="ov ov-small" id="k-copyright" style="left:5%; top:99.4%; width:90%; height:1.5%; font-size:7px;"></div>
 
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot play-btn" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
@@ -458,10 +458,10 @@
   <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:79.5%; width:58%; height:4.6%; text-align:left;"></div>
   <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:84.4%; width:65%; height:2.5%;"></button>
 
-  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:91.3%; width:23%; height:2.4%;"></div>
-  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:91.3%; width:23%; height:2.4%;"></div>
-  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:91.3%; width:23%; height:2.4%;"></div>
-  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:91.3%; width:23%; height:2.4%;"></div>
+  <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:92.1%; width:23%; height:2.1%;"></div>
+  <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:92.1%; width:23%; height:2.1%;"></div>
+  <div class="ov ov-badge" id="a-badge-3" style="left:51%; top:92.1%; width:23%; height:2.1%;"></div>
+  <div class="ov ov-badge" id="a-badge-4" style="left:76%; top:92.1%; width:23%; height:2.1%;"></div>
   <div class="ov ov-small" id="a-copyright" style="left:5%; top:94.3%; width:90%; height:1.5%; font-size:7px;"></div>
 
   <button class="hot arrow-left-1" onclick="shiftFormats(-1)"></button>
@@ -539,9 +539,11 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
-<!-- Зоряна — голосовий FAQ-помічник. Кнопка вбудована саме в дитячу секцію,
-     у звільненому синьому місці праворуч від відео (те саме місце, яке Ігор
-     обводив червоним) — НЕ фіксована, НЕ по центру екрана. -->
+<!-- Зоряна — голосовий FAQ-помічник. 07.08: ЗМІНЕНО на прохання Ігоря —
+     кнопка тепер position:fixed (одна на весь сайт, а не вбудована в
+     дитячу секцію), лишається на екрані, поки користувач гортає всі три
+     лендинги вниз. Раніше (06.08) навмисно робили НЕ fixed — це рішення
+     тепер свідомо скасоване, не повертати без нового прямого запиту. -->
 <div class="zoryana-panel" id="zoryana-panel">
   <div class="zoryana-head">
     <div class="avatar"><img src="zoryana-portrait.png" alt="Зоряна"></div>
@@ -635,51 +637,51 @@
 
   // ---------- Дитяча лінійка — текст (раніше запечений в картинці) ----------
   const KIDS_TXT = {
-    ua: { tagline:'Створюємо мультфільми з вашою дитиною в головній ролі!', startnow:'Почніть свою історію прямо зараз!',
-      genreheading:'✦ Оберіть жанр мультфільму ✦', genre1:'Космічні пригоди', genre2:'Світ драконів та магії', genre3:'Казкове королівство', genre4:'Перегони на машинках', genre5:'Супергеройські місії',
+    ua: { tagline:'Створюємо мультфільми\nз вашою дитиною\nв головній ролі!', startnow:'Почніть свою історію прямо зараз!',
+      genreheading:'✦ Оберіть жанр мультфільму ✦', genre1:'Космічні\nпригоди', genre2:'Дракони та\nмагія', genre3:'Казкове\nкоролівство', genre4:'Перегони на\nмашинках', genre5:'Супер-\nгерої',
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захоплюючі пригоди у відкритому космосі, далекі планети, яскраві прибульці та неймовірні відкриття!',
       howheading:'✦ Як це працює? ✦', step1:'Завантажте фото дитини', step2:'Оберіть сюжет та жанр', step3:'Отримайте свій мультфільм!',
-      bannerH:'Готові створити щось неймовірне разом?', bannerSub:'Це легко, швидко і дуже весело!',
+      bannerH:'Готові створити щось\nнеймовірне разом?', bannerSub:'Це легко, швидко і дуже весело!',
       badge1t:'Безпечно для дітей', badge1s:'Ми дбаємо про вашу конфіденційність', badge2t:'Готовий мультфільм', badge2s:'Професійна якість без затримок',
       badge3t:'Унікальний контент', badge3s:'Жодних шаблонів — тільки ваша унікальна історія', badge4t:'З любов\u2019ю', badge4s:'Ми створюємо мультфільми, які дарують радість',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СТВОРИТИ ГЕРОЯ', ctaFinal:'★ СТВОРИТИ МУЛЬТ ЗАРАЗ' },
-    en: { tagline:'We create cartoons starring your child!', startnow:'Start your story right now!',
-      genreheading:'✦ Choose your cartoon genre ✦', genre1:'Space Adventure', genre2:'World of Dragons and Magic', genre3:'Fairytale Kingdom', genre4:'Car Racing Adventure', genre5:'Superhero Missions',
+    en: { tagline:'We create cartoons\nwith your child\nas the hero!', startnow:'Start your story right now!',
+      genreheading:'✦ Choose your cartoon genre ✦', genre1:'Space\nAdventure', genre2:'World of\nDragons', genre3:'Fairytale\nKingdom', genre4:'Car Racing\nAdventure', genre5:'Super-\nheroes',
       spaceHeading:'SPACE 🚀', spaceDesc:'Thrilling adventures in outer space, distant planets, bright aliens and incredible discoveries!',
       howheading:'✦ How does it work? ✦', step1:'Upload your child\u2019s photo', step2:'Pick a story and genre', step3:'Get your cartoon!',
-      bannerH:'Ready to create something amazing together?', bannerSub:'It\u2019s easy, fast and lots of fun!',
+      bannerH:'Ready to create something\namazing together?', bannerSub:'It\u2019s easy, fast and lots of fun!',
       badge1t:'Safe for kids', badge1s:'We care about your privacy', badge2t:'Finished cartoon', badge2s:'Professional quality, no delays',
       badge3t:'Unique content', badge3s:'No templates — only your one-of-a-kind story', badge4t:'Made with love', badge4s:'We create cartoons that bring joy',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREATE A HERO', ctaFinal:'★ CREATE A CARTOON NOW' },
-    ru: { tagline:'Создаём мультфильмы, где ваш ребёнок — главный герой!', startnow:'Начните свою историю прямо сейчас!',
-      genreheading:'✦ Выберите жанр мультфильма ✦', genre1:'Космические приключения', genre2:'Мир драконов и магии', genre3:'Сказочное королевство', genre4:'Гонки на машинках', genre5:'Супергеройские миссии',
+    ru: { tagline:'Создаём мультфильмы,\nгде ваш ребёнок —\nглавный герой!', startnow:'Начните свою историю прямо сейчас!',
+      genreheading:'✦ Выберите жанр мультфильма ✦', genre1:'Космос и\nзвёзды', genre2:'Драконы и\nмагия', genre3:'Сказочное\nкоролевство', genre4:'Гонки на\nмашинках', genre5:'Супер-\nгерои',
       spaceHeading:'КОСМОС 🚀', spaceDesc:'Захватывающие приключения в открытом космосе, далёкие планеты, яркие пришельцы и невероятные открытия!',
       howheading:'✦ Как это работает? ✦', step1:'Загрузите фото ребёнка', step2:'Выберите сюжет и жанр', step3:'Получите свой мультфильм!',
-      bannerH:'Готовы создать что-то невероятное вместе?', bannerSub:'Это легко, быстро и очень весело!',
+      bannerH:'Готовы создать что-то\nневероятное вместе?', bannerSub:'Это легко, быстро и очень весело!',
       badge1t:'Безопасно для детей', badge1s:'Мы заботимся о вашей конфиденциальности', badge2t:'Готовый мультфильм', badge2s:'Профессиональное качество без задержек',
       badge3t:'Уникальный контент', badge3s:'Никаких шаблонов — только ваша уникальная история', badge4t:'С любовью', badge4s:'Мы создаём мультфильмы, которые дарят радость',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ СОЗДАТЬ ГЕРОЯ', ctaFinal:'★ СОЗДАТЬ МУЛЬТФИЛЬМ' },
-    it: { tagline:'Creiamo cartoni animati con il tuo bambino come protagonista!', startnow:'Inizia subito la tua storia!',
-      genreheading:'✦ Scegli il genere del cartone ✦', genre1:'Avventura nello spazio', genre2:'Il mondo dei draghi e della magia', genre3:'Regno delle fiabe', genre4:'Corse di auto', genre5:'Missioni da supereroe',
+    it: { tagline:'Creiamo cartoni animati\ncon il tuo bambino\ncome protagonista!', startnow:'Inizia subito la tua storia!',
+      genreheading:'✦ Scegli il genere del cartone ✦', genre1:'Avventura\nnello spazio', genre2:'Draghi e\nmagia', genre3:'Regno delle\nfiabe', genre4:'Corse di\nauto', genre5:'Super-\neroi',
       spaceHeading:'SPAZIO 🚀', spaceDesc:'Avventure emozionanti nello spazio aperto, pianeti lontani, alieni sorprendenti e scoperte incredibili!',
       howheading:'✦ Come funziona? ✦', step1:'Carica la foto del bambino', step2:'Scegli trama e genere', step3:'Ricevi il tuo cartone!',
-      bannerH:'Pronti a creare qualcosa di incredibile insieme?', bannerSub:'È facile, veloce e molto divertente!',
+      bannerH:'Pronti a creare qualcosa\ndi incredibile insieme?', bannerSub:'È facile, veloce e molto divertente!',
       badge1t:'Sicuro per i bambini', badge1s:'Ci prendiamo cura della tua privacy', badge2t:'Cartone pronto', badge2s:'Qualità professionale, senza ritardi',
       badge3t:'Contenuto unico', badge3s:'Nessun modello — solo la tua storia unica', badge4t:'Con amore', badge4s:'Creiamo cartoni che regalano gioia',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREA UN EROE', ctaFinal:'★ CREA IL CARTONE ORA' },
-    fr: { tagline:'Nous créons des dessins animés avec votre enfant en héros !', startnow:'Commencez votre histoire dès maintenant !',
-      genreheading:'✦ Choisissez le genre du dessin animé ✦', genre1:'Aventure spatiale', genre2:'Le monde des dragons et de la magie', genre3:'Royaume de conte de fées', genre4:'Course de voitures', genre5:'Missions de super-héros',
+    fr: { tagline:'Nous créons des dessins animés\navec votre enfant\nen héros !', startnow:'Commencez votre histoire dès maintenant !',
+      genreheading:'✦ Choisissez le genre du dessin animé ✦', genre1:'Aventure\nspatiale', genre2:'Dragons et\nmagie', genre3:'Royaume\nféerique', genre4:'Course de\nvoitures', genre5:'Super-\nhéros',
       spaceHeading:'ESPACE 🚀', spaceDesc:'Aventures palpitantes dans l\u2019espace, planètes lointaines, extraterrestres colorés et découvertes incroyables !',
       howheading:'✦ Comment ça marche ? ✦', step1:'Téléchargez la photo de l\u2019enfant', step2:'Choisissez l\u2019histoire et le genre', step3:'Recevez votre dessin animé !',
-      bannerH:'Prêts à créer quelque chose d\u2019incroyable ensemble ?', bannerSub:'C\u2019est facile, rapide et très amusant !',
+      bannerH:'Prêts à créer quelque chose\nd\u2019incroyable ensemble ?', bannerSub:'C\u2019est facile, rapide et très amusant !',
       badge1t:'Sûr pour les enfants', badge1s:'Nous protégeons votre confidentialité', badge2t:'Dessin animé prêt', badge2s:'Qualité professionnelle, sans délai',
       badge3t:'Contenu unique', badge3s:'Aucun modèle — seulement votre histoire unique', badge4t:'Avec amour', badge4s:'Nous créons des dessins animés qui apportent de la joie',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CRÉER UN HÉROS', ctaFinal:'★ CRÉER LE DESSIN ANIMÉ' },
-    es: { tagline:'¡Creamos dibujos animados con tu hijo como protagonista!', startnow:'¡Comienza tu historia ahora mismo!',
-      genreheading:'✦ Elige el género del dibujo animado ✦', genre1:'Aventura espacial', genre2:'El mundo de los dragones y la magia', genre3:'Reino de cuento de hadas', genre4:'Carrera de coches', genre5:'Misiones de superhéroe',
+    es: { tagline:'¡Creamos dibujos animados\ncon tu hijo\ncomo protagonista!', startnow:'¡Comienza tu historia ahora mismo!',
+      genreheading:'✦ Elige el género del dibujo animado ✦', genre1:'Aventura\nespacial', genre2:'Dragones y\nmagia', genre3:'Reino\nencantado', genre4:'Carrera de\ncoches', genre5:'Super-\nhéroes',
       spaceHeading:'ESPACIO 🚀', spaceDesc:'¡Aventuras emocionantes en el espacio exterior, planetas lejanos, alienígenas coloridos y descubrimientos increíbles!',
       howheading:'✦ ¿Cómo funciona? ✦', step1:'Sube la foto del niño', step2:'Elige la historia y el género', step3:'¡Recibe tu dibujo animado!',
-      bannerH:'¿Listos para crear algo increíble juntos?', bannerSub:'¡Es fácil, rápido y muy divertido!',
+      bannerH:'¿Listos para crear algo\nincreíble juntos?', bannerSub:'¡Es fácil, rápido y muy divertido!',
       badge1t:'Seguro para niños', badge1s:'Cuidamos tu privacidad', badge2t:'Dibujo animado listo', badge2s:'Calidad profesional, sin demoras',
       badge3t:'Contenido único', badge3s:'Sin plantillas — solo tu historia única', badge4t:'Con amor', badge4s:'Creamos dibujos animados que traen alegría',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'★ CREAR UN HÉROE', ctaFinal:'★ CREAR EL DIBUJO YA' },
@@ -695,8 +697,8 @@
     document.getElementById('k-genre-4').textContent = t.genre4;
     document.getElementById('k-genre-5').textContent = t.genre5;
     // how-heading/step-1..3 прибрані з розмітки 06.08 (FAQ тепер тільки в Заряні)
-    document.getElementById('k-banner-h').textContent = t.bannerH;
-    document.getElementById('k-banner-sub').textContent = t.bannerSub;
+    // k-banner-h/k-banner-sub прибрані з розмітки 07.08 (Ігор попросив спростити —
+    // лишити тільки кнопку, решту розповість Зоряна), тому textContent тут більше не ставимо.
     document.getElementById('k-badge-1').innerHTML = `<b>${t.badge1t}</b>`;
     document.getElementById('k-badge-2').innerHTML = `<b>${t.badge2t}</b>`;
     document.getElementById('k-badge-3').innerHTML = `<b>${t.badge3t}</b>`;
@@ -917,6 +919,57 @@
       satisfaction: 'Я зроблю все, щоб ви посміхалися! Ми вносимо правки, поки результат не стане ідеальним — ваші емоції для нас найголовніше.',
       fallback: 'Хм, точної відповіді на це в мене немає — краще запитайте прямо в боті @CartobiBot, там відповість команда Карто́бі 💛',
       order: 'Щоб оформити замовлення, напишіть нашому боту — натисніть кнопку "Створити героя" вище на сторінці 👆',
+      mainMenu: [
+        { label: '👶 Хочу мультфільм для дитини', key: 'kid' },
+        { label: '🎁 Шукаю подарунок для дорослого', key: 'adult' },
+        { label: '🐾 Мультфільм про улюбленця', key: 'pet' },
+        { label: '❓ У мене є запитання', key: 'question' },
+      ],
+      kidIntro: 'Чудовий вибір! Уявіть, як засяють очі дитини, коли вона побачить себе справжньою героєю мультфільму. Який жанр оберемо?',
+      adultIntro: 'Це буде найзворушливіший подарунок у їхньому житті! Що святкуємо?',
+      petIntro: 'Обожнюю хвостиків! 🐾 Хто у вас головний герой?',
+      faqIntro: 'Питайте — я тут, щоб допомогти! 💛',
+      kidsGenres: [
+        { label: '🚀 Космос', key: 'space' },
+        { label: '🐉 Дракони', key: 'dragons' },
+        { label: '🏰 Казка', key: 'tale' },
+        { label: '🏎 Машинки', key: 'cars' },
+        { label: '🦸 Супергерої', key: 'heroes' },
+      ],
+      genreSpace: 'О, космічні пригоди — це неймовірно! Ми перетворимо фото вашої дитини на справжнього астронавта серед зірок.',
+      genreDragons: 'Дракони та магія — обожнюю цей жанр! Ваша дитина стане відважним чарівником у казковому світі драконів.',
+      genreTale: 'Казкове королівство чекає! Ваша дитина оживе серед принців, принцес і чарівних замків.',
+      genreCars: 'Швидкість і драйв! Ми зробимо вашу дитину справжнім героєм перегонів на яскравих машинках.',
+      genreHeroes: 'Супергеройські місії — це так весело! Ваша дитина отримає силу, плащ і справжній подвиг.',
+      adultFormats: [
+        { label: '❤️ Романтична історія', key: 'romance' },
+        { label: '🎂 День народження', key: 'birthday' },
+        { label: '👔 Корпоратив', key: 'corporate' },
+        { label: '💍 Весілля', key: 'wedding' },
+      ],
+      formatRomance: 'Романтична історія кохання — це наче маленький фільм про двох. Розкажіть, кому дарувати цю магію?',
+      formatBirthday: 'День народження стане незабутнім! Ми перетворимо іменинника чи іменинницю на головного героя власної пригоди.',
+      formatCorporate: 'Корпоративна анімація — чудовий спосіб здивувати команду чи партнерів. Розкажемо вашу історію яскраво і професійно.',
+      formatWedding: 'Весільний мультфільм — це найніжніший спосіб зберегти головний день назавжди.',
+      petsTypes: [
+        { label: '🐱 Котик', key: 'cat' },
+        { label: '🐶 Песик', key: 'dog' },
+        { label: '🦜 Пташка', key: 'bird' },
+        { label: '🐹 Гризун', key: 'rodent' },
+        { label: '🦎 Екзотика', key: 'exotic' },
+      ],
+      petCat: 'Котики — справжні зірки екрана! Ваш пухнастий герой отримає власну пригоду.',
+      petDog: 'Песики завжди крадуть серця! Зробимо вашого улюбленця головним героєм теплої історії.',
+      petBird: 'Пташка в головній ролі — це буде яскраво і незвично!',
+      petRodent: 'Маленький гризун — великий герой! Обожнюю такі історії.',
+      petExotic: 'Екзотичний улюбленець — це завжди особлива історія. З радістю втілимо!',
+      readyLabel: '✨ Готовий замовити / Створити',
+      moreLabel: '❓ Ще запитання',
+      backLabel: '⬅ На головну',
+      orderPrompt: 'Ура! Я вже готую фарби та пензлі! 🎨 Зараз перенаправлю вас на коротку анкету-бриф, або ви можете написати нашому менеджеру прямо тут. Як вам зручніше?',
+      briefLabel: '📝 Заповнити бриф',
+      managerLabel: '💬 Чат з менеджером',
+      closing: 'Дякуємо, що завітали до Cartobi! Я буду тут, якщо знову знадобиться дрібка магії. Гарного дня та казкового настрою! ✨',
     },
     en: {
       greeting: "Hi! I'm Зоряна! I'll tell you about Cartobi — genres, pricing, timing — or tap a button below.",
@@ -942,6 +995,57 @@
       satisfaction: "I'll do everything to make you smile! We make revisions until the result is perfect — your emotions matter most to us.",
       fallback: "I don't have an exact answer for that — best to ask directly in @CartobiBot, our team will help 💛",
       order: 'To place an order, message our bot — tap the "Create a Hero" button above 👆',
+      mainMenu: [
+        { label: '👶 I want a cartoon for a child', key: 'kid' },
+        { label: '🎁 Looking for a gift for an adult', key: 'adult' },
+        { label: '🐾 Cartoon about a pet', key: 'pet' },
+        { label: '❓ I have a question', key: 'question' },
+      ],
+      kidIntro: 'Great choice! Imagine the child\\u2019s delight seeing themselves as a real cartoon hero. Which genre shall we pick?',
+      adultIntro: 'This will be the most touching gift of their lives! What are we celebrating?',
+      petIntro: 'I love fur babies! 🐾 Who is our main character?',
+      faqIntro: 'Ask away — I\\u2019m here to help! 💛',
+      kidsGenres: [
+        { label: '🚀 Space', key: 'space' },
+        { label: '🐉 Dragons', key: 'dragons' },
+        { label: '🏰 Fairy Tale', key: 'tale' },
+        { label: '🏎 Cars', key: 'cars' },
+        { label: '🦸 Superheroes', key: 'heroes' },
+      ],
+      genreSpace: 'Oh, space adventures are incredible! We\\u2019ll turn your child\\u2019s photo into a real astronaut among the stars.',
+      genreDragons: 'Dragons and magic — I love this genre! Your child will become a brave wizard in a fairytale world of dragons.',
+      genreTale: 'A fairytale kingdom awaits! Your child will come alive among princes, princesses, and enchanted castles.',
+      genreCars: 'Speed and thrills! We\\u2019ll make your child a real racing hero on bright, fast cars.',
+      genreHeroes: 'Superhero missions are so much fun! Your child will get superpowers, a cape, and a real triumph.',
+      adultFormats: [
+        { label: '❤️ Love Story', key: 'romance' },
+        { label: '🎂 Birthday', key: 'birthday' },
+        { label: '👔 Corporate', key: 'corporate' },
+        { label: '💍 Wedding', key: 'wedding' },
+      ],
+      formatRomance: 'A love story cartoon feels like a little film about the two of you. Who are we creating this magic for?',
+      formatBirthday: 'Their birthday will be unforgettable! We\\u2019ll turn the birthday hero into the star of their own adventure.',
+      formatCorporate: 'Corporate animation is a wonderful way to surprise your team or partners. We\\u2019ll tell your story vividly and professionally.',
+      formatWedding: 'A wedding cartoon is the tenderest way to keep the big day forever.',
+      petsTypes: [
+        { label: '🐱 Cat', key: 'cat' },
+        { label: '🐶 Dog', key: 'dog' },
+        { label: '🦜 Bird', key: 'bird' },
+        { label: '🐹 Rodent', key: 'rodent' },
+        { label: '🦎 Exotic', key: 'exotic' },
+      ],
+      petCat: 'Cats are true screen stars! Your fluffy hero will get an adventure all their own.',
+      petDog: 'Dogs always steal the show! We\\u2019ll make your companion the hero of a warm, heartfelt story.',
+      petBird: 'A bird in the lead role — that will be bright and unforgettable!',
+      petRodent: 'A tiny rodent, a big hero! I love these stories.',
+      petExotic: 'An exotic pet is always a special story. We\\u2019d love to bring it to life!',
+      readyLabel: '✨ Ready to order / Create',
+      moreLabel: '❓ More questions',
+      backLabel: '⬅ Back to menu',
+      orderPrompt: 'Yay! I\\u2019m already getting my paints and brushes ready! 🎨 Now I\\u2019ll redirect you to a short brief form, or you can message our manager right here. Which do you prefer?',
+      briefLabel: '📝 Fill the brief',
+      managerLabel: '💬 Chat with manager',
+      closing: 'Thanks for visiting Cartobi! I\\u2019ll be here if you need another pinch of magic. Have a wonderful day and a fairy-tale mood! ✨',
     },
     ru: {
       greeting: 'Привет! Я Зоряна! Расскажу всё про Карто́бі — жанры, цены, сроки. Просто напишите вопрос или нажмите кнопку ниже.',
@@ -967,6 +1071,57 @@
       satisfaction: 'Я сделаю всё, чтобы вы улыбались! Мы вносим правки, пока результат не станет идеальным — ваши эмоции для нас самое главное.',
       fallback: 'Хм, точного ответа на это у меня нет — лучше спросите прямо в боте @CartobiBot, там ответит команда Карто́бі 💛',
       order: 'Чтобы оформить заказ, напишите нашему боту — нажмите кнопку "Создать героя" выше на странице 👆',
+      mainMenu: [
+        { label: '👶 Хочу мультфильм для ребёнка', key: 'kid' },
+        { label: '🎁 Ищу подарок для взрослого', key: 'adult' },
+        { label: '🐾 Мультфильм о питомце', key: 'pet' },
+        { label: '❓ У меня есть вопрос', key: 'question' },
+      ],
+      kidIntro: 'Отличный выбор! Представьте, как засияют глаза ребёнка, когда он увидит себя настоящим героем мультфильма. Какой жанр выберем?',
+      adultIntro: 'Это будет самый трогательный подарок в их жизни! Что празднуем?',
+      petIntro: 'Обожаю хвостиков! 🐾 Кто у вас главный герой?',
+      faqIntro: 'Спрашивайте — я здесь, чтобы помочь! 💛',
+      kidsGenres: [
+        { label: '🚀 Космос', key: 'space' },
+        { label: '🐉 Драконы', key: 'dragons' },
+        { label: '🏰 Сказка', key: 'tale' },
+        { label: '🏎 Машинки', key: 'cars' },
+        { label: '🦸 Супергерои', key: 'heroes' },
+      ],
+      genreSpace: 'О, космические приключения — это невероятно! Мы превратим фото вашего ребёнка в настоящего астронавта среди звёзд.',
+      genreDragons: 'Драконы и магия — обожаю этот жанр! Ваш ребёнок станет отважным волшебником в сказочном мире драконов.',
+      genreTale: 'Сказочное королевство ждёт! Ваш ребёнок оживёт среди принцев, принцесс и волшебных замков.',
+      genreCars: 'Скорость и драйв! Мы сделаем вашего ребёнка настоящим героем гонок на ярких машинках.',
+      genreHeroes: 'Супергеройские миссии — это так весело! Ваш ребёнок получит суперсилу, плащ и настоящий подвиг.',
+      adultFormats: [
+        { label: '❤️ Романтическая история', key: 'romance' },
+        { label: '🎂 День рождения', key: 'birthday' },
+        { label: '👔 Корпоратив', key: 'corporate' },
+        { label: '💍 Свадьба', key: 'wedding' },
+      ],
+      formatRomance: 'Романтическая история любви — это как маленький фильм о двоих. Расскажите, кому дарим эту магию?',
+      formatBirthday: 'День рождения станет незабываемым! Мы превратим именинника или именинницу в главного героя собственного приключения.',
+      formatCorporate: 'Корпоративная анимация — отличный способ удивить команду или партнёров. Расскажем вашу историю ярко и профессионально.',
+      formatWedding: 'Свадебный мультфильм — это самый нежный способ сохранить главный день навсегда.',
+      petsTypes: [
+        { label: '🐱 Котик', key: 'cat' },
+        { label: '🐶 Песик', key: 'dog' },
+        { label: '🦜 Птичка', key: 'bird' },
+        { label: '🐹 Грызун', key: 'rodent' },
+        { label: '🦎 Экзотика', key: 'exotic' },
+      ],
+      petCat: 'Котики — настоящие звёзды экрана! Ваш пушистый герой получит собственное приключение.',
+      petDog: 'Песики всегда крадут сердца! Сделаем вашего питомца главным героем тёплой истории.',
+      petBird: 'Птичка в главной роли — это будет ярко и необычно!',
+      petRodent: 'Маленький грызун — большой герой! Обожаю такие истории.',
+      petExotic: 'Экзотический питомец — это всегда особенная история. С радостью воплотим!',
+      readyLabel: '✨ Готов заказать / Создать',
+      moreLabel: '❓ Ещё вопросы',
+      backLabel: '⬅ На главную',
+      orderPrompt: 'Ура! Я уже готовлю краски и кисти! 🎨 Сейчас перенаправлю вас на короткую анкету-бриф, или вы можете написать нашему менеджеру прямо здесь. Как вам удобнее?',
+      briefLabel: '📝 Заполнить бриф',
+      managerLabel: '💬 Чат с менеджером',
+      closing: 'Спасибо, что заглянули в Cartobi! Я буду здесь, если снова понадобится капелька волшебства. Хорошего дня и сказочного настроения! ✨',
     },
     it: {
       greeting: 'Ciao! Sono Зоряна! Ti racconto tutto su Cartobi — generi, prezzi, tempi — o tocca un pulsante qui sotto.',
@@ -992,6 +1147,57 @@
       satisfaction: 'Farò di tutto per farti sorridere! Apportiamo modifiche finché il risultato non è perfetto — le tue emozioni sono la cosa più importante per noi.',
       fallback: 'Non ho una risposta esatta per questo — chiedi direttamente a @CartobiBot, il nostro team ti aiuterà 💛',
       order: 'Per ordinare, scrivi al nostro bot — tocca il pulsante "Crea un eroe" qui sopra 👆',
+      mainMenu: [
+        { label: '👶 Voglio un cartone per un bambino', key: 'kid' },
+        { label: '🎁 Cerco un regalo per un adulto', key: 'adult' },
+        { label: '🐾 Cartone su un animale domestico', key: 'pet' },
+        { label: '❓ Ho una domanda', key: 'question' },
+      ],
+      kidIntro: 'Ottima scelta! Immagina gli occhi del bambino brillare vedendosi vero eroe di un cartone animato. Quale genere scegliamo?',
+      adultIntro: 'Sarà il regalo più commovente della loro vita! Cosa festeggiamo?',
+      petIntro: 'Adoro le code pelose! 🐾 Chi è il nostro protagonista?',
+      faqIntro: 'Chiedi pure — sono qui per aiutarti! 💛',
+      kidsGenres: [
+        { label: '🚀 Spazio', key: 'space' },
+        { label: '🐉 Draghi', key: 'dragons' },
+        { label: '🏰 Fiaba', key: 'tale' },
+        { label: '🏎 Macchine', key: 'cars' },
+        { label: '🦸 Supereroi', key: 'heroes' },
+      ],
+      genreSpace: 'Oh, le avventure spaziali sono incredibili! Trasformeremo la foto di vostro figlio in un vero astronauta tra le stelle.',
+      genreDragons: 'Draghi e magia — adoro questo genere! Vostro figlio diventerà un coraggioso mago in un mondo fiabesco di draghi.',
+      genreTale: 'Il regno delle fiabe vi aspetta! Vostro figlio prenderà vita tra principi, principesse e castelli incantati.',
+      genreCars: 'Velocità ed emozione! Renderemo vostro figlio un vero eroe delle corse su auto scintillanti.',
+      genreHeroes: 'Le missioni da supereroe sono così divertenti! Vostro figlio avrà superpoteri, un mantello e un vero trionfo.',
+      adultFormats: [
+        { label: '❤️ Storia d\\u2019amore', key: 'romance' },
+        { label: '🎂 Compleanno', key: 'birthday' },
+        { label: '👔 Aziendale', key: 'corporate' },
+        { label: '💍 Matrimonio', key: 'wedding' },
+      ],
+      formatRomance: 'Una storia d\\u2019amore animata è come un piccolo film sui due innamorati. Per chi creiamo questa magia?',
+      formatBirthday: 'Il compleanno sarà indimenticabile! Trasformeremo il festeggiato nel protagonista della propria avventura.',
+      formatCorporate: 'L\\u2019animazione aziendale è un modo meraviglioso per sorprendere il team o i partner. Racconteremo la vostra storia in modo vivido e professionale.',
+      formatWedding: 'Un cartone animato di nozze è il modo più tenero per conservare per sempre il giorno più importante.',
+      petsTypes: [
+        { label: '🐱 Gatto', key: 'cat' },
+        { label: '🐶 Cane', key: 'dog' },
+        { label: '🦜 Uccello', key: 'bird' },
+        { label: '🐹 Roditore', key: 'rodent' },
+        { label: '🦎 Esotico', key: 'exotic' },
+      ],
+      petCat: 'I gatti sono vere star dello schermo! Il vostro eroe peloso avrà un\\u2019avventura tutta sua.',
+      petDog: 'I cani rubano sempre il cuore! Renderemo il vostro compagno protagonista di una storia calorosa.',
+      petBird: 'Un uccello come protagonista — sarà brillante e originale!',
+      petRodent: 'Un piccolo roditore, un grande eroe! Adoro queste storie.',
+      petExotic: 'Un animale esotico è sempre una storia speciale. Saremo felici di realizzarla!',
+      readyLabel: '✨ Pronto a ordinare / Creare',
+      moreLabel: '❓ Altre domande',
+      backLabel: '⬅ Al menu principale',
+      orderPrompt: 'Evviva! Sto già preparando colori e pennelli! 🎨 Ora vi reindirizzo a un breve modulo, oppure potete scrivere al nostro manager qui stesso. Cosa preferite?',
+      briefLabel: '📝 Compila il brief',
+      managerLabel: '💬 Chatta con il manager',
+      closing: 'Grazie per aver visitato Cartobi! Sarò qui se vi servirà ancora un pizzico di magia. Buona giornata e umore fiabesco! ✨',
     },
     fr: {
       greeting: 'Salut ! Je suis Зоряна ! Je vous dis tout sur Cartobi — genres, prix, délais — ou touchez un bouton ci-dessous.',
@@ -1017,6 +1223,57 @@
       satisfaction: 'Je ferai tout pour vous faire sourire ! Nous apportons des modifications jusqu\u2019à ce que le résultat soit parfait — vos émotions comptent le plus pour nous.',
       fallback: "Je n'ai pas de réponse exacte à cela — demandez directement à @CartobiBot, notre équipe vous aidera 💛",
       order: 'Pour commander, écrivez à notre bot — touchez le bouton "Créer un héros" ci-dessus 👆',
+      mainMenu: [
+        { label: '👶 Je veux un dessin animé pour un enfant', key: 'kid' },
+        { label: '🎁 Je cherche un cadeau pour un adulte', key: 'adult' },
+        { label: '🐾 Dessin animé sur un animal', key: 'pet' },
+        { label: '❓ J\\u2019ai une question', key: 'question' },
+      ],
+      kidIntro: 'Excellent choix ! Imaginez les yeux de l\\u2019enfant briller en se voyant vrai héros de dessin animé. Quel genre choisit-on ?',
+      adultIntro: 'Ce sera le cadeau le plus touchant de leur vie ! Que fête-t-on ?',
+      petIntro: 'J\\u2019adore les petites boules de poils ! 🐾 Qui est notre héros principal ?',
+      faqIntro: 'Posez vos questions — je suis là pour vous aider ! 💛',
+      kidsGenres: [
+        { label: '🚀 Espace', key: 'space' },
+        { label: '🐉 Dragons', key: 'dragons' },
+        { label: '🏰 Conte de fées', key: 'tale' },
+        { label: '🏎 Voitures', key: 'cars' },
+        { label: '🦸 Super-héros', key: 'heroes' },
+      ],
+      genreSpace: 'Oh, les aventures spatiales sont incroyables ! Nous transformerons la photo de votre enfant en véritable astronaute parmi les étoiles.',
+      genreDragons: 'Dragons et magie — j\\u2019adore ce genre ! Votre enfant deviendra un magicien courageux dans un monde féerique de dragons.',
+      genreTale: 'Le royaume des contes vous attend ! Votre enfant prendra vie parmi princes, princesses et châteaux enchantés.',
+      genreCars: 'Vitesse et sensations ! Nous ferons de votre enfant un vrai héros de course sur des voitures éclatantes.',
+      genreHeroes: 'Les missions de super-héros, c\\u2019est tellement amusant ! Votre enfant aura des super-pouvoirs, une cape et un vrai triomphe.',
+      adultFormats: [
+        { label: '❤️ Histoire d\\u2019amour', key: 'romance' },
+        { label: '🎂 Anniversaire', key: 'birthday' },
+        { label: '👔 Entreprise', key: 'corporate' },
+        { label: '💍 Mariage', key: 'wedding' },
+      ],
+      formatRomance: 'Un dessin animé d\\u2019histoire d\\u2019amour, c\\u2019est comme un petit film à deux. Pour qui créons-nous cette magie ?',
+      formatBirthday: 'L\\u2019anniversaire sera inoubliable ! Nous ferons du héros du jour le protagoniste de sa propre aventure.',
+      formatCorporate: 'L\\u2019animation d\\u2019entreprise est un merveilleux moyen de surprendre votre équipe ou vos partenaires. Nous raconterons votre histoire avec éclat et professionnalisme.',
+      formatWedding: 'Un dessin animé de mariage est la façon la plus tendre de garder ce grand jour pour toujours.',
+      petsTypes: [
+        { label: '🐱 Chat', key: 'cat' },
+        { label: '🐶 Chien', key: 'dog' },
+        { label: '🦜 Oiseau', key: 'bird' },
+        { label: '🐹 Rongeur', key: 'rodent' },
+        { label: '🦎 Exotique', key: 'exotic' },
+      ],
+      petCat: 'Les chats sont de vraies stars de l\\u2019écran ! Votre héros à fourrure aura sa propre aventure.',
+      petDog: 'Les chiens volent toujours les cœurs ! Nous ferons de votre compagnon le héros d\\u2019une histoire chaleureuse.',
+      petBird: 'Un oiseau en rôle principal — ce sera éclatant et original !',
+      petRodent: 'Un petit rongeur, un grand héros ! J\\u2019adore ces histoires.',
+      petExotic: 'Un animal exotique, c\\u2019est toujours une histoire à part. Nous serons ravis de la réaliser !',
+      readyLabel: '✨ Prêt à commander / Créer',
+      moreLabel: '❓ D\\u2019autres questions',
+      backLabel: '⬅ Menu principal',
+      orderPrompt: 'Youpi ! Je prépare déjà mes peintures et mes pinceaux ! 🎨 Je vous redirige maintenant vers un court formulaire, ou vous pouvez écrire à notre manager ici même. Que préférez-vous ?',
+      briefLabel: '📝 Remplir le formulaire',
+      managerLabel: '💬 Discuter avec le manager',
+      closing: 'Merci d\\u2019avoir visité Cartobi ! Je serai là si vous avez besoin d\\u2019une nouvelle pincée de magie. Belle journée et ambiance féerique ! ✨',
     },
     es: {
       greeting: '¡Hola! Soy Зоряна! Te cuento todo sobre Cartobi — géneros, precios, tiempos — o toca un botón abajo.',
@@ -1042,6 +1299,57 @@
       satisfaction: '¡Haré todo para que sonrías! Hacemos cambios hasta que el resultado sea perfecto — tus emociones son lo más importante para nosotros.',
       fallback: 'No tengo una respuesta exacta para eso — pregunta directamente en @CartobiBot, nuestro equipo te ayudará 💛',
       order: 'Para pedir, escribe a nuestro bot — toca el botón "Crear un héroe" arriba 👆',
+      mainMenu: [
+        { label: '👶 Quiero un dibujo animado para un niño', key: 'kid' },
+        { label: '🎁 Busco un regalo para un adulto', key: 'adult' },
+        { label: '🐾 Dibujo animado sobre una mascota', key: 'pet' },
+        { label: '❓ Tengo una pregunta', key: 'question' },
+      ],
+      kidIntro: '¡Excelente elección! Imagina los ojos del niño brillar al verse como un verdadero héroe de dibujos animados. ¿Qué género elegimos?',
+      adultIntro: '¡Será el regalo más conmovedor de su vida! ¿Qué celebramos?',
+      petIntro: '¡Adoro a los peludos! 🐾 ¿Quién es nuestro protagonista?',
+      faqIntro: 'Pregunta lo que quieras — ¡estoy aquí para ayudarte! 💛',
+      kidsGenres: [
+        { label: '🚀 Espacio', key: 'space' },
+        { label: '🐉 Dragones', key: 'dragons' },
+        { label: '🏰 Cuento de hadas', key: 'tale' },
+        { label: '🏎 Coches', key: 'cars' },
+        { label: '🦸 Superhéroes', key: 'heroes' },
+      ],
+      genreSpace: '¡Oh, las aventuras espaciales son increíbles! Convertiremos la foto de tu hijo en un verdadero astronauta entre las estrellas.',
+      genreDragons: 'Dragones y magia — ¡adoro este género! Tu hijo se convertirá en un mago valiente en un mundo de cuento con dragones.',
+      genreTale: '¡El reino de cuento te espera! Tu hijo cobrará vida entre príncipes, princesas y castillos encantados.',
+      genreCars: '¡Velocidad y emoción! Haremos de tu hijo un verdadero héroe de carreras en autos brillantes.',
+      genreHeroes: '¡Las misiones de superhéroes son tan divertidas! Tu hijo tendrá superpoderes, una capa y un verdadero triunfo.',
+      adultFormats: [
+        { label: '❤️ Historia de amor', key: 'romance' },
+        { label: '🎂 Cumpleaños', key: 'birthday' },
+        { label: '👔 Corporativo', key: 'corporate' },
+        { label: '💍 Boda', key: 'wedding' },
+      ],
+      formatRomance: 'Un dibujo animado de historia de amor es como una pequeña película sobre los dos. ¿Para quién creamos esta magia?',
+      formatBirthday: '¡Su cumpleaños será inolvidable! Convertiremos al homenajeado en el protagonista de su propia aventura.',
+      formatCorporate: 'La animación corporativa es una forma maravillosa de sorprender a tu equipo o socios. Contaremos tu historia con brillo y profesionalismo.',
+      formatWedding: 'Un dibujo animado de boda es la forma más tierna de guardar ese gran día para siempre.',
+      petsTypes: [
+        { label: '🐱 Gato', key: 'cat' },
+        { label: '🐶 Perro', key: 'dog' },
+        { label: '🦜 Ave', key: 'bird' },
+        { label: '🐹 Roedor', key: 'rodent' },
+        { label: '🦎 Exótico', key: 'exotic' },
+      ],
+      petCat: '¡Los gatos son verdaderas estrellas de pantalla! Tu héroe peludo tendrá su propia aventura.',
+      petDog: '¡Los perros siempre roban corazones! Haremos de tu compañero el héroe de una historia cálida.',
+      petBird: 'Un ave como protagonista — ¡será brillante y original!',
+      petRodent: '¡Un pequeño roedor, un gran héroe! Adoro estas historias.',
+      petExotic: 'Una mascota exótica siempre es una historia especial. ¡Con gusto la haremos realidad!',
+      readyLabel: '✨ Listo para pedir / Crear',
+      moreLabel: '❓ Más preguntas',
+      backLabel: '⬅ Menú principal',
+      orderPrompt: '¡Genial! ¡Ya estoy preparando mis pinturas y pinceles! 🎨 Ahora te redirijo a un breve formulario, o puedes escribir a nuestro gerente aquí mismo. ¿Qué prefieres?',
+      briefLabel: '📝 Completar el formulario',
+      managerLabel: '💬 Chatear con el gerente',
+      closing: '¡Gracias por visitar Cartobi! Estaré aquí si necesitas otra pizca de magia. ¡Que tengas un día maravilloso y un ánimo de cuento! ✨',
     },
   };
 
@@ -1059,6 +1367,12 @@
   };
 
   let zoryanaOpened = false;
+  // Стан діалогу: 'menu' (головне меню) → 'kidsGenre'/'adultFormat'/'petsType'
+  // (вибір жанру/формату/тварини) → 'leaf' (готовий замовити / ще питання /
+  // на головну) → 'orderChoice' (бриф / менеджер). 'faq' — плаский список
+  // з 9 питань, доступний з меню або з кнопки "Ще запитання" на будь-якому кроці.
+  let zoryanaStep = 'menu';
+  let zoryanaLastCategory = null; // 'kids' | 'adult' | 'pets' — для маршруту в бота після leaf
   function toggleZoryana() {
     const panel = document.getElementById('zoryana-panel');
     panel.classList.toggle('open');
@@ -1077,7 +1391,83 @@
   function zoryanaRenderQuick() {
     const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
     const el = document.getElementById('zoryana-quick');
-    el.innerHTML = t.quick.map(q => `<button onclick="zoryanaAsk('${q.key}')">${q.label}</button>`).join('');
+    let items;
+    if (zoryanaStep === 'menu') items = t.mainMenu.map(q => ({ label: q.label, fn: `zoryanaMenuChoice('${q.key}')` }));
+    else if (zoryanaStep === 'kidsGenre') items = t.kidsGenres.map(q => ({ label: q.label, fn: `zoryanaLeafChoice('kids','${q.key}')` }));
+    else if (zoryanaStep === 'adultFormat') items = t.adultFormats.map(q => ({ label: q.label, fn: `zoryanaLeafChoice('adult','${q.key}')` }));
+    else if (zoryanaStep === 'petsType') items = t.petsTypes.map(q => ({ label: q.label, fn: `zoryanaLeafChoice('pets','${q.key}')` }));
+    else if (zoryanaStep === 'leaf') items = [
+      { label: t.readyLabel, fn: "zoryanaLeafAction('ready')" },
+      { label: t.moreLabel, fn: "zoryanaLeafAction('faq')" },
+      { label: t.backLabel, fn: "zoryanaLeafAction('menu')" },
+    ];
+    else if (zoryanaStep === 'orderChoice') items = [
+      { label: t.briefLabel, fn: "zoryanaOrderChoice('brief')" },
+      { label: t.managerLabel, fn: "zoryanaOrderChoice('manager')" },
+    ];
+    else items = t.quick.map(q => ({ label: q.label, fn: `zoryanaAsk('${q.key}')` })).concat([{ label: t.backLabel, fn: "zoryanaLeafAction('menu')" }]);
+    el.innerHTML = items.map(it => `<button onclick="${it.fn}">${it.label}</button>`).join('');
+  }
+  function zoryanaMenuChoice(key) {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    const item = t.mainMenu.find(m => m.key === key);
+    zoryanaAddMsg(item.label, 'user', false);
+    if (key === 'question') {
+      zoryanaStep = 'faq';
+      zoryanaAddMsg(t.faqIntro, 'bot', true);
+    } else if (key === 'kid') {
+      zoryanaStep = 'kidsGenre';
+      zoryanaAddMsg(t.kidIntro, 'bot', true);
+    } else if (key === 'adult') {
+      zoryanaStep = 'adultFormat';
+      zoryanaAddMsg(t.adultIntro, 'bot', true);
+    } else if (key === 'pet') {
+      zoryanaStep = 'petsType';
+      zoryanaAddMsg(t.petIntro, 'bot', true);
+    }
+    zoryanaRenderQuick();
+  }
+  function zoryanaLeafChoice(category, key) {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    const arr = category === 'kids' ? t.kidsGenres : category === 'adult' ? t.adultFormats : t.petsTypes;
+    const item = arr.find(a => a.key === key);
+    zoryanaAddMsg(item.label, 'user', false);
+    const cap = key.charAt(0).toUpperCase() + key.slice(1);
+    const replyKey = (category === 'kids' ? 'genre' : category === 'adult' ? 'format' : 'pet') + cap;
+    zoryanaAddMsg(t[replyKey] || t.fallback, 'bot', true);
+    zoryanaLastCategory = category;
+    zoryanaStep = 'leaf';
+    zoryanaRenderQuick();
+  }
+  function zoryanaLeafAction(action) {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    if (action === 'ready') {
+      zoryanaAddMsg(t.readyLabel, 'user', false);
+      zoryanaAddMsg(t.orderPrompt, 'bot', true);
+      zoryanaStep = 'orderChoice';
+    } else if (action === 'faq') {
+      zoryanaAddMsg(t.moreLabel, 'user', false);
+      zoryanaAddMsg(t.faqIntro, 'bot', true);
+      zoryanaStep = 'faq';
+    } else {
+      zoryanaAddMsg(t.backLabel, 'user', false);
+      zoryanaStep = 'menu';
+    }
+    zoryanaRenderQuick();
+  }
+  function zoryanaOrderChoice(kind) {
+    const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
+    const track = zoryanaLastCategory === 'kids' ? 'kids' : zoryanaLastCategory === 'adult' ? 'adult' : zoryanaLastCategory === 'pets' ? 'pets' : 'kids';
+    if (kind === 'brief') {
+      zoryanaAddMsg(t.briefLabel, 'user', false);
+      zoryanaAddMsg(t.closing, 'bot', true);
+      setTimeout(() => goToBot(track), 900);
+    } else {
+      zoryanaAddMsg(t.managerLabel, 'user', false);
+      zoryanaAddMsg(t.closing, 'bot', true);
+      setTimeout(() => { window.location.href = 'https://t.me/' + BOT_USERNAME; }, 900);
+    }
+    zoryanaStep = 'menu';
   }
   function zoryanaAddMsg(text, who, speak) {
     const body = document.getElementById('zoryana-body');
