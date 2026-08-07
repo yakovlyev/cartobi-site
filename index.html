@@ -403,10 +403,9 @@
 
   <button class="zoryana-fab" id="zoryana-fab" onclick="toggleZoryana()" aria-label="Зоряна" style="left:64%; top:69.4%;"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 
-  <div class="ov ov-heading" id="k-how-heading" style="left:5%; top:70.2%; width:90%; height:2.2%;"></div>
-  <div class="ov ov-caption" id="k-step-1" style="left:1%; top:81.8%; width:28%; height:4.6%;"></div>
-  <div class="ov ov-caption" id="k-step-2" style="left:35%; top:81.8%; width:28%; height:4.6%;"></div>
-  <div class="ov ov-caption" id="k-step-3" style="left:69%; top:81.8%; width:30%; height:4.6%;"></div>
+  <!-- "Як це працює?" і кроки прибрані з картинки 06.08 — це FAQ-контент,
+       тепер його розповідає тільки Зоряна (голосом), щоб не дублювати і
+       не перевантажувати лендинг дрібним текстом. -->
 
   <div class="ov ov-heading" id="k-banner-h" style="left:9%; top:85.9%; width:82%; height:3.6%;"></div>
   <button class="real-btn" id="k-cta-final" onclick="goToBot('kids')" style="left:15%; top:90.0%; width:70%; height:2.3%;"></button>
@@ -442,12 +441,8 @@
   <div class="ov ov-caption" id="a-format-3" style="left:52%; top:44.6%; width:23%; height:2.4%;"></div>
   <div class="ov ov-caption" id="a-format-4" style="left:77%; top:44.6%; width:21%; height:2.4%;"></div>
 
-  <div class="ov ov-heading" id="a-how-heading" style="left:5%; top:47.9%; width:90%; height:1.7%;"></div>
-  <div class="ov ov-small" id="a-step-1" style="left:1%; top:56.0%; width:24%; height:5.5%;"></div>
-  <div class="ov ov-small" id="a-step-2" style="left:26%; top:56.0%; width:24%; height:5.5%;"></div>
-  <div class="ov ov-small" id="a-step-3" style="left:51%; top:56.0%; width:24%; height:5.5%;"></div>
-  <div class="ov ov-small" id="a-step-4" style="left:76%; top:56.0%; width:23%; height:5.5%;"></div>
-  <div class="ov ov-small" id="a-timing" style="left:8%; top:62.0%; width:84%; height:1.6%;"></div>
+  <!-- "Як це працює?" / кроки / терміни прибрані з картинки 06.08 — це
+       FAQ-контент, тепер його розповідає тільки Зоряна (голосом). -->
 
   <div class="ov ov-heading" id="a-examples-heading" style="left:5%; top:63.9%; width:90%; height:1.6%;"></div>
   <div class="ov ov-caption" id="a-tc-1" style="left:3%; top:72.5%; width:12%; height:1.6%; text-align:left;"></div>
@@ -691,16 +686,12 @@
     const t = KIDS_TXT[lang] || KIDS_TXT.ua;
     document.getElementById('k-tagline').textContent = t.tagline;
     document.getElementById('k-startnow').textContent = t.startnow;
-    document.getElementById('k-genreheading').textContent = t.genreheading;
-    document.getElementById('k-genre-1').textContent = t.genre1;
+    document.getElementById('k-genreheading').textContent = t.genreheading;document.getElementById('k-genre-1').textContent = t.genre1;
     document.getElementById('k-genre-2').textContent = t.genre2;
     document.getElementById('k-genre-3').textContent = t.genre3;
     document.getElementById('k-genre-4').textContent = t.genre4;
     document.getElementById('k-genre-5').textContent = t.genre5;
-    document.getElementById('k-how-heading').textContent = t.howheading;
-    document.getElementById('k-step-1').textContent = t.step1;
-    document.getElementById('k-step-2').textContent = t.step2;
-    document.getElementById('k-step-3').textContent = t.step3;
+    // how-heading/step-1..3 прибрані з розмітки 06.08 (FAQ тепер тільки в Заряні)
     document.getElementById('k-banner-h').textContent = t.bannerH;
     document.getElementById('k-banner-sub').textContent = t.bannerSub;
     document.getElementById('k-badge-1').innerHTML = `<b>${t.badge1t}</b>${t.badge1s}`;
@@ -787,12 +778,7 @@
     document.getElementById('a-format-2').textContent = t.format2;
     document.getElementById('a-format-3').textContent = t.format3;
     document.getElementById('a-format-4').textContent = t.format4;
-    document.getElementById('a-how-heading').textContent = t.howheading;
-    document.getElementById('a-step-1').textContent = t.step1;
-    document.getElementById('a-step-2').textContent = t.step2;
-    document.getElementById('a-step-3').textContent = t.step3;
-    document.getElementById('a-step-4').textContent = t.step4;
-    document.getElementById('a-timing').textContent = t.timing;
+    // how-heading/step-1..4/timing прибрані з розмітки 06.08 (FAQ тепер тільки в Заряні)
     document.getElementById('a-examples-heading').textContent = t.examplesheading;
     document.getElementById('a-tc-1').textContent = ADULT_TIMECODES[0];
     document.getElementById('a-tc-2').textContent = ADULT_TIMECODES[1];
