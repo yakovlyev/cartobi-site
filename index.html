@@ -181,7 +181,7 @@
   .ov-accent{color:#ffcb3d;}
   .ov-heading{font-weight:800; font-size:clamp(11px,3.1vw,17px);}
   .ov-body{font-weight:600; font-size:clamp(9px,2.3vw,13px);}
-  .ov-caption{font-weight:700; font-size:clamp(8px,2vw,11px); overflow:hidden; line-height:1.2;
+  .ov-caption{font-weight:700; font-size:clamp(7px,1.7vw,9.5px); overflow:hidden; line-height:1.15;
     white-space:pre-line; text-shadow:0 1px 2px rgba(0,0,0,0.95);}
   .ov-small{font-weight:600; font-size:clamp(7px,1.8vw,10px); opacity:0.85;}
   .ov-badge{font-weight:700; font-size:clamp(6px,1.7vw,9px); overflow:hidden; line-height:1.15;}
@@ -398,11 +398,11 @@
   <button class="real-btn" id="k-cta-main" onclick="goToBot('kids')" style="left:50%; top:26.8%; width:auto; height:auto; min-width:0; transform:translateX(-50%); padding:9px 22px; white-space:nowrap;"></button>
   <div class="ov ov-heading" id="k-genreheading" style="left:5%; top:32.0%; width:90%; height:2.5%;"></div>
 
-  <div class="ov ov-caption" id="k-genre-1" style="left:8.3%; top:49.4%; width:13%; height:5%;"></div>
-  <div class="ov ov-caption" id="k-genre-2" style="left:26%; top:49.4%; width:13%; height:5%;"></div>
-  <div class="ov ov-caption" id="k-genre-3" style="left:43.5%; top:49.4%; width:13%; height:5%;"></div>
-  <div class="ov ov-caption" id="k-genre-4" style="left:60.9%; top:49.4%; width:13%; height:5%;"></div>
-  <div class="ov ov-caption" id="k-genre-5" style="left:78.7%; top:49.4%; width:13%; height:5%;"></div>
+  <div class="ov ov-caption" id="k-genre-1" style="left:7.05%; top:49.4%; width:15.5%; height:8%; display:flex; flex-direction:column; align-items:center; justify-content:center;"></div>
+  <div class="ov ov-caption" id="k-genre-2" style="left:24.75%; top:49.4%; width:15.5%; height:8%; display:flex; flex-direction:column; align-items:center; justify-content:center;"></div>
+  <div class="ov ov-caption" id="k-genre-3" style="left:42.25%; top:49.4%; width:15.5%; height:8%; display:flex; flex-direction:column; align-items:center; justify-content:center;"></div>
+  <div class="ov ov-caption" id="k-genre-4" style="left:59.65%; top:49.4%; width:15.5%; height:8%; display:flex; flex-direction:column; align-items:center; justify-content:center;"></div>
+  <div class="ov ov-caption" id="k-genre-5" style="left:77.45%; top:49.4%; width:15.5%; height:8%; display:flex; flex-direction:column; align-items:center; justify-content:center;"></div>
 
   <button class="zoryana-fab" id="zoryana-fab-kids" onclick="toggleZoryana()" aria-label="Зоряна"><img src="zoryana-portrait.png" alt="Зоряна"></button>
 
@@ -1590,15 +1590,20 @@
   }, { threshold: 0.01 });
   if (socialBar) socialObserver.observe(socialBar);
 
-  // Ховаємо підказку "гортай вниз", щойно доросла секція потрапляє у в'юпорт
+  // Ховаємо підказку "гортай вниз" щойно користувач хоч трохи проскролив
+  // (раніше чекали появи дорослої секції — а до того підказка весь час
+  // сиділа поверх бейджів/копірайту на першому екрані). Плюс запасний
+  // таймер на 4с — якщо взагалі не скролить, підказка все одно згасне
+  // і не затулятиме напис "© 2026" назавжди.
   const scrollHint = document.getElementById('scroll-hint-fab');
-  const adultSectionForHint = document.getElementById('section-adult');
-  const hintObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      scrollHint.classList.toggle('hidden', entry.isIntersecting);
-    });
-  }, { threshold: 0.15 });
-  if (adultSectionForHint) hintObserver.observe(adultSectionForHint);
+  let hintHidden = false;
+  function hideScrollHint() {
+    if (hintHidden) return;
+    hintHidden = true;
+    scrollHint.classList.add('hidden');
+  }
+  window.addEventListener('scroll', () => { if (window.scrollY > 30) hideScrollHint(); }, { passive: true });
+  setTimeout(hideScrollHint, 4000);
 </script>
 
 </body>
