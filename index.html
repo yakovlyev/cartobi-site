@@ -545,7 +545,7 @@
 </a>
 
 <a class="scroll-hint-fab" id="scroll-hint-fab" href="#section-adult">
-  <span>Погортайте вниз — є ще!</span>
+  <span id="scroll-hint-text">Погортайте вниз — є ще!</span>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
 </a>
 
@@ -824,6 +824,18 @@
   function toggleLangDropdown() {
     document.getElementById('lang-dropdown').classList.toggle('open');
   }
+  const SCROLL_HINT_TXT = {
+    ua: 'Погортайте вниз — є ще!',
+    en: 'Scroll down — there\'s more!',
+    ru: 'Пролистайте вниз — есть ещё!',
+    it: 'Scorri in basso — c\'è altro!',
+    fr: 'Faites défiler — il y a plus !',
+    es: 'Desliza hacia abajo — ¡hay más!',
+  };
+  function renderScrollHint(lang) {
+    const el = document.getElementById('scroll-hint-text');
+    if (el) el.textContent = SCROLL_HINT_TXT[lang] || SCROLL_HINT_TXT.ua;
+  }
   function setLang(lang) {
     document.getElementById('lang-dropdown').classList.remove('open');
     if (lang === 'ua') {
@@ -832,6 +844,7 @@
       renderPetLabels('ua');
       renderKidsText('ua');
       renderAdultText('ua');
+      renderScrollHint('ua');
       buildLangDropdown();
       return;
     }
@@ -841,6 +854,7 @@
       renderPetLabels(lang);
       renderKidsText(lang);
       renderAdultText(lang);
+      renderScrollHint(lang);
       buildLangDropdown();
       if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
       return;
