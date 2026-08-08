@@ -226,7 +226,7 @@
   .zoryana-fab{
     position:fixed; z-index:15;
     width:20vw; max-width:78px; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
-    left:66%; top:44vh;
+    left:66%; top:min(100.9vw, 545px);
     background:#1560c9;
     box-shadow:0 4px 16px rgba(0,0,0,0.5), 0 0 0 3px rgba(74,163,255,0.4);
     display:flex; align-items:center; justify-content:center; font-size:22px;
@@ -416,7 +416,7 @@
   <div class="ov ov-badge" id="k-badge-2" style="left:32.3%; top:96.3%; width:16.2%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
   <div class="ov ov-badge" id="k-badge-3" style="left:56.5%; top:96.3%; width:17%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
   <div class="ov ov-badge" id="k-badge-4" style="left:81.3%; top:96.3%; width:17.2%; height:2.6%; text-align:left; display:flex; align-items:center;"></div>
-  <div class="ov ov-small" id="k-copyright" style="left:5%; top:99.4%; width:90%; height:1.5%; font-size:7px;"></div>
+  <div class="ov ov-small" id="k-copyright" style="left:5%; top:98.3%; width:90%; height:1.5%; font-size:7px;"></div>
 
   <button class="hot genre-1" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
   <button class="hot play-btn" onclick="openVideo('videos/kids-space.mp4','kids','space')"></button>
@@ -1592,15 +1592,13 @@
 
   // Ховаємо підказку "гортай вниз", щойно доросла секція потрапляє у в'юпорт
   const scrollHint = document.getElementById('scroll-hint-fab');
-  const petsSectionForHint = document.getElementById('section-pets');
+  const adultSectionForHint = document.getElementById('section-adult');
   const hintObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      // Ховаємо тільки коли видно ОСТАННЮ секцію (питомці) — на дорослій
-      // підказка має лишатись, бо нижче ще є третя сторінка.
       scrollHint.classList.toggle('hidden', entry.isIntersecting);
     });
   }, { threshold: 0.15 });
-  if (petsSectionForHint) hintObserver.observe(petsSectionForHint);
+  if (adultSectionForHint) hintObserver.observe(adultSectionForHint);
 </script>
 
 </body>
