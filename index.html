@@ -151,10 +151,10 @@
      робили з genre-hotspot'ами на дитячій секції. */
   .pet-label{
     position:absolute; text-align:center; color:#fff; font-family:Arial,sans-serif;
-    font-weight:800; font-size:clamp(6px,1.6vw,9px); text-shadow:0 1px 5px rgba(0,0,0,0.7);
-    pointer-events:none; line-height:1.1; white-space:normal; overflow-wrap:break-word;
-    word-break:break-word; overflow:hidden; height:8%; max-height:8%;
-    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+    font-weight:800; font-size:clamp(8px,2.2vw,11px); text-shadow:0 1px 5px rgba(0,0,0,0.85);
+    pointer-events:none; white-space:pre-line; line-height:1.15;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    overflow:hidden; height:10%; max-height:10%;
   }
   #section-pets .pet-label-1{left:2%; top:46.5%; width:18.4%;}
   #section-pets .pet-label-2{left:21.6%; top:46.5%; width:18.4%;}
@@ -184,7 +184,7 @@
   .ov-accent{color:#ffcb3d;}
   .ov-heading{font-weight:800; font-size:clamp(11px,3.1vw,17px);}
   .ov-body{font-weight:600; font-size:clamp(9px,2.3vw,13px);}
-  .ov-caption{font-weight:700; font-size:clamp(7px,1.7vw,9.5px); overflow:hidden; line-height:1.15;
+  .ov-caption{font-weight:700; font-size:clamp(8.5px,2.1vw,11.5px); overflow:hidden; line-height:1.15;
     white-space:pre-line; text-shadow:0 1px 2px rgba(0,0,0,0.95);}
   .ov-small{font-weight:600; font-size:clamp(7px,1.8vw,10px); opacity:0.85;}
   .ov-badge{font-weight:700; font-size:clamp(6px,1.7vw,9px); overflow:hidden; line-height:1.15;}
@@ -466,7 +466,7 @@
   <div class="ov ov-caption" id="a-ex-cap-4" style="left:77%; top:74.8%; width:21%; height:2.8%;"></div>
 
   <div class="ov ov-heading" id="a-banner-h" style="left:8%; top:79.5%; width:58%; height:4.6%; text-align:left;"></div>
-  <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:15%; top:84.4%; width:65%; height:2.5%;"></button>
+  <button class="real-btn" id="a-cta-final" onclick="goToBot('adult')" style="left:60%; top:85.5%; width:auto; height:auto; min-width:0; transform:translate(-50%,-50%); padding:7px 16px; font-size:clamp(10px,3vw,15px); white-space:nowrap;"></button>
 
   <div class="ov ov-badge" id="a-badge-1" style="left:1%; top:92.6%; width:23%; height:1.7%;"></div>
   <div class="ov ov-badge" id="a-badge-2" style="left:26%; top:92.6%; width:23%; height:1.7%;"></div>
@@ -616,25 +616,25 @@
   const SUPPORTED_LANGS = ['en','ru','it','fr','es','pl','de','pt','tr'];
 
   const PET_TRANSLATIONS = {
-    ua: { cats:'Мультфільми про котиків', dogs:'Пригоди для песиків', birds:'Історії про пташок', small:'Витівки гризунів', exotic:'Екзотичні тварини в анімації',
+    ua: { cats:'Мультфільми\nпро котиків', dogs:'Пригоди\nдля песиків', birds:'Історії\nпро пташок', small:'Витівки\nгризунів', exotic:'Екзотичні\nтварини',
       ctaFinal:'★ Замовити', comingSoon:'Скоро можна буде замовити просто тут 🐾' },
-    en: { cats:'Cat Cartoons', dogs:'Dog Adventures', birds:'Bird Stories', small:'Rodent Antics', exotic:'Exotic Pets on Screen',
+    en: { cats:'Cat\nCartoons', dogs:'Dog\nAdventures', birds:'Bird\nStories', small:'Rodent\nAntics', exotic:'Exotic\nPets',
       ctaFinal:'★ Order', comingSoon:'Ordering here is coming soon 🐾' },
-    ru: { cats:'Мультфильмы про котиков', dogs:'Приключения песиков', birds:'Истории про птичек', small:'Проделки грызунов', exotic:'Экзотические питомцы в анимации',
+    ru: { cats:'Мультфильмы\nпро котиков', dogs:'Приключения\nпесиков', birds:'Истории\nпро птичек', small:'Проделки\nгрызунов', exotic:'Экзотические\nпитомцы',
       ctaFinal:'★ Заказать', comingSoon:'Скоро здесь можно будет заказать 🐾' },
-    it: { cats:'Cartoni sui gatti', dogs:'Avventure dei cani', birds:'Storie di uccellini', small:'Buffi roditori', exotic:'Animali esotici animati',
+    it: { cats:'Cartoni\nsui gatti', dogs:'Avventure\ndei cani', birds:'Storie di\nuccellini', small:'Buffi\nroditori', exotic:'Animali\nesotici',
       ctaFinal:'★ Ordina', comingSoon:'Presto potrai ordinare qui 🐾' },
-    fr: { cats:'Dessins animés sur les chats', dogs:'Aventures de chiens', birds:"Histoires d'oiseaux", small:'Facéties de rongeurs', exotic:'Animaux exotiques animés',
+    fr: { cats:'Dessins animés\nsur les chats', dogs:'Aventures\nde chiens', birds:"Histoires\nd'oiseaux", small:'Facéties de\nrongeurs', exotic:'Animaux\nexotiques',
       ctaFinal:'★ Commander', comingSoon:'Vous pourrez bientôt commander ici 🐾' },
-    es: { cats:'Dibujos de gatos', dogs:'Aventuras de perros', birds:'Historias de aves', small:'Travesuras de roedores', exotic:'Mascotas exóticas animadas',
+    es: { cats:'Dibujos\nde gatos', dogs:'Aventuras\nde perros', birds:'Historias\nde aves', small:'Travesuras\nde roedores', exotic:'Mascotas\nexóticas',
       ctaFinal:'★ Pedir', comingSoon:'Pronto podrás pedir aquí 🐾' },
-    pl: { cats:'Kreskówki o kotach', dogs:'Przygody piesków', birds:'Historie o ptaszkach', small:'Psoty gryzoni', exotic:'Egzotyczne zwierzęta w animacji',
+    pl: { cats:'Kreskówki\no kotach', dogs:'Przygody\npiesków', birds:'Historie o\nptaszkach', small:'Psoty\ngryzoni', exotic:'Egzotyczne\nzwierzęta',
       ctaFinal:'★ Zamów', comingSoon:'Wkrótce będzie można zamówić tutaj 🐾' },
-    de: { cats:'Katzen-Cartoons', dogs:'Hunde-Abenteuer', birds:'Vogelgeschichten', small:'Nagetier-Streiche', exotic:'Exotische Haustiere im Cartoon',
+    de: { cats:'Katzen-\nCartoons', dogs:'Hunde-\nAbenteuer', birds:'Vogel-\ngeschichten', small:'Nagetier-\nStreiche', exotic:'Exotische\nHaustiere',
       ctaFinal:'★ Bestellen', comingSoon:'Bald kannst du hier bestellen 🐾' },
-    pt: { cats:'Desenhos de gatinhos', dogs:'Aventuras de cachorrinhos', birds:'Histórias de passarinhos', small:'Travessuras de roedores', exotic:'Animais exóticos animados',
+    pt: { cats:'Desenhos\nde gatinhos', dogs:'Aventuras de\ncachorrinhos', birds:'Histórias de\npassarinhos', small:'Travessuras\nde roedores', exotic:'Animais\nexóticos',
       ctaFinal:'★ Encomendar', comingSoon:'Em breve você poderá encomendar aqui 🐾' },
-    tr: { cats:'Kedi Çizgi Filmleri', dogs:'Köpek Maceraları', birds:'Kuş Hikâyeleri', small:'Kemirgen Yaramazlıkları', exotic:'Egzotik Evcil Hayvanlar',
+    tr: { cats:'Kedi Çizgi\nFilmleri', dogs:'Köpek\nMaceraları', birds:'Kuş\nHikâyeleri', small:'Kemirgen\nYaramazlıkları', exotic:'Egzotik Evcil\nHayvanlar',
       ctaFinal:'★ Sipariş Ver', comingSoon:'Çok yakında buradan sipariş verebileceksiniz 🐾' },
   };
 
@@ -832,7 +832,7 @@
       badge4t:'Z dbałością o szczegóły', badge4s:'Tworzymy historie, które poruszają serce',
       copyright:'© 2026 Cartobi Animation Studio', ctaMain:'♡ STWÓRZ HISTORIĘ', ctaFinal:'♡ STWÓRZ BAJKĘ TERAZ' },
     de: { tagline:'Cartoons für die wichtigen Momente des Lebens', startnow:'Romantik, Feiern, Firmengeschichten — wir erwecken Emotionen zum Leben. Starte deine einzigartige Geschichte jetzt!',
-      formatheading:'Wähle das Format des Cartoons', format1:'Romantische Liebesgeschichten', format2:'Originelle Geburtstagsgrüße', format3:'Firmenanimation und Präsentationen', format4:'Cartoon-Hochzeitsgeschichten',
+      formatheading:'Wähle das Format des Cartoons', format1:'Romantische Liebesgeschichten', format2:'Originelle Geburtstagsgrüße', format3:'Firmenanimation und Präsentationen', format4:'Hochzeits-\ncartoons',
       howheading:'Wie funktioniert es?', step1:'Erzähl uns deine Idee — fülle das Briefing aus oder schreib uns', step2:'Drehbuch — wir schreiben es und senden es zur Freigabe',
       step3:'Animation — professionelle Animation und Vertonung', step4:'Du erhältst die Emotion — einen fertigen Cartoon, der berührt',
       timing:'Produktion ab 5-7 Tagen nach Drehbuch-Freigabe', examplesheading:'Beispiele unserer Arbeiten',
