@@ -919,7 +919,7 @@
     if (!link) return;
     link.textContent = OFERTA_TXT[lang] || OFERTA_TXT.ua;
     const OFERTA_PAGES = { ua:'oferta.html', en:'oferta-en.html', ru:'oferta-ru.html', it:'oferta-it.html', fr:'oferta-fr.html', es:'oferta-es.html' };
-    link.href = OFERTA_PAGES[lang] || 'oferta.html';
+    link.href = OFERTA_PAGES[lang] || 'oferta-en.html';
   }
   function setLang(lang) {
     document.getElementById('lang-dropdown').classList.remove('open');
