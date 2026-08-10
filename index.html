@@ -1943,22 +1943,38 @@
     // на будь-якому пристрої. Android/Google зазвичай прямо пише
     // "Male"/"Female" в імені голосу — це ловиться словом male/female.
     // Але вбудовані голоси iOS (Apple) НЕ містять слова male/female —
-    // вони підписані власними іменами (Alex, Daniel, Fred, Diego...),
-    // тому без явного списку цих імен чоловічий голос Apple проходив
-    // непоміченим, особливо в англійській та інших не-слов'янських
-    // мовах — саме це й сталось 10.08 (EN звучав чоловічим голосом).
-    // Список нижче покриває відомі чоловічі голоси Apple/Google/
-    // Microsoft у всіх 10 мовах сайту.
-    const maleNames = /\b(male|чолов|мужск|ostap|dmytro|yuri|yuriy|pavel|filip|mykyta|ivan|milos|alex|fred|aaron|nathan|evan|daniel|arthur|lee|oliver|gordon|rishi|diego|jorge|juan|carlos|thomas|yannick|xander|ruben|luca|marco|giorgio|felix|markus|stefan|hans|yannis|cem|krzysztof|piotr|adam|marek|duncan|bruce|albert|reed|rocko|ralph|grandpa|junior|zarvox)\b/i;
-    const notMale = candidates.filter(v => !maleNames.test(v.name));
+    // вони підписані власними іменами (Alex, Daniel, Fred, Diego...).
+    //
+    // 10.08, СПРАВЖНЯ причина чоловічого голосу на iOS (знайдена через
+    // діагностичний банер, не вгадана): iOS ЛОКАЛІЗУЄ v.name під мову
+    // системи пристрою! На пристрої з російською/українською системною
+    // мовою "Daniel" повертається як "Дэниэл", "Samantha" — як "Саманта"
+    // (кирилицею!). Англійський список імен нижче фізично не міг
+    // збігтись із кириличним рядком — фільтр мовчки не спрацьовував
+    // узагалі, і завжди брався перший голос зі списку (яким і був
+    // чоловічий Daniel/"Дэниэл"). Фікс: перевіряємо БІЛЬШ надійне поле
+    // v.voiceURI — це внутрішній системний ідентифікатор
+    // (com.apple.voice.compact.en-GB.Daniel), який НЕ локалізується на
+    // відміну від v.name — і додатково додали кириличні варіанти імен,
+    // які реально побачили в діагностиці на пристрої Ігоря, про всяк
+    // випадок якщо voiceURI колись буде відсутній.
+    const nameOf = v => ((v.voiceURI || '') + ' ' + (v.name || ''));
+    const maleNames = /\b(male|ostap|dmytro|yuri|yuriy|pavel|filip|mykyta|ivan|milos|alex|fred|aaron|nathan|evan|daniel|arthur|lee|oliver|gordon|rishi|diego|jorge|juan|carlos|thomas|yannick|xander|ruben|luca|marco|giorgio|felix|markus|stefan|hans|yannis|cem|krzysztof|piotr|adam|marek|duncan|bruce|albert|reed|rocko|ralph|grandpa|junior|zarvox)\b|чолов|мужск|дэниэл|деніел|риши|альберт|ральф/i;
+    // Голоси-"забавки" Apple (Bad News, Bells, Bubbles, Cellos, Wobble,
+    // Trinoid, Whisper, Zarvox тощо) — не жіночі й не милі, це ефекти.
+    // Виключаємо їх так само, як чоловічі — нехай радше програють
+    // явному жіночому голосу, ніж переможуть його випадково першими в
+    // списку.
+    const novelty = /bad news|good news|bells|bubbles|cellos|wobble|trinoid|whisper|jester|superstar|boing|плохие новости|хорошие новости|колокольчик|пузырьки|виолончель|воббл|триноид|шепот|шутник|суперзвезда|джуниор/i;
+    const notMale = candidates.filter(v => !maleNames.test(nameOf(v)) && !novelty.test(nameOf(v)));
     if (notMale.length) candidates = notMale;
     // Явно жіночі за іменем — найнадійніший сигнал, коли він є.
-    const femaleNames = /female|жіно|женск|zenska|weiblich|milena|lesya|lesia|samantha|ava|allison|susan|nicky|victoria|kate|serena|martha|karen|catherine|moira|tessa|fiona|zoe|vicki|anna|alena|alice|elsa|paulina|monica|marie|amelie|audrey|celine|petra|joana|luciana|zosia|ewa|yelda|kalinka|milena/i;
+    const femaleNames = /female|жіно|женск|zenska|weiblich|леся|саманта|тесса|milena|lesya|lesia|samantha|ava|allison|susan|nicky|victoria|kate|serena|martha|karen|catherine|moira|tessa|fiona|zoe|vicki|anna|alena|alice|elsa|paulina|monica|marie|amelie|audrey|celine|petra|joana|luciana|zosia|ewa|yelda|kalinka/i;
     // Голоси від Google/Microsoft Natural/Online зазвичай звучать м'якше
     // за системний eSpeak-фолбек, але явне жіноче ім'я — надійніший
     // сигнал, тож перевіряємо його першим.
-    const female = candidates.find(v => femaleNames.test(v.name));
-    const quality = candidates.find(v => /google|natural|online|neural/i.test(v.name));
+    const female = candidates.find(v => femaleNames.test(nameOf(v)));
+    const quality = candidates.find(v => /google|natural|online|neural/i.test(nameOf(v)));
     return female || quality || candidates[0];
   }
   // iOS-фікс 10.08: на iOS Safari є відомий баг — speechSynthesis.getVoices()
@@ -1985,23 +2001,6 @@
     try {
       const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
       const voice = zoryanaPickVoice(langCode);
-      // ТИМЧАСОВА ДІАГНОСТИКА 10.08 — прибрати після того, як Ігор надішле
-      // скріншот з реальним ім'ям голосу на його iPhone. Два попередні
-      // виправлення (розширений список імен + retry на getVoices) не
-      // допомогли — треба побачити факт, а не гадати втретє наосліп.
-      try {
-        const allForLang = zoryanaVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(langCode.split('-')[0]));
-        const dbgText = `🔊 voice: ${voice ? voice.name : 'null (системний за замовчуванням)'} | lang: ${voice ? voice.lang : '—'} | доступно голосів для "${langCode}": ${allForLang.length} (${allForLang.map(v=>v.name).join(', ') || 'немає'})`;
-        let dbg = document.getElementById('zoryana-voice-debug');
-        if (!dbg) {
-          dbg = document.createElement('div');
-          dbg.id = 'zoryana-voice-debug';
-          dbg.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:99999; background:#ff0055; color:#fff; font-size:10px; padding:6px 8px; line-height:1.3; word-break:break-word;';
-          document.body.appendChild(dbg);
-        }
-        dbg.textContent = dbgText;
-        console.log(dbgText);
-      } catch (e) {}
       const clean = text.replace(/[👋💛🐾👆]/g, '').trim();
       const rawSentences = clean.split(/(?<=[.!?…])\s+/).filter(Boolean);
       // Довгі речення додатково ділимо по комах і тире — інакше довга
