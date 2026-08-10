@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oferta pública — Cartobi Animation Studio</title>
+<style>
+  *{margin:0; padding:0; box-sizing:border-box;}
+  body{background:#0A0722; color:#e8e5f5; font-family:Arial,sans-serif; line-height:1.6; padding:24px 18px 60px; max-width:720px; margin:0 auto;}
+  h1{font-size:22px; color:#ffb020; margin-bottom:6px;}
+  h2{font-size:17px; color:#ffb020; margin:28px 0 8px;}
+  p, li{font-size:14.5px; color:#d8d5e8;}
+  ul{margin:8px 0 8px 20px;}
+  li{margin-bottom:6px;}
+  .updated{font-size:12.5px; color:#8b87a8; margin-bottom:24px;}
+  a{color:#3a9bff;}
+  .back{display:inline-block; margin-bottom:20px; color:#ffb020; text-decoration:none; font-weight:700;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:10px;}
+  select#lang{background:#1a1440; color:#e8e5f5; border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:6px 10px; font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="/">← Inicio</a>
+  <select id="lang" onchange="setOfertaLang(this.value)">
+    <option value="ua">Українська</option>
+    <option value="en">English</option>
+    <option value="ru">Русский</option>
+    <option value="it">Italiano</option>
+    <option value="fr">Français</option>
+    <option value="es" selected>Español</option>
+  </select>
+</div>
+
+<h1 id="t-h1"></h1>
+<p class="updated" id="t-updated"></p>
+<p id="t-intro"></p>
+
+<h2 id="t-h2-1"></h2>
+<p id="t-p-1"></p>
+
+<h2 id="t-h2-2"></h2>
+<ul id="t-ul-2"></ul>
+
+<h2 id="t-h2-3"></h2>
+<p id="t-p-3"></p>
+
+<h2 id="t-h2-4"></h2>
+<ul id="t-ul-4"></ul>
+
+<h2 id="t-h2-5"></h2>
+<p id="t-p-5"></p>
+
+<h2 id="t-h2-6"></h2>
+<ul id="t-ul-6"></ul>
+
+<h2 id="t-h2-7"></h2>
+<p id="t-p-7"></p>
+
+<h2 id="t-h2-8"></h2>
+<p id="t-p-8"></p>
+
+<h2 id="t-h2-9"></h2>
+<p id="t-p-9"></p>
+
+<h2 id="t-h2-10"></h2>
+<p id="t-p-10"></p>
+
+<h2 id="t-h2-11"></h2>
+<p id="t-p-11"></p>
+
+<script>
+const OFERTA = {
+ua: {
+  h1:'Публічна оферта', updated:'Останнє оновлення: 20 липня 2026',
+  intro:'Ця Публічна оферта визначає умови надання послуг студією Cartobi Animation Studio (далі — «Студія») фізичним особам (далі — «Клієнт») з виготовлення анімаційного відеоконтенту на замовлення. Оформлення замовлення через бота @CartobiBot або оплата послуги означає повну згоду Клієнта з умовами цієї оферти.',
+  h2_1:'1. Предмет послуги', p_1:'Студія створює короткі анімаційні відео (мультфільми) на замовлення — для дітей (з рисами обличчя дитини Клієнта, без фотореалістичної копії) та для дорослих подій (романтика, день народження, весілля, корпоративні історії, сценарій на замовлення).',
+  h2_2:'2. Бриф і відповідальність за дані', ul_2:['Клієнт самостійно відповідає за точність і повноту інформації, наданої в брифі (імена, побажання, фото тощо).','Студія працює виключно на основі наданих Клієнтом даних і не несе відповідальності за розбіжності, спричинені неточним або неповним брифом.'],
+  h2_3:'3. Оплата', p_3:'100% вартості замовлення сплачується одразу після заповнення брифу, до початку роботи над проєктом.',
+  h2_4:'4. Строки виготовлення', ul_4:['Дитяча лінійка — 48-72 години з моменту оплати.','Дорослі формати — сценарій надсилається на затвердження Клієнту одразу після оплати; після затвердження сценарію виробництво займає 5-7 днів.'],
+  h2_5:'5. Правки', p_5:'У вартість входить 1 (одна) безкоштовна правка готового результату. Додаткові правки або зміни поза межами початкового брифу оплачуються окремо за домовленістю.',
+  h2_6:'6. Права на матеріали', ul_6:['Клієнт гарантує, що має право використовувати надані ним матеріали (фото, побажання щодо сюжету) і не порушує права третіх осіб.','Після повної оплати та завершення замовлення готовий відеоконтент повністю переходить у власність Клієнта.','Фотографії, надані Клієнтом для виготовлення мультфільму, видаляються після завершення замовлення.'],
+  h2_7:'7. Музичний супровід', p_7:'Студія використовує виключно оригінальну або ліцензійно вільну музику. Клієнт може вказати бажаний настрій/жанр музики, але не конкретний захищений авторським правом трек.',
+  h2_8:'8. Обмеження контенту', p_8:'Студія не відтворює у мультфільмах чужі захищені авторським правом персонажі, логотипи чи бренди.',
+  h2_9:'9. Скасування та повернення коштів', p_9:'Оскільки робота над замовленням розпочинається одразу після оплати, повернення коштів після початку виробництва не передбачене. Питання по конкретній ситуації можна обговорити напряму зі Студією через бота.',
+  h2_10:'10. Географія послуги', p_10:'Послуга доступна клієнтам з будь-якої країни.',
+  h2_11:'11. Контакти', p_11:'Усі питання — через бота @CartobiBot або соціальні мережі Cartobi Animation Studio.',
+},
+en: {
+  h1:'Public Offer / Terms of Service', updated:'Last updated: July 20, 2026',
+  intro:'This Public Offer sets out the terms under which Cartobi Animation Studio ("Studio") provides custom animated video services to individuals ("Client"). Placing an order via @CartobiBot or paying for the service means the Client fully accepts these terms.',
+  h2_1:'1. Service scope', p_1:'The Studio creates short animated videos (cartoons) to order — for children (featuring the child\'s facial features as a cartoon character, not a photorealistic copy) and for adult occasions (romance, birthday, wedding, corporate stories, custom script).',
+  h2_2:'2. Brief and data responsibility', ul_2:['The Client is solely responsible for the accuracy and completeness of the information provided in the brief (names, wishes, photos, etc.).','The Studio works strictly from the data provided by the Client and is not responsible for discrepancies caused by an inaccurate or incomplete brief.'],
+  h2_3:'3. Payment', p_3:'100% of the order cost is paid immediately after the brief is completed, before work begins.',
+  h2_4:'4. Production time', ul_4:['Kids line — 48-72 hours from payment.','Adult formats — the script is sent for approval right after payment; production takes 5-7 days after the script is approved.'],
+  h2_5:'5. Revisions', p_5:'The price includes 1 (one) free revision of the finished result. Additional revisions or changes outside the original brief are paid separately by agreement.',
+  h2_6:'6. Rights to materials', ul_6:['The Client guarantees they have the right to use the materials provided (photos, story wishes) and does not infringe third-party rights.','After full payment and order completion, the finished video content becomes the Client\'s full property.','Photos provided by the Client for making the cartoon are deleted after the order is completed.'],
+  h2_7:'7. Music', p_7:'The Studio uses only original or royalty-free licensed music. The Client may specify a desired mood/genre of music, but not a specific copyrighted track.',
+  h2_8:'8. Content restrictions', p_8:'The Studio does not reproduce third-party copyrighted characters, logos, or brands in the cartoons.',
+  h2_9:'9. Cancellation and refunds', p_9:'Since work on the order begins immediately after payment, refunds are not available once production has started. Specific situations can be discussed directly with the Studio via the bot.',
+  h2_10:'10. Service area', p_10:'The service is available to clients from any country.',
+  h2_11:'11. Contact', p_11:'All questions — via the bot @CartobiBot or Cartobi Animation Studio\'s social media.',
+},
+ru: {
+  h1:'Публичная оферта', updated:'Последнее обновление: 20 июля 2026',
+  intro:'Эта Публичная оферта определяет условия предоставления услуг студией Cartobi Animation Studio («Студия») физическим лицам («Клиент») по изготовлению анимационного видеоконтента на заказ. Оформление заказа через бота @CartobiBot или оплата услуги означает полное согласие Клиента с условиями этой оферты.',
+  h2_1:'1. Предмет услуги', p_1:'Студия создаёт короткие анимационные видео (мультфильмы) на заказ — для детей (с чертами лица ребёнка Клиента, без фотореалистичной копии) и для взрослых событий (романтика, день рождения, свадьба, корпоративные истории, сценарий на заказ).',
+  h2_2:'2. Бриф и ответственность за данные', ul_2:['Клиент самостоятельно отвечает за точность и полноту информации, предоставленной в брифе (имена, пожелания, фото и т.д.).','Студия работает исключительно на основе предоставленных Клиентом данных и не несёт ответственности за расхождения, вызванные неточным или неполным брифом.'],
+  h2_3:'3. Оплата', p_3:'100% стоимости заказа оплачивается сразу после заполнения брифа, до начала работы над проектом.',
+  h2_4:'4. Сроки изготовления', ul_4:['Детская линейка — 48-72 часа с момента оплаты.','Взрослые форматы — сценарий отправляется на утверждение Клиенту сразу после оплаты; после утверждения сценария производство занимает 5-7 дней.'],
+  h2_5:'5. Правки', p_5:'В стоимость входит 1 (одна) бесплатная правка готового результата. Дополнительные правки или изменения вне рамок исходного брифа оплачиваются отдельно по договорённости.',
+  h2_6:'6. Права на материалы', ul_6:['Клиент гарантирует, что имеет право использовать предоставленные им материалы (фото, пожелания по сюжету) и не нарушает права третьих лиц.','После полной оплаты и завершения заказа готовый видеоконтент полностью переходит в собственность Клиента.','Фотографии, предоставленные Клиентом для изготовления мультфильма, удаляются после завершения заказа.'],
+  h2_7:'7. Музыкальное сопровождение', p_7:'Студия использует исключительно оригинальную или лицензионно свободную музыку. Клиент может указать желаемое настроение/жанр музыки, но не конкретный трек, защищённый авторским правом.',
+  h2_8:'8. Ограничения контента', p_8:'Студия не воспроизводит в мультфильмах чужих защищённых авторским правом персонажей, логотипы или бренды.',
+  h2_9:'9. Отмена и возврат средств', p_9:'Поскольку работа над заказом начинается сразу после оплаты, возврат средств после начала производства не предусмотрен. Конкретную ситуацию можно обсудить напрямую со Студией через бота.',
+  h2_10:'10. География услуги', p_10:'Услуга доступна клиентам из любой страны.',
+  h2_11:'11. Контакты', p_11:'Все вопросы — через бота @CartobiBot или социальные сети Cartobi Animation Studio.',
+},
+it: {
+  h1:'Offerta pubblica / Termini di servizio', updated:'Ultimo aggiornamento: 20 luglio 2026',
+  intro:'Questa Offerta pubblica stabilisce le condizioni con cui Cartobi Animation Studio ("Studio") fornisce servizi di video animati personalizzati a persone fisiche ("Cliente"). Effettuare un ordine tramite @CartobiBot o pagare il servizio significa accettare pienamente questi termini.',
+  h2_1:'1. Ambito del servizio', p_1:'Lo Studio crea brevi video animati (cartoni) su richiesta — per bambini (con i tratti del viso del bambino del Cliente, non una copia fotorealistica) e per eventi per adulti (romanticismo, compleanno, matrimonio, storie aziendali, sceneggiatura personalizzata).',
+  h2_2:'2. Brief e responsabilità dei dati', ul_2:['Il Cliente è l\'unico responsabile dell\'accuratezza e completezza delle informazioni fornite nel brief (nomi, desideri, foto, ecc.).','Lo Studio lavora esclusivamente sulla base dei dati forniti dal Cliente e non è responsabile di discrepanze causate da un brief impreciso o incompleto.'],
+  h2_3:'3. Pagamento', p_3:'Il 100% del costo dell\'ordine viene pagato subito dopo il completamento del brief, prima dell\'inizio del lavoro.',
+  h2_4:'4. Tempi di produzione', ul_4:['Linea bambini — 48-72 ore dal pagamento.','Formati adulti — la sceneggiatura viene inviata per approvazione subito dopo il pagamento; la produzione richiede 5-7 giorni dopo l\'approvazione della sceneggiatura.'],
+  h2_5:'5. Revisioni', p_5:'Il prezzo include 1 (una) revisione gratuita del risultato finito. Revisioni aggiuntive o modifiche al di fuori del brief originale sono a pagamento previo accordo.',
+  h2_6:'6. Diritti sui materiali', ul_6:['Il Cliente garantisce di avere il diritto di utilizzare i materiali forniti (foto, desideri sulla storia) e di non violare i diritti di terzi.','Dopo il pagamento completo e il completamento dell\'ordine, il video finito diventa piena proprietà del Cliente.','Le foto fornite dal Cliente per realizzare il cartone vengono eliminate dopo il completamento dell\'ordine.'],
+  h2_7:'7. Musica', p_7:'Lo Studio utilizza solo musica originale o musica su licenza libera da royalty. Il Cliente può indicare l\'atmosfera/genere musicale desiderato, ma non un brano specifico protetto da copyright.',
+  h2_8:'8. Restrizioni sui contenuti', p_8:'Lo Studio non riproduce nei cartoni personaggi, loghi o marchi di terzi protetti da copyright.',
+  h2_9:'9. Cancellazione e rimborsi', p_9:'Poiché il lavoro sull\'ordine inizia subito dopo il pagamento, non sono previsti rimborsi una volta iniziata la produzione. Situazioni specifiche possono essere discusse direttamente con lo Studio tramite il bot.',
+  h2_10:'10. Area di servizio', p_10:'Il servizio è disponibile per clienti di qualsiasi paese.',
+  h2_11:'11. Contatti', p_11:'Per qualsiasi domanda — tramite il bot @CartobiBot o i social media di Cartobi Animation Studio.',
+},
+fr: {
+  h1:'Offre publique / Conditions de service', updated:'Dernière mise à jour : 20 juillet 2026',
+  intro:'Cette Offre publique définit les conditions dans lesquelles Cartobi Animation Studio (« Studio ») fournit des services de vidéos animées personnalisées à des particuliers (« Client »). Passer commande via @CartobiBot ou payer le service signifie que le Client accepte pleinement ces conditions.',
+  h2_1:'1. Objet du service', p_1:'Le Studio crée de courtes vidéos animées (dessins animés) sur commande — pour les enfants (avec les traits du visage de l\'enfant du Client, sans copie photoréaliste) et pour les événements adultes (romance, anniversaire, mariage, histoires d\'entreprise, scénario personnalisé).',
+  h2_2:'2. Brief et responsabilité des données', ul_2:['Le Client est seul responsable de l\'exactitude et de l\'exhaustivité des informations fournies dans le brief (noms, souhaits, photos, etc.).','Le Studio travaille exclusivement à partir des données fournies par le Client et n\'est pas responsable des écarts causés par un brief inexact ou incomplet.'],
+  h2_3:'3. Paiement', p_3:'100 % du coût de la commande est payé immédiatement après la fin du brief, avant le début du travail.',
+  h2_4:'4. Délais de production', ul_4:['Ligne enfants — 48 à 72 heures après paiement.','Formats adultes — le scénario est envoyé pour approbation juste après le paiement ; la production prend 5 à 7 jours après l\'approbation du scénario.'],
+  h2_5:'5. Révisions', p_5:'Le prix inclut 1 (une) révision gratuite du résultat final. Les révisions supplémentaires ou les modifications en dehors du brief initial sont payantes, par accord.',
+  h2_6:'6. Droits sur les matériaux', ul_6:['Le Client garantit avoir le droit d\'utiliser les matériaux fournis (photos, souhaits d\'histoire) et ne pas enfreindre les droits de tiers.','Après paiement intégral et finalisation de la commande, la vidéo finie devient l\'entière propriété du Client.','Les photos fournies par le Client pour réaliser le dessin animé sont supprimées après la finalisation de la commande.'],
+  h2_7:'7. Musique', p_7:'Le Studio utilise exclusivement de la musique originale ou libre de droits sous licence. Le Client peut indiquer l\'ambiance/le genre musical souhaité, mais pas un morceau spécifique protégé par le droit d\'auteur.',
+  h2_8:'8. Restrictions de contenu', p_8:'Le Studio ne reproduit pas dans les dessins animés des personnages, logos ou marques tiers protégés par le droit d\'auteur.',
+  h2_9:'9. Annulation et remboursements', p_9:'Le travail sur la commande commençant immédiatement après le paiement, aucun remboursement n\'est possible une fois la production commencée. Les situations particulières peuvent être discutées directement avec le Studio via le bot.',
+  h2_10:'10. Zone de service', p_10:'Le service est disponible pour les clients de tout pays.',
+  h2_11:'11. Contact', p_11:'Pour toute question — via le bot @CartobiBot ou les réseaux sociaux de Cartobi Animation Studio.',
+},
+es: {
+  h1:'Oferta pública / Términos de servicio', updated:'Última actualización: 20 de julio de 2026',
+  intro:'Esta Oferta pública establece los términos bajo los cuales Cartobi Animation Studio ("Estudio") ofrece servicios de video animado personalizado a personas físicas ("Cliente"). Realizar un pedido a través de @CartobiBot o pagar el servicio significa que el Cliente acepta plenamente estos términos.',
+  h2_1:'1. Alcance del servicio', p_1:'El Estudio crea videos animados cortos (dibujos animados) por encargo — para niños (con los rasgos faciales del hijo del Cliente, no una copia fotorrealista) y para eventos de adultos (romance, cumpleaños, boda, historias corporativas, guion personalizado).',
+  h2_2:'2. Brief y responsabilidad de los datos', ul_2:['El Cliente es el único responsable de la exactitud e integridad de la información proporcionada en el brief (nombres, deseos, fotos, etc.).','El Estudio trabaja exclusivamente con los datos proporcionados por el Cliente y no se hace responsable de discrepancias causadas por un brief inexacto o incompleto.'],
+  h2_3:'3. Pago', p_3:'El 100% del costo del pedido se paga inmediatamente después de completar el brief, antes de comenzar el trabajo.',
+  h2_4:'4. Tiempos de producción', ul_4:['Línea infantil — 48-72 horas desde el pago.','Formatos para adultos — el guion se envía para aprobación justo después del pago; la producción tarda 5-7 días después de aprobado el guion.'],
+  h2_5:'5. Revisiones', p_5:'El precio incluye 1 (una) revisión gratuita del resultado final. Las revisiones adicionales o cambios fuera del brief original se pagan por separado según acuerdo.',
+  h2_6:'6. Derechos sobre los materiales', ul_6:['El Cliente garantiza que tiene derecho a usar los materiales proporcionados (fotos, deseos de la historia) y que no infringe derechos de terceros.','Tras el pago completo y la finalización del pedido, el video terminado pasa a ser propiedad plena del Cliente.','Las fotos proporcionadas por el Cliente para hacer el dibujo animado se eliminan después de completar el pedido.'],
+  h2_7:'7. Música', p_7:'El Estudio utiliza únicamente música original o con licencia libre de regalías. El Cliente puede indicar el ambiente/género musical deseado, pero no una pista específica protegida por derechos de autor.',
+  h2_8:'8. Restricciones de contenido', p_8:'El Estudio no reproduce en los dibujos animados personajes, logotipos o marcas de terceros protegidos por derechos de autor.',
+  h2_9:'9. Cancelación y reembolsos', p_9:'Dado que el trabajo en el pedido comienza inmediatamente después del pago, no se ofrecen reembolsos una vez iniciada la producción. Las situaciones específicas se pueden discutir directamente con el Estudio a través del bot.',
+  h2_10:'10. Área de servicio', p_10:'El servicio está disponible para clientes de cualquier país.',
+  h2_11:'11. Contacto', p_11:'Para cualquier pregunta — a través del bot @CartobiBot o las redes sociales de Cartobi Animation Studio.',
+},
+};
+
+function setOfertaLang(lang) {
+  const t = OFERTA[lang] || OFERTA.ua;
+  document.getElementById('t-h1').textContent = t.h1;
+  document.getElementById('t-updated').textContent = t.updated;
+  document.getElementById('t-intro').textContent = t.intro;
+  for (let i=1;i<=11;i++) {
+    const h2el = document.getElementById('t-h2-'+i);
+    if (h2el) h2el.textContent = t['h2_'+i];
+    const pEl = document.getElementById('t-p-'+i);
+    if (pEl) pEl.textContent = t['p_'+i] || '';
+    const ulEl = document.getElementById('t-ul-'+i);
+    if (ulEl && t['ul_'+i]) ulEl.innerHTML = t['ul_'+i].map(x => '<li>'+x+'</li>').join('');
+  }
+  document.documentElement.lang = lang === 'ua' ? 'uk' : lang;
+}
+setOfertaLang('es');
+</script>
+
+</body>
+</html>
