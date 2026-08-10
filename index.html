@@ -522,7 +522,7 @@
 
 <!-- Юридичний футер — посилання на оферту, яку бот обіцяє клієнту в FAQ -->
 <div style="text-align:center; padding:18px 16px 26px; background:#0A0722;">
-  <a href="oferta.html" style="color:#8b87a8; font-size:13px; font-family:Arial,sans-serif; text-decoration:underline;">Публічна оферта</a>
+  <a href="oferta.html" id="oferta-link" style="color:#8b87a8; font-size:13px; font-family:Arial,sans-serif; text-decoration:underline;">Публічна оферта</a>
   <span style="color:#4a4568; font-size:13px; margin:0 6px;">·</span>
   <span style="color:#4a4568; font-size:13px; font-family:Arial,sans-serif;">© 2026 Cartobi Animation Studio</span>
 </div>
@@ -909,6 +909,17 @@
     const el = document.getElementById('scroll-hint-text');
     if (el) el.textContent = SCROLL_HINT_TXT[lang] || SCROLL_HINT_TXT.ua;
   }
+  const OFERTA_TXT = {
+    ua: 'Публічна оферта', en: 'Public Offer', ru: 'Публичная оферта', it: 'Offerta pubblica',
+    fr: 'Offre publique', es: 'Oferta pública', pl: 'Oferta publiczna', de: 'Öffentliches Angebot',
+    pt: 'Oferta pública', tr: 'Kamu Teklifi',
+  };
+  function renderOferta(lang) {
+    const link = document.getElementById('oferta-link');
+    if (!link) return;
+    link.textContent = OFERTA_TXT[lang] || OFERTA_TXT.ua;
+    link.href = (lang === 'en') ? 'oferta-en.html' : 'oferta.html';
+  }
   function setLang(lang) {
     document.getElementById('lang-dropdown').classList.remove('open');
     if (lang === 'ua') {
@@ -918,6 +929,7 @@
       renderKidsText('ua');
       renderAdultText('ua');
       renderScrollHint('ua');
+      renderOferta('ua');
       buildLangDropdown();
       return;
     }
@@ -928,6 +940,7 @@
       renderKidsText(lang);
       renderAdultText(lang);
       renderScrollHint(lang);
+      renderOferta(lang);
       buildLangDropdown();
       if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
       return;
