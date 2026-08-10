@@ -2049,6 +2049,18 @@
   // по її вертикальному центру, з тим самим запобіжником (не нижче
   // ~82% висоти екрана), перераховуючи при завантаженні, зміні розміру
   // і повороті екрана.
+  //
+  // 10.08 iOS-фікс: на iPhone під час скролу Safari багато разів поспіль
+  // анімовано ховає/показує адресний рядок — і кожен такий кадр генерує
+  // власну подію 'resize', на відміну від Android. Якщо на кожну таку
+  // подію одразу перераховувати позицію, playBtn.getBoundingClientRect()
+  // в цей момент вказує на "проміжну" (ще не доскрольовану) позицію
+  // кнопки — часто вже за межами екрана зверху — і Зоряна з клампом
+  // top<8 миттєво стрибає нагору й "танцює" там, поки триває скрол.
+  // Android не породжує такого шторму resize-подій під час скролу,
+  // тому там усе виглядало стабільно. Фікс: дебаунс — перераховуємо
+  // позицію тільки через 150мс ПІСЛЯ того, як події резайзу/скролу
+  // затихли, а не на кожен окремий кадр.
   function positionZoryana() {
     const fab = document.getElementById('zoryana-fab-kids');
     const playBtn = document.querySelector('#section-kids .play-btn');
@@ -2063,9 +2075,14 @@
     if (top < 8) top = 8;
     fab.style.top = top + 'px';
   }
+  let zoryanaRepositionTimer = null;
+  function scheduleZoryanaReposition(delay) {
+    clearTimeout(zoryanaRepositionTimer);
+    zoryanaRepositionTimer = setTimeout(positionZoryana, delay);
+  }
   window.addEventListener('load', () => { setTimeout(positionZoryana, 200); });
-  window.addEventListener('resize', positionZoryana);
-  window.addEventListener('orientationchange', () => setTimeout(positionZoryana, 300));
+  window.addEventListener('resize', () => scheduleZoryanaReposition(150));
+  window.addEventListener('orientationchange', () => scheduleZoryanaReposition(300));
   window.addEventListener('scroll', updateScrollHint, { passive: true });
   window.addEventListener('resize', updateScrollHint);
 </script>
