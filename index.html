@@ -42,7 +42,7 @@
      картинку і залишав порожні поля по боках. */
   section.frame{position:relative; width:100%; max-width:540px; margin:0 auto; line-height:0;}
   .frame-inner{position:relative;}
-  .frame-inner img{width:100%; height:auto; display:block;}
+  .frame-inner img{width:100%; height:auto; display:block; -webkit-transform:translateZ(0); transform:translateZ(0); will-change:transform;}
 
   .hot{position:absolute; cursor:pointer; background:transparent; border:none; padding:0;}
   .hot:active{opacity:0.6;}
