@@ -1948,8 +1948,27 @@
     const quality = candidates.find(v => /google|natural|online|neural/i.test(v.name));
     return female || quality || candidates[0];
   }
-  function zoryanaSpeak(text) {
+  // iOS-фікс 10.08: на iOS Safari є відомий баг — speechSynthesis.getVoices()
+  // на перший виклик часто повертає ПОРОЖНІЙ масив, а onvoiceschanged
+  // ненадійно спрацьовує (може взагалі не спрацювати до першого speak()).
+  // Якщо в момент першої репліки zoryanaVoices порожній, весь наш
+  // фільтр статі (maleNames/femaleNames) просто нічого не фільтрує —
+  // zoryanaPickVoice поверне null, і iOS сам обере якийсь системний
+  // голос за замовчуванням, який часто виявляється чоловічим. Це,
+  // ймовірно, і є справжня причина "чоловічого голосу" на iOS, а не
+  // сам список імен. Фікс: перед першою реплікою кілька разів
+  // пробуємо перезавантажити список голосів з невеликою затримкою,
+  // поки він не заповниться (або поки не вичерпаємо спроби).
+  function zoryanaSpeak(text, attempt) {
+    attempt = attempt || 0;
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
+    if (!zoryanaVoices.length && attempt < 10) {
+      zoryanaLoadVoices();
+      if (!zoryanaVoices.length) {
+        setTimeout(() => zoryanaSpeak(text, attempt + 1), 120);
+        return;
+      }
+    }
     try {
       const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
       const voice = zoryanaPickVoice(langCode);
