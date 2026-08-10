@@ -1926,16 +1926,27 @@
     const prefix = langCode.split('-')[0];
     let candidates = zoryanaVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
     if (!candidates.length) return null;
-    // Явно чоловічі голоси (за відомими іменами) відсіюємо одразу — Зоряна
-    // має звучати дівчинкою, навіть якщо на пристрої є лише пара голосів.
-    const maleNames = /male|чолов|ostap|dmytro|yuri|pavel|filip|mykyta/i;
+    // Явно чоловічі голоси відсіюємо одразу — Зоряна має звучати дівчинкою
+    // на будь-якому пристрої. Android/Google зазвичай прямо пише
+    // "Male"/"Female" в імені голосу — це ловиться словом male/female.
+    // Але вбудовані голоси iOS (Apple) НЕ містять слова male/female —
+    // вони підписані власними іменами (Alex, Daniel, Fred, Diego...),
+    // тому без явного списку цих імен чоловічий голос Apple проходив
+    // непоміченим, особливо в англійській та інших не-слов'янських
+    // мовах — саме це й сталось 10.08 (EN звучав чоловічим голосом).
+    // Список нижче покриває відомі чоловічі голоси Apple/Google/
+    // Microsoft у всіх 10 мовах сайту.
+    const maleNames = /\b(male|чолов|мужск|ostap|dmytro|yuri|yuriy|pavel|filip|mykyta|ivan|milos|alex|fred|aaron|nathan|evan|daniel|arthur|lee|oliver|gordon|rishi|diego|jorge|juan|carlos|thomas|yannick|xander|ruben|luca|marco|giorgio|felix|markus|stefan|hans|yannis|cem|krzysztof|piotr|adam|marek|duncan|bruce|albert|reed|rocko|ralph|grandpa|junior|zarvox)\b/i;
     const notMale = candidates.filter(v => !maleNames.test(v.name));
     if (notMale.length) candidates = notMale;
+    // Явно жіночі за іменем — найнадійніший сигнал, коли він є.
+    const femaleNames = /female|жіно|женск|zenska|weiblich|milena|lesya|lesia|samantha|ava|allison|susan|nicky|victoria|kate|serena|martha|karen|catherine|moira|tessa|fiona|zoe|vicki|anna|alena|alice|elsa|paulina|monica|marie|amelie|audrey|celine|petra|joana|luciana|zosia|ewa|yelda|kalinka|milena/i;
     // Голоси від Google/Microsoft Natural/Online зазвичай звучать м'якше
-    // за системний eSpeak-фолбек — пробуємо знайти саме такий спочатку.
+    // за системний eSpeak-фолбек, але явне жіноче ім'я — надійніший
+    // сигнал, тож перевіряємо його першим.
+    const female = candidates.find(v => femaleNames.test(v.name));
     const quality = candidates.find(v => /google|natural|online|neural/i.test(v.name));
-    const female = candidates.find(v => /female|жіно|zenska|weiblich|milena|lesya|lesia/i.test(v.name));
-    return quality || female || candidates[0];
+    return female || quality || candidates[0];
   }
   function zoryanaSpeak(text) {
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
