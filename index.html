@@ -227,9 +227,22 @@
 
   /* ---------- Зоряна — голосовий FAQ-помічник (плаваючий, реальний HTML) ---------- */
   .zoryana-fab{
-    position:fixed; z-index:25;
-    width:20vw; max-width:78px; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
-    left:66%; top:390px;
+    /* 10.08: раніше position:fixed з top, який щоразу рахував JS через
+       getBoundingClientRect() кнопки play — це viewport-координати, які
+       "правильні" лише в момент розрахунку. На iOS Safari resize під час
+       скролу (анімація адресного рядка) перераховував top на моменти,
+       коли кнопка вже прокручена не туди — звідси стрибки/танці.
+       Тепер вона просто дитина #section-kids (position:relative) з %
+       координатами — так само, як усі інші елементи на сторінці. Ніякого
+       JS для позиції більше не треба: 66%/56.87% підібрані так, щоб
+       вертикальний центр збігався з центром play-btn (top:59% + height:7%/2
+       = 62.5%), з поправкою на власну висоту (20% ширини кадру, переведені
+       в % висоти кадру через реальне співвідношення сторін hero-kids.jpg
+       1080×1916 = 20% / 1.774 ≈ 11.27% → 62.5% − 11.27%/2 ≈ 56.87%).
+    */
+    position:absolute; z-index:25;
+    width:20%; max-width:78px; aspect-ratio:1; border-radius:100px; cursor:pointer; border:2px solid #bfe3ff;
+    left:66%; top:56.87%;
     background:#1560c9;
     box-shadow:0 4px 16px rgba(0,0,0,0.5), 0 0 0 3px rgba(74,163,255,0.4);
     display:flex; align-items:center; justify-content:center; font-size:22px;
@@ -2071,48 +2084,14 @@
   }
   window.addEventListener('load', () => { setTimeout(updateScrollHint, 150); });
 
-  // Позиція Зоряни — раніше рахувалась формулою через vw/vh (наближено),
-  // що ненадійно поводилось в landscape на реальних пристроях (viewport
-  // units по-різному трактуються різними мобільними браузерами при
-  // повороті екрана). Тепер рахуємо напряму по факту: беремо реальні
-  // координати кнопки play на відео космонавта і ставимо Зоряну точно
-  // по її вертикальному центру, з тим самим запобіжником (не нижче
-  // ~82% висоти екрана), перераховуючи при завантаженні, зміні розміру
-  // і повороті екрана.
-  //
-  // 10.08 iOS-фікс: на iPhone під час скролу Safari багато разів поспіль
-  // анімовано ховає/показує адресний рядок — і кожен такий кадр генерує
-  // власну подію 'resize', на відміну від Android. Якщо на кожну таку
-  // подію одразу перераховувати позицію, playBtn.getBoundingClientRect()
-  // в цей момент вказує на "проміжну" (ще не доскрольовану) позицію
-  // кнопки — часто вже за межами екрана зверху — і Зоряна з клампом
-  // top<8 миттєво стрибає нагору й "танцює" там, поки триває скрол.
-  // Android не породжує такого шторму resize-подій під час скролу,
-  // тому там усе виглядало стабільно. Фікс: дебаунс — перераховуємо
-  // позицію тільки через 150мс ПІСЛЯ того, як події резайзу/скролу
-  // затихли, а не на кожен окремий кадр.
-  function positionZoryana() {
-    const fab = document.getElementById('zoryana-fab-kids');
-    const playBtn = document.querySelector('#section-kids .play-btn');
-    if (!fab || !playBtn) return;
-    const playRect = playBtn.getBoundingClientRect();
-    if (playRect.width === 0) return; // ще не відмалювалось
-    const fabSize = fab.getBoundingClientRect().width || parseFloat(getComputedStyle(fab).width);
-    const targetCenterY = playRect.top + playRect.height / 2;
-    let top = targetCenterY - fabSize / 2;
-    const maxTop = window.innerHeight * 0.82 - fabSize;
-    if (top > maxTop) top = maxTop;
-    if (top < 8) top = 8;
-    fab.style.top = top + 'px';
-  }
-  let zoryanaRepositionTimer = null;
-  function scheduleZoryanaReposition(delay) {
-    clearTimeout(zoryanaRepositionTimer);
-    zoryanaRepositionTimer = setTimeout(positionZoryana, delay);
-  }
-  window.addEventListener('load', () => { setTimeout(positionZoryana, 200); });
-  window.addEventListener('resize', () => scheduleZoryanaReposition(150));
-  window.addEventListener('orientationchange', () => scheduleZoryanaReposition(300));
+  // 10.08: Позиція Зоряни раніше рахувалась в JS (спочатку через vw/vh,
+  // потім через getBoundingClientRect кнопки play з дебаунсом) — обидва
+  // підходи ламались на iOS Safari через штормові resize-події під час
+  // скролу (адресний рядок анімовано ховається/показується). Тепер вона
+  // просто position:absolute з % координатами всередині #section-kids,
+  // як і всі інші елементи сторінки (див. .zoryana-fab в CSS) — рухатись
+  // їй більше нема від чого, JS для позиції не потрібен на жодній
+  // платформі.
   window.addEventListener('scroll', updateScrollHint, { passive: true });
   window.addEventListener('resize', updateScrollHint);
 </script>
