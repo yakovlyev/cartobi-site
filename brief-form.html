@@ -62,10 +62,17 @@
   .err{color:var(--danger); font-size:12.5px; margin-top:5px; display:none;}
   .err.show{display:block;}
   .section-title{font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin:26px 0 12px; font-weight:700;}
+  .lang-switcher{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px;}
+  .lang-chip{
+    background:var(--card); border:1.5px solid var(--border); border-radius:100px;
+    padding:5px 11px; font-size:12px; cursor:pointer; color:var(--muted); user-select:none;
+  }
+  .lang-chip.selected{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--accent-text); border-color:transparent; font-weight:700;}
 </style>
 </head>
 <body>
 
+<div class="lang-switcher" id="langSwitcher"></div>
 <h1 id="title">Бриф</h1>
 <p class="intro" id="intro"></p>
 <div class="photo-notice" id="photoNotice"></div>
@@ -73,8 +80,8 @@
 
 <div class="total-bar" id="totalBar">
   <div>
-    <span>Разом до сплати</span>
-    <div style="font-size:10px; color:var(--muted); margin-top:1px;">Оплата в гривнях за курсом НБУ на день оплати, без ПДВ</div>
+    <span id="totalLabelEl">Разом до сплати</span>
+    <div id="totalSubEl" style="font-size:10px; color:var(--muted); margin-top:1px;">Оплата в гривнях за курсом НБУ на день оплати, без ПДВ</div>
   </div>
   <b id="totalVal">$0</b>
 </div>
@@ -106,139 +113,3798 @@ const presetGenre = params.get('genre'); // тільки для kids, якщо �
   } catch (e) { /* тихо ігноруємо */ }
 })();
 
-// ---------- Дорослі лінійки — дзеркало BRIEFS з bot.js ----------
-// ВАЖЛИВО: цей об'єкт треба вручну тримати синхронізованим з BRIEFS у
-// bot/bot.js, якщо там міняються питання — тут теж треба поправити.
-const ADULT_BRIEFS = {
-  romance: {
-    title: '💕 Романтична історія',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
-    questions: [
-      { key: 'occasion', q: 'Який привід?', hint: 'освідчення, річниця, просто сюрприз, примирення тощо' },
-      { key: 'names', q: 'Імена обох героїв (хто дарує і кому)?' },
-      { key: 'appearance', q: 'Опишіть зовнішність обох', hint: 'колір волосся, приблизний вік, стиль одягу. Або надішліть фото боту після цього брифу (краще по 2 фото на кожного — анфас і профіль).' },
-      { key: 'story', q: 'Коротко історію стосунків або момент, який хочете показати?', hint: 'як познайомились, спільний спогад тощо' },
-      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'конкретна фраза, місце, деталь, подія' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'setting', q: 'Де відбувається дія?', hint: 'конкретне місто/місце, або можна вигадати мальовниче оточення' },
-      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Романтично-ніжний', 'Яскравий/казковий', 'Сучасний реалістичний'] },
-      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права) — використовуємо ліцензійну музику', options: ['Ніжна лірична', 'Енергійна', 'Весела'] },
-      { key: 'platform', type: 'buttons', q: 'Де плануєте показувати відео?', hint: 'впливає на формат кадру. Розмір відео: 9:16 або 16:9.', options: ['Особисто на телефоні', 'Instagram/TikTok/Shorts', 'Facebook', 'На великому екрані'] },
-    ],
+// ---------- Мова: визначення + перемикач ----------
+// Бот сам по собі не знає мову користувача (Mini App відкривається лише
+// зсередини Telegram, окремо від сайту — між ними немає "мосту" для мови).
+// Тому визначаємо мову напряму з Telegram WebApp SDK (мова клієнта
+// користувача), звужуючи до 6 мов, на яких є офферта — на решту сайт поки
+// не перекладений. Є ручний перемикач зверху форми — на випадок, якщо
+// визначена мова не та, яку людина хоче використати саме тут.
+const SUPPORTED_BRIEF_LANGS = ['ua', 'en', 'ru', 'it', 'fr', 'es'];
+const LANG_LABELS = { ua: '🇺🇦 UA', en: '🇬🇧 EN', ru: '🇷🇺 RU', it: '🇮🇹 IT', fr: '🇫🇷 FR', es: '🇪🇸 ES' };
+function detectLang() {
+  const saved = localStorage.getItem('cartobi_brief_lang');
+  if (saved && SUPPORTED_BRIEF_LANGS.includes(saved)) return saved;
+  const tgLang = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code;
+  if (tgLang) {
+    const short = tgLang.split('-')[0].toLowerCase();
+    const map = { uk: 'ua', ua: 'ua', en: 'en', ru: 'ru', it: 'it', fr: 'fr', es: 'es' };
+    if (map[short]) return map[short];
+  }
+  return 'ua';
+}
+let currentLang = detectLang();
+
+const UI_TXT = {
+  "ua": {
+    "photoNoticeKids": "📷 <b>Після цієї форми бот попросить фото дитини (краще 2 фото — анфас і профіль)</b> — це обов'язковий крок, без нього не можемо зробити персонажа.",
+    "photoNoticePets": "📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов'язковий крок, без нього не можемо зробити персонажа схожим.",
+    "photoNoticeAdult": "📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.",
+    "kidsTitle": "🎬 Персональний мультфільм",
+    "kidsIntro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.",
+    "kidsHeroName": "Ім'я героя?",
+    "kidsGenreQ": "Який жанр?",
+    "kidsGenderQ": "Хлопчик чи дівчинка?",
+    "kidsBoy": "Хлопчик",
+    "kidsGirl": "Дівчинка",
+    "chooseTariff": "Оберіть тариф",
+    "chooseLevel": "Оберіть рівень",
+    "addMagic": "Додати трохи магії? (необов'язково)",
+    "totalLabel": "Разом до сплати",
+    "totalSub": "Оплата в гривнях за курсом НБУ на день оплати, без ПДВ",
+    "submitBtn": "Надіслати бриф",
+    "requiredErr": "Це поле обов'язкове",
+    "yourAnswer": "Ваша відповідь…",
+    "genrePickerTitle": "💌 Дорослі формати",
+    "genrePickerIntro": "Оберіть, що саме хочете створити — далі покажемо питання саме під цей формат.",
+    "whichGenre": "Який жанр?",
+    "formTitle": "Бриф"
   },
-  birthday: {
-    title: '🎉 День народження',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
-    questions: [
-      { key: 'name', q: 'Ім\'я іменинника/іменинниці?' },
-      { key: 'age', type: 'buttons', q: 'Скільки виповнюється?', options: ['1-3 роки', '4-6 років', '7-12 років', '13-17 років', '18-30 років', '31-50 років', '50+ років'] },
-      { key: 'appearance', q: 'Опишіть зовнішність іменинника', hint: 'колір волосся, стиль. Або надішліть фото боту після цього брифу.' },
-      { key: 'interests', type: 'buttons', q: 'Головна тема захоплень?', options: ['Спорт', 'Музика', 'Подорожі', 'Ігри/технології', 'Кулінарія', 'Тварини', 'Мода/краса', 'Інше — напишу окремо'] },
-      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'внутрішній жарт, конкретна подія, фраза' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/деталі, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'from', q: 'Від кого привітання?', hint: 'ім\'я/імена — що хочете побажати чи сказати' },
-      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Весело й яскраво', 'Тепло і сентиментально', 'З гумором'] },
-      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Весела', 'Святкова', 'Зворушлива', 'Енергійна'] },
-    ],
+  "en": {
+    "photoNoticeKids": "📷 <b>After this form the bot will ask for a photo of the child (preferably 2 photos — front and profile)</b> — this is a required step, we can't make the character without it.",
+    "photoNoticePets": "📷 <b>After this form the bot will ask for a photo of your pet</b> — this is a required step, we can't make the character look like your pet without it.",
+    "photoNoticeAdult": "📷 <b>After this form the bot will offer to send a photo</b> — optional (the appearance description is already below), but highly recommended for a closer likeness.",
+    "kidsTitle": "🎬 Personal Cartoon",
+    "kidsIntro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision.",
+    "kidsHeroName": "The hero's name?",
+    "kidsGenreQ": "Which genre?",
+    "kidsGenderQ": "Boy or girl?",
+    "kidsBoy": "Boy",
+    "kidsGirl": "Girl",
+    "chooseTariff": "Choose a tier",
+    "chooseLevel": "Choose a tier",
+    "addMagic": "Add a bit of magic? (optional)",
+    "totalLabel": "Total to pay",
+    "totalSub": "Payment in hryvnia at the NBU rate on the day of payment, no VAT",
+    "submitBtn": "Send the brief",
+    "requiredErr": "This field is required",
+    "yourAnswer": "Your answer…",
+    "genrePickerTitle": "💌 Adult Formats",
+    "genrePickerIntro": "Choose exactly what you want to create — we'll show questions for that specific format next.",
+    "whichGenre": "Which format?",
+    "formTitle": "Brief"
   },
-  corporate: {
-    title: '🏢 Корпоративне відео',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію.',
-    questions: [
-      { key: 'company', q: 'Назва компанії / бренду?' },
-      { key: 'goal', type: 'buttons', q: 'Мета відео?', options: ['Привітання команди/клієнтів', 'Презентація продукту', 'Навчальний ролик', 'Інше — напишу окремо'] },
-      { key: 'audience', type: 'buttons', q: 'Для кого відео?', options: ['Внутрішня команда', 'Клієнти', 'Соцмережі'] },
-      { key: 'keyMessage', q: 'Головна думка/меседж, яку відео має донести?' },
-      { key: 'mustHave', q: 'Які конкретні сцени/моменти ОБОВ\'ЯЗКОВО мають бути показані?' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/образи, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'brand', q: 'Брендбук/логотип/фірмові кольори?', hint: 'опишіть, або надішліть після брифу' },
-      { key: 'onScreenText', type: 'buttons', q: 'Чи потрібен текст на екрані?', options: ['Так, українською', 'Так, англійською', 'Не потрібен'] },
-      { key: 'voiceover', type: 'buttons', q: 'Дикторська озвучка?', options: ['Так, діловий тон', 'Так, дружній тон', 'Не потрібна'] },
-      { key: 'length', type: 'buttons', q: 'Бажана тривалість відео?', options: ['30 сек', '1 хв', '2-3 хв', 'Довше'] },
-    ],
+  "ru": {
+    "photoNoticeKids": "📷 <b>После этой формы бот попросит фото ребёнка (лучше 2 фото — анфас и профиль)</b> — это обязательный шаг, без него не можем сделать персонажа.",
+    "photoNoticePets": "📷 <b>После этой формы бот попросит фото питомца</b> — это обязательный шаг, без него не можем сделать персонажа похожим.",
+    "photoNoticeAdult": "📷 <b>После этой формы бот предложит прислать фото</b> — необязательно (описание внешности уже есть ниже), но очень рекомендуем для более точного сходства.",
+    "kidsTitle": "🎬 Персональный мультфильм",
+    "kidsIntro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка.",
+    "kidsHeroName": "Имя героя?",
+    "kidsGenreQ": "Какой жанр?",
+    "kidsGenderQ": "Мальчик или девочка?",
+    "kidsBoy": "Мальчик",
+    "kidsGirl": "Девочка",
+    "chooseTariff": "Выберите тариф",
+    "chooseLevel": "Выберите уровень",
+    "addMagic": "Добавить немного магии? (необязательно)",
+    "totalLabel": "Итого к оплате",
+    "totalSub": "Оплата в гривнах по курсу НБУ на день оплаты, без НДС",
+    "submitBtn": "Отправить бриф",
+    "requiredErr": "Это поле обязательное",
+    "yourAnswer": "Ваш ответ…",
+    "genrePickerTitle": "💌 Взрослые форматы",
+    "genrePickerIntro": "Выберите, что именно хотите создать — дальше покажем вопросы именно под этот формат.",
+    "whichGenre": "Какой формат?",
+    "formTitle": "Бриф"
   },
-  wedding: {
-    title: '💍 Весільна історія',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
-    questions: [
-      { key: 'names', q: 'Імена нареченого і нареченої?' },
-      { key: 'appearance', q: 'Опишіть зовнішність обох', hint: 'або надішліть фото боту після цього брифу' },
-      { key: 'story', q: 'Коротко історію пари?', hint: 'як познайомились, скільки разом, особливий момент' },
-      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути показано?', hint: 'освідчення, перший танець, конкретне місце весілля' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'weddingDate', q: 'Дата весілля?' },
-      { key: 'usage', type: 'buttons', q: 'Де плануєте показувати відео?', options: ['На весіллі як сюрприз', 'У соцмережах', 'Як запрошення гостям'] },
-      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Казковий (принцеса/принц)', 'Елегантний реалістичний', 'З гумором'] },
-      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Урочиста', 'Ніжна', 'Романтична'] },
-    ],
+  "it": {
+    "photoNoticeKids": "📷 <b>Dopo questo modulo il bot chiederà una foto del bambino (meglio 2 foto — frontale e di profilo)</b> — è un passaggio obbligatorio, senza non possiamo creare il personaggio.",
+    "photoNoticePets": "📷 <b>Dopo questo modulo il bot chiederà una foto del tuo animale</b> — è un passaggio obbligatorio, senza non possiamo rendere il personaggio somigliante.",
+    "photoNoticeAdult": "📷 <b>Dopo questo modulo il bot proporrà di inviare una foto</b> — facoltativo (la descrizione dell’aspetto è già qui sotto), ma molto consigliato per una somiglianza più precisa.",
+    "kidsTitle": "🎬 Cartone Personalizzato",
+    "kidsIntro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita.",
+    "kidsHeroName": "Nome dell’eroe?",
+    "kidsGenreQ": "Quale genere?",
+    "kidsGenderQ": "Maschio o femmina?",
+    "kidsBoy": "Maschio",
+    "kidsGirl": "Femmina",
+    "chooseTariff": "Scegli un livello",
+    "chooseLevel": "Scegli un livello",
+    "addMagic": "Aggiungere un po’ di magia? (facoltativo)",
+    "totalLabel": "Totale da pagare",
+    "totalSub": "Pagamento in hryvnia al tasso NBU del giorno del pagamento, IVA esclusa",
+    "submitBtn": "Invia il brief",
+    "requiredErr": "Questo campo è obbligatorio",
+    "yourAnswer": "La tua risposta…",
+    "genrePickerTitle": "💌 Formati per Adulti",
+    "genrePickerIntro": "Scegli cosa vuoi creare — poi ti mostreremo le domande specifiche per quel formato.",
+    "whichGenre": "Quale formato?",
+    "formTitle": "Brief"
   },
-  script: {
-    title: '📝 Мультфільм за сценарієм',
-    intro: 'Дам трохи більше питань, ніж зазвичай про ваш сценарій — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).',
-    questions: [
-      { key: 'scriptText', q: 'Опишіть сюжет вашого сценарію', hint: 'детальний опис — повний текст сценарію можна надіслати боту окремо після цього брифу' },
-      { key: 'characters', q: 'Скільки персонажів, хто вони і як виглядають?' },
-      { key: 'mustHave', q: 'Які конкретні сцени/репліки ОБОВ\'ЯЗКОВО мають бути присутні дослівно?' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є щось, чого точно НЕ повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'style', type: 'buttons', q: 'Бажаний візуальний стиль?', options: ['Реалістична 3D-анімація', 'Казковий', 'Сучасний плоский стиль'] },
-      { key: 'voiceover', type: 'buttons', q: 'Озвучка персонажів?', options: ['Так, українською', 'Так, англійською', 'Не потрібна'] },
-      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Відповідно до сюжету', 'Весела', 'Драматична', 'Спокійна'] },
-      { key: 'length', type: 'buttons', q: 'Бажана тривалість відео?', options: ['30 сек', '1 хв', '2-3 хв', 'Довше'] },
-      { key: 'platform', type: 'buttons', q: 'Де плануєте показувати відео?', options: ['Особисто на телефоні', 'Instagram/TikTok/Shorts', 'Facebook', 'На великому екрані'] },
-    ],
+  "fr": {
+    "photoNoticeKids": "📷 <b>Après ce formulaire, le bot demandera une photo de l’enfant (de préférence 2 photos — de face et de profil)</b> — c’est une étape obligatoire, sans elle nous ne pouvons pas créer le personnage.",
+    "photoNoticePets": "📷 <b>Après ce formulaire, le bot demandera une photo de votre animal</b> — c’est une étape obligatoire, sans elle nous ne pouvons pas rendre le personnage ressemblant.",
+    "photoNoticeAdult": "📷 <b>Après ce formulaire, le bot proposera d’envoyer une photo</b> — facultatif (la description de l’apparence est déjà ci-dessous), mais fortement recommandé pour une meilleure ressemblance.",
+    "kidsTitle": "🎬 Dessin Animé Personnalisé",
+    "kidsIntro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite.",
+    "kidsHeroName": "Le nom du héros ?",
+    "kidsGenreQ": "Quel genre ?",
+    "kidsGenderQ": "Garçon ou fille ?",
+    "kidsBoy": "Garçon",
+    "kidsGirl": "Fille",
+    "chooseTariff": "Choisissez une formule",
+    "chooseLevel": "Choisissez une formule",
+    "addMagic": "Ajouter un peu de magie ? (facultatif)",
+    "totalLabel": "Total à payer",
+    "totalSub": "Paiement en hryvnias au taux de la BNU le jour du paiement, hors TVA",
+    "submitBtn": "Envoyer le brief",
+    "requiredErr": "Ce champ est obligatoire",
+    "yourAnswer": "Votre réponse…",
+    "genrePickerTitle": "💌 Formats Adultes",
+    "genrePickerIntro": "Choisissez ce que vous voulez créer — nous vous montrerons ensuite les questions propres à ce format.",
+    "whichGenre": "Quel format ?",
+    "formTitle": "Brief"
   },
-  pets: {
-    title: '🐾 Мультфільм про улюбленця',
-    intro: 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.',
-    questions: [
-      { key: 'petType', type: 'buttons', q: 'Хто ваш улюбленець?', options: ['Котик', 'Песик', 'Птах', 'Гризун (кролик/хом\'як/свинка)', 'Екзотика (рептилія/риба/черепаха)'] },
-      { key: 'petName', q: 'Як звати улюбленця?' },
-      { key: 'petAge', type: 'buttons', q: 'Скільки років улюбленцю?', options: ['До 1 року', '1-3 роки', '4-7 років', '8-12 років', '13-20 років', '20+ років'] },
-      { key: 'appearance', q: 'Опишіть зовнішність улюбленця', hint: 'порода, забарвлення, особливі прикмети. Або надішліть фото боту після цього брифу.' },
-      { key: 'character', type: 'buttons', q: 'Головна риса характеру?', options: ['Грайливий/енергійний', 'Спокійний/лагідний', 'Пустотливий/непосида', 'Гордий/незалежний', 'Боязкий/сором\'язливий'] },
-      { key: 'mustHave', q: 'Що ОБОВ\'ЯЗКОВО має бути у відео?', hint: 'звичка улюбленця, улюблена іграшка/місце, конкретна сценка' },
-      { key: 'excludeThis', type: 'buttons', q: 'Чи є теми/деталі, яких точно не повинно бути?', options: ['Немає обмежень', 'Так, напишу окремо після брифу'] },
-      { key: 'style', type: 'buttons', q: 'Побажання щодо стилю?', options: ['Яскраво й весело', 'Тепло і сентиментально', 'З гумором'] },
-      { key: 'music', type: 'buttons', q: 'Настрій музики?', hint: 'конкретну відому пісню вставити не можемо (авторські права)', options: ['Весела', 'Спокійна', 'Енергійна', 'Зворушлива'] },
-      { key: 'promoConsent', type: 'buttons', q: 'Чи згодні ви, щоб ми показали вашого улюбленця (фото/фрагмент відео) у нашій рекламі чи портфоліо Cartobi?', hint: 'Не обов\'язково — можна відмовитись.', options: ['Так, згоден(на)', 'Ні, не показувати'] },
-    ],
-  },
+  "es": {
+    "photoNoticeKids": "📷 <b>Después de este formulario el bot pedirá una foto del niño/a (mejor 2 fotos — de frente y de perfil)</b> — es un paso obligatorio, sin ella no podemos crear el personaje.",
+    "photoNoticePets": "📷 <b>Después de este formulario el bot pedirá una foto de tu mascota</b> — es un paso obligatorio, sin ella no podemos hacer que el personaje se parezca.",
+    "photoNoticeAdult": "📷 <b>Después de este formulario el bot propondrá enviar una foto</b> — opcional (la descripción del aspecto ya está abajo), pero muy recomendable para un parecido más preciso.",
+    "kidsTitle": "🎬 Dibujo Animado Personal",
+    "kidsIntro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita.",
+    "kidsHeroName": "¿Nombre del protagonista?",
+    "kidsGenreQ": "¿Qué género?",
+    "kidsGenderQ": "¿Niño o niña?",
+    "kidsBoy": "Niño",
+    "kidsGirl": "Niña",
+    "chooseTariff": "Elige un nivel",
+    "chooseLevel": "Elige un nivel",
+    "addMagic": "¿Añadir un poco de magia? (opcional)",
+    "totalLabel": "Total a pagar",
+    "totalSub": "Pago en grivnas al tipo de cambio del NBU el día del pago, sin IVA",
+    "submitBtn": "Enviar el brief",
+    "requiredErr": "Este campo es obligatorio",
+    "yourAnswer": "Tu respuesta…",
+    "genrePickerTitle": "💌 Formatos para Adultos",
+    "genrePickerIntro": "Elige exactamente lo que quieres crear — luego te mostraremos las preguntas específicas para ese formato.",
+    "whichGenre": "¿Qué formato?",
+    "formTitle": "Brief"
+  }
 };
 
-// ---------- Дитяча лінійка — окрема логіка (ціни/ключі для боту) ----------
-const KIDS_TARIFFS = [
-  { key: 'start', label: 'Старт', price: 99, desc: '1 персонаж, хронометраж 40-50 секунд, 1-5 реплік персонажа (або без реплік), фонова музика. Розмір відео: 9:16 або 16:9.' },
-  { key: 'popular', label: 'Популярний', price: 199, desc: 'До 2 персонажів у кадрі, хронометраж 60-90 секунд, авторський сюжет, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9.' },
-  { key: 'premium', label: 'Premium', price: 399, desc: 'Хронометраж 90-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9.' },
-];
-const PET_TARIFFS = [
-  { key: 'start', label: 'Старт', price: 79, desc: '1 улюбленець, хронометраж 40-50 секунд, фонова музика. Розмір відео: 9:16 або 16:9.' },
-  { key: 'popular', label: 'Популярний', price: 149, desc: 'До 2 тварин у кадрі, хронометраж 60-90 секунд, авторський сюжет, елементи озвучки. Розмір відео: 9:16 або 16:9.' },
-  { key: 'premium', label: 'Premium', price: 299, desc: 'Хронометраж 90-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9.' },
-];
-const ADULT_TARIFFS = [
-  { key: 'start', label: 'Старт', price: 199, desc: '2 персонажі, хронометраж 60-90 секунд, компактна, але щира історія, до 5 діалогів персонажів' },
-  { key: 'expanded', label: 'Популярний', price: 399, desc: '2-4 персонажі, хронометраж 90-120 секунд, авторський сюжет, закадровий текст та/або діалоги із синхронізованим мовленням' },
-  { key: 'premium', label: 'Premium', price: 799, desc: 'Хронометраж 120-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням' },
-];
-const ADULT_GENRES = [
-  { key: 'romance', label: '💕 Романтична історія' },
-  { key: 'birthday', label: '🎉 День народження' },
-  { key: 'corporate', label: '🏢 Корпоративне відео' },
-  { key: 'wedding', label: '💍 Весільна історія' },
-];
-const KIDS_ADDONS = [
-  { key: 'voice', label: '🎤 Озвучка імені', price: 25 },
-  { key: 'second', label: '👨‍👩‍👧 Другий персонаж', price: 30 },
-];
-const KIDS_GENRES = ['Космос', 'Дракони', 'Казка', 'Машинки', 'Супергерої'];
+const ADULT_BRIEFS_I18N = {
+  "ua": {
+    "romance": {
+      "title": "💕 Романтична історія",
+      "intro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "Який привід?",
+          "hint": "освідчення, річниця, просто сюрприз, примирення тощо"
+        },
+        {
+          "key": "names",
+          "q": "Імена обох героїв (хто дарує і кому)?"
+        },
+        {
+          "key": "appearance",
+          "q": "Опишіть зовнішність обох",
+          "hint": "колір волосся, приблизний вік, стиль одягу. Або надішліть фото боту після цього брифу (краще по 2 фото на кожного — анфас і профіль)."
+        },
+        {
+          "key": "story",
+          "q": "Коротко історію стосунків або момент, який хочете показати?",
+          "hint": "як познайомились, спільний спогад тощо"
+        },
+        {
+          "key": "mustHave",
+          "q": "Що ОБОВ’ЯЗКОВО має бути у відео?",
+          "hint": "конкретна фраза, місце, деталь, подія"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є щось, чого точно НЕ повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "Де відбувається дія?",
+          "hint": "конкретне місто/місце, або можна вигадати мальовниче оточення"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Побажання щодо стилю?",
+          "options": [
+            "Романтично-ніжний",
+            "Яскравий/казковий",
+            "Сучасний реалістичний"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настрій музики?",
+          "hint": "конкретну відому пісню вставити не можемо (авторські права) — використовуємо ліцензійну музику",
+          "options": [
+            "Ніжна лірична",
+            "Енергійна",
+            "Весела"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Де плануєте показувати відео?",
+          "hint": "впливає на формат кадру. Розмір відео: 9:16 або 16:9.",
+          "options": [
+            "Особисто на телефоні",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "На великому екрані"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 День народження",
+      "intro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "Ім’я іменинника/іменинниці?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "Скільки виповнюється?",
+          "options": [
+            "1-3 роки",
+            "4-6 років",
+            "7-12 років",
+            "13-17 років",
+            "18-30 років",
+            "31-50 років",
+            "50+ років"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Опишіть зовнішність іменинника",
+          "hint": "колір волосся, стиль. Або надішліть фото боту після цього брифу."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "Головна тема захоплень?",
+          "options": [
+            "Спорт",
+            "Музика",
+            "Подорожі",
+            "Ігри/технології",
+            "Кулінарія",
+            "Тварини",
+            "Мода/краса",
+            "Інше — напишу окремо"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Що ОБОВ’ЯЗКОВО має бути у відео?",
+          "hint": "внутрішній жарт, конкретна подія, фраза"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є теми/деталі, яких точно не повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "Від кого привітання?",
+          "hint": "ім’я/імена — що хочете побажати чи сказати"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Побажання щодо стилю?",
+          "options": [
+            "Весело й яскраво",
+            "Тепло і сентиментально",
+            "З гумором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настрій музики?",
+          "hint": "конкретну відому пісню вставити не можемо (авторські права)",
+          "options": [
+            "Весела",
+            "Святкова",
+            "Зворушлива",
+            "Енергійна"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Корпоративне відео",
+      "intro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після затвердження сценарію.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "Назва компанії / бренду?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "Мета відео?",
+          "options": [
+            "Привітання команди/клієнтів",
+            "Презентація продукту",
+            "Навчальний ролик",
+            "Інше — напишу окремо"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "Для кого відео?",
+          "options": [
+            "Внутрішня команда",
+            "Клієнти",
+            "Соцмережі"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "Головна думка/меседж, яку відео має донести?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Які конкретні сцени/моменти ОБОВ’ЯЗКОВО мають бути показані?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є теми/образи, яких точно не повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "Брендбук/логотип/фірмові кольори?",
+          "hint": "опишіть, або надішліть після брифу"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "Чи потрібен текст на екрані?",
+          "options": [
+            "Так, українською",
+            "Так, англійською",
+            "Не потрібен"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Дикторська озвучка?",
+          "options": [
+            "Так, діловий тон",
+            "Так, дружній тон",
+            "Не потрібна"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Бажана тривалість відео?",
+          "options": [
+            "30 сек",
+            "1 хв",
+            "2-3 хв",
+            "Довше"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Весільна історія",
+      "intro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "Імена нареченого і нареченої?"
+        },
+        {
+          "key": "appearance",
+          "q": "Опишіть зовнішність обох",
+          "hint": "або надішліть фото боту після цього брифу"
+        },
+        {
+          "key": "story",
+          "q": "Коротко історію пари?",
+          "hint": "як познайомились, скільки разом, особливий момент"
+        },
+        {
+          "key": "mustHave",
+          "q": "Що ОБОВ’ЯЗКОВО має бути показано?",
+          "hint": "освідчення, перший танець, конкретне місце весілля"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є щось, чого точно НЕ повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "Дата весілля?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "Де плануєте показувати відео?",
+          "options": [
+            "На весіллі як сюрприз",
+            "У соцмережах",
+            "Як запрошення гостям"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Побажання щодо стилю?",
+          "options": [
+            "Казковий (принцеса/принц)",
+            "Елегантний реалістичний",
+            "З гумором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настрій музики?",
+          "hint": "конкретну відому пісню вставити не можемо (авторські права)",
+          "options": [
+            "Урочиста",
+            "Ніжна",
+            "Романтична"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Мультфільм за сценарієм",
+      "intro": "Дам трохи більше питань, ніж зазвичай про ваш сценарій — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — до 5 днів після оплати (залежно від складності та тривалості).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Опишіть сюжет вашого сценарію",
+          "hint": "детальний опис — повний текст сценарію можна надіслати боту окремо після цього брифу"
+        },
+        {
+          "key": "characters",
+          "q": "Скільки персонажів, хто вони і як виглядають?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Які конкретні сцени/репліки ОБОВ’ЯЗКОВО мають бути присутні дослівно?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є щось, чого точно НЕ повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Бажаний візуальний стиль?",
+          "options": [
+            "Реалістична 3D-анімація",
+            "Казковий",
+            "Сучасний плоский стиль"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Озвучка персонажів?",
+          "options": [
+            "Так, українською",
+            "Так, англійською",
+            "Не потрібна"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настрій музики?",
+          "hint": "конкретну відому пісню вставити не можемо (авторські права)",
+          "options": [
+            "Відповідно до сюжету",
+            "Весела",
+            "Драматична",
+            "Спокійна"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Бажана тривалість відео?",
+          "options": [
+            "30 сек",
+            "1 хв",
+            "2-3 хв",
+            "Довше"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Де плануєте показувати відео?",
+          "options": [
+            "Особисто на телефоні",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "На великому екрані"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Мультфільм про улюбленця",
+      "intro": "Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка. Виготовлення — 48-72 години після оплати.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "Хто ваш улюбленець?",
+          "options": [
+            "Котик",
+            "Песик",
+            "Птах",
+            "Гризун (кролик/хом’як/свинка)",
+            "Екзотика (рептилія/риба/черепаха)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "Як звати улюбленця?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "Скільки років улюбленцю?",
+          "options": [
+            "До 1 року",
+            "1-3 роки",
+            "4-7 років",
+            "8-12 років",
+            "13-20 років",
+            "20+ років"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Опишіть зовнішність улюбленця",
+          "hint": "порода, забарвлення, особливі прикмети. Або надішліть фото боту після цього брифу."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "Головна риса характеру?",
+          "options": [
+            "Грайливий/енергійний",
+            "Спокійний/лагідний",
+            "Пустотливий/непосида",
+            "Гордий/незалежний",
+            "Боязкий/сором’язливий"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Що ОБОВ’ЯЗКОВО має бути у відео?",
+          "hint": "звичка улюбленця, улюблена іграшка/місце, конкретна сценка"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Чи є теми/деталі, яких точно не повинно бути?",
+          "options": [
+            "Немає обмежень",
+            "Так, напишу окремо після брифу"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Побажання щодо стилю?",
+          "options": [
+            "Яскраво й весело",
+            "Тепло і сентиментально",
+            "З гумором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настрій музики?",
+          "hint": "конкретну відому пісню вставити не можемо (авторські права)",
+          "options": [
+            "Весела",
+            "Спокійна",
+            "Енергійна",
+            "Зворушлива"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "Чи згодні ви, щоб ми показали вашого улюбленця (фото/фрагмент відео) у нашій рекламі чи портфоліо Cartobi?",
+          "hint": "Не обов’язково — можна відмовитись.",
+          "options": [
+            "Так, згоден(на)",
+            "Ні, не показувати"
+          ]
+        }
+      ]
+    }
+  },
+  "en": {
+    "romance": {
+      "title": "💕 Love Story",
+      "intro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — up to 5 days after payment (depending on complexity and length).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "What's the occasion?",
+          "hint": "a proposal, an anniversary, just a surprise, making up, etc."
+        },
+        {
+          "key": "names",
+          "q": "Names of both characters (who's giving and to whom)?"
+        },
+        {
+          "key": "appearance",
+          "q": "Describe both of their looks",
+          "hint": "hair color, approximate age, clothing style. Or send a photo to the bot after this brief (preferably 2 photos per person — front and profile)."
+        },
+        {
+          "key": "story",
+          "q": "Briefly, the story of your relationship or the moment you want to show?",
+          "hint": "how you met, a shared memory, etc."
+        },
+        {
+          "key": "mustHave",
+          "q": "What MUST be in the video?",
+          "hint": "a specific phrase, place, detail, event"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Is there anything that definitely should NOT be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "Where does it take place?",
+          "hint": "a specific city/place, or we can invent a scenic setting"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Style preference?",
+          "options": [
+            "Romantic and tender",
+            "Bright/fairy-tale",
+            "Modern realistic"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Music mood?",
+          "hint": "we can't use a specific well-known song (copyright) — we use licensed music",
+          "options": [
+            "Tender lyrical",
+            "Energetic",
+            "Cheerful"
+          ]
+        },
+        {
+          "key": "platform",
+          "q": "Where do you plan to show the video?",
+          "type": "buttons",
+          "hint": "affects the frame format. Video size: 9:16 or 16:9.",
+          "options": [
+            "In person on the phone",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "On a big screen"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 Birthday",
+      "intro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — up to 5 days after payment (depending on complexity and length).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "Name of the birthday person?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "How old are they turning?",
+          "options": [
+            "1-3 years",
+            "4-6 years",
+            "7-12 years",
+            "13-17 years",
+            "18-30 years",
+            "31-50 years",
+            "50+ years"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Describe the birthday person's looks",
+          "hint": "hair color, style. Or send a photo to the bot after this brief."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "Main interest/hobby?",
+          "options": [
+            "Sports",
+            "Music",
+            "Travel",
+            "Games/tech",
+            "Cooking",
+            "Animals",
+            "Fashion/beauty",
+            "Other — I'll write separately"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "What MUST be in the video?",
+          "hint": "an inside joke, a specific event, a phrase"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Are there topics/details that definitely shouldn't be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "Who's the greeting from?",
+          "hint": "name(s) — what you want to wish or say"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Style preference?",
+          "options": [
+            "Fun and bright",
+            "Warm and sentimental",
+            "With humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Music mood?",
+          "hint": "we can't use a specific well-known song (copyright)",
+          "options": [
+            "Cheerful",
+            "Festive",
+            "Touching",
+            "Energetic"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Corporate Video",
+      "intro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — up to 5 days after the script is approved.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "Company / brand name?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "Video goal?",
+          "options": [
+            "Greeting team/clients",
+            "Product presentation",
+            "Training video",
+            "Other — I'll write separately"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "Who is the video for?",
+          "options": [
+            "Internal team",
+            "Clients",
+            "Social media"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "The main idea/message the video should convey?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Which specific scenes/moments MUST be shown?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Are there topics/imagery that definitely shouldn't be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "Brand book/logo/brand colors?",
+          "hint": "describe, or send after the brief"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "Do you need on-screen text?",
+          "options": [
+            "Yes, in Ukrainian",
+            "Yes, in English",
+            "Not needed"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Narrator voiceover?",
+          "options": [
+            "Yes, formal tone",
+            "Yes, friendly tone",
+            "Not needed"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Desired video length?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Longer"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Wedding Story",
+      "intro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — up to 5 days after payment (depending on complexity and length).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "Names of the bride and groom?"
+        },
+        {
+          "key": "appearance",
+          "q": "Describe both of their looks",
+          "hint": "or send a photo to the bot after this brief"
+        },
+        {
+          "key": "story",
+          "q": "Briefly, the couple's story?",
+          "hint": "how you met, how long together, a special moment"
+        },
+        {
+          "key": "mustHave",
+          "q": "What MUST be shown?",
+          "hint": "the proposal, first dance, a specific wedding venue"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Is there anything that definitely should NOT be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "Wedding date?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "Where do you plan to show the video?",
+          "options": [
+            "At the wedding as a surprise",
+            "On social media",
+            "As an invitation for guests"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Style preference?",
+          "options": [
+            "Fairy-tale (princess/prince)",
+            "Elegant realistic",
+            "With humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Music mood?",
+          "hint": "we can't use a specific well-known song (copyright)",
+          "options": [
+            "Solemn",
+            "Tender",
+            "Romantic"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Custom Script Cartoon",
+      "intro": "I'll ask a few more questions than usual about your script — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — up to 5 days after payment (depending on complexity and length).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Describe your script's plot",
+          "hint": "a detailed description — you can send the full script text to the bot separately after this brief"
+        },
+        {
+          "key": "characters",
+          "q": "How many characters, who are they, and what do they look like?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Which specific scenes/lines MUST be present verbatim?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Is there anything that definitely should NOT be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Desired visual style?",
+          "options": [
+            "Realistic 3D animation",
+            "Fairy-tale",
+            "Modern flat style"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Character voiceover?",
+          "options": [
+            "Yes, in Ukrainian",
+            "Yes, in English",
+            "Not needed"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Music mood?",
+          "hint": "we can't use a specific well-known song (copyright)",
+          "options": [
+            "Matching the plot",
+            "Cheerful",
+            "Dramatic",
+            "Calm"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Desired video length?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Longer"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Where do you plan to show the video?",
+          "options": [
+            "In person on the phone",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "On a big screen"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Pet Cartoon",
+      "intro": "I'll ask a few more questions than usual — so the result matches exactly what you have in mind, since the price includes only 1 free revision. Delivery — 48-72 hours after payment.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "Who's your pet?",
+          "options": [
+            "Cat",
+            "Dog",
+            "Bird",
+            "Rodent (rabbit/hamster/guinea pig)",
+            "Exotic (reptile/fish/turtle)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "Your pet's name?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "How old is your pet?",
+          "options": [
+            "Under 1 year",
+            "1-3 years",
+            "4-7 years",
+            "8-12 years",
+            "13-20 years",
+            "20+ years"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Describe your pet's looks",
+          "hint": "breed, coloring, distinctive features. Or send a photo to the bot after this brief."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "Main character trait?",
+          "options": [
+            "Playful/energetic",
+            "Calm/gentle",
+            "Mischievous/restless",
+            "Proud/independent",
+            "Timid/shy"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "What MUST be in the video?",
+          "hint": "a habit of your pet, a favorite toy/spot, a specific scene"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Are there topics/details that definitely shouldn't be there?",
+          "options": [
+            "No restrictions",
+            "Yes, I'll write separately after the brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Style preference?",
+          "options": [
+            "Bright and fun",
+            "Warm and sentimental",
+            "With humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Music mood?",
+          "hint": "we can't use a specific well-known song (copyright)",
+          "options": [
+            "Cheerful",
+            "Calm",
+            "Energetic",
+            "Touching"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "Do you agree to let us feature your pet (photo/video clip) in Cartobi's advertising or portfolio?",
+          "hint": "Optional — you can decline.",
+          "options": [
+            "Yes, I agree",
+            "No, don't show it"
+          ]
+        }
+      ]
+    }
+  },
+  "ru": {
+    "romance": {
+      "title": "💕 Романтическая история",
+      "intro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — до 5 дней после оплаты (в зависимости от сложности и длительности).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "Какой повод?",
+          "hint": "предложение руки и сердца, годовщина, просто сюрприз, примирение и т.п."
+        },
+        {
+          "key": "names",
+          "q": "Имена обоих героев (кто дарит и кому)?"
+        },
+        {
+          "key": "appearance",
+          "q": "Опишите внешность обоих",
+          "hint": "цвет волос, приблизительный возраст, стиль одежды. Или пришлите фото боту после этого брифа (лучше по 2 фото на каждого — анфас и профиль)."
+        },
+        {
+          "key": "story",
+          "q": "Кратко историю отношений или момент, который хотите показать?",
+          "hint": "как познакомились, общее воспоминание и т.п."
+        },
+        {
+          "key": "mustHave",
+          "q": "Что ОБЯЗАТЕЛЬНО должно быть в видео?",
+          "hint": "конкретная фраза, место, деталь, событие"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли что-то, чего точно НЕ должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "Где происходит действие?",
+          "hint": "конкретный город/место, или можно придумать живописное окружение"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Пожелания по стилю?",
+          "options": [
+            "Романтично-нежный",
+            "Яркий/сказочный",
+            "Современный реалистичный"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настроение музыки?",
+          "hint": "конкретную известную песню вставить не можем (авторские права) — используем лицензионную музыку",
+          "options": [
+            "Нежная лирическая",
+            "Энергичная",
+            "Весёлая"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Где планируете показывать видео?",
+          "hint": "влияет на формат кадра. Размер видео: 9:16 или 16:9.",
+          "options": [
+            "Лично на телефоне",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "На большом экране"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 День рождения",
+      "intro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — до 5 дней после оплаты (в зависимости от сложности и длительности).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "Имя именинника/именинницы?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "Сколько исполняется?",
+          "options": [
+            "1-3 года",
+            "4-6 лет",
+            "7-12 лет",
+            "13-17 лет",
+            "18-30 лет",
+            "31-50 лет",
+            "50+ лет"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Опишите внешность именинника",
+          "hint": "цвет волос, стиль. Или пришлите фото боту после этого брифа."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "Главная тема увлечений?",
+          "options": [
+            "Спорт",
+            "Музыка",
+            "Путешествия",
+            "Игры/технологии",
+            "Кулинария",
+            "Животные",
+            "Мода/красота",
+            "Другое — напишу отдельно"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Что ОБЯЗАТЕЛЬНО должно быть в видео?",
+          "hint": "внутренняя шутка, конкретное событие, фраза"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли темы/детали, которых точно не должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "От кого поздравление?",
+          "hint": "имя/имена — что хотите пожелать или сказать"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Пожелания по стилю?",
+          "options": [
+            "Весело и ярко",
+            "Тепло и сентиментально",
+            "С юмором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настроение музыки?",
+          "hint": "конкретную известную песню вставить не можем (авторские права)",
+          "options": [
+            "Весёлая",
+            "Праздничная",
+            "Трогательная",
+            "Энергичная"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Корпоративное видео",
+      "intro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — до 5 дней после утверждения сценария.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "Название компании / бренда?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "Цель видео?",
+          "options": [
+            "Поздравление команды/клиентов",
+            "Презентация продукта",
+            "Обучающий ролик",
+            "Другое — напишу отдельно"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "Для кого видео?",
+          "options": [
+            "Внутренняя команда",
+            "Клиенты",
+            "Соцсети"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "Главная мысль/месседж, которую видео должно донести?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Какие конкретные сцены/моменты ОБЯЗАТЕЛЬНО должны быть показаны?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли темы/образы, которых точно не должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "Брендбук/логотип/фирменные цвета?",
+          "hint": "опишите, или пришлите после брифа"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "Нужен ли текст на экране?",
+          "options": [
+            "Да, на украинском",
+            "Да, на английском",
+            "Не нужен"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Дикторская озвучка?",
+          "options": [
+            "Да, деловой тон",
+            "Да, дружеский тон",
+            "Не нужна"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Желаемая длительность видео?",
+          "options": [
+            "30 сек",
+            "1 мин",
+            "2-3 мин",
+            "Дольше"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Свадебная история",
+      "intro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — до 5 дней после оплаты (в зависимости от сложности и длительности).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "Имена жениха и невесты?"
+        },
+        {
+          "key": "appearance",
+          "q": "Опишите внешность обоих",
+          "hint": "или пришлите фото боту после этого брифа"
+        },
+        {
+          "key": "story",
+          "q": "Кратко историю пары?",
+          "hint": "как познакомились, сколько вместе, особый момент"
+        },
+        {
+          "key": "mustHave",
+          "q": "Что ОБЯЗАТЕЛЬНО должно быть показано?",
+          "hint": "предложение руки и сердца, первый танец, конкретное место свадьбы"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли что-то, чего точно НЕ должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "Дата свадьбы?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "Где планируете показывать видео?",
+          "options": [
+            "На свадьбе как сюрприз",
+            "В соцсетях",
+            "Как приглашение гостям"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Пожелания по стилю?",
+          "options": [
+            "Сказочный (принцесса/принц)",
+            "Элегантный реалистичный",
+            "С юмором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настроение музыки?",
+          "hint": "конкретную известную песню вставить не можем (авторские права)",
+          "options": [
+            "Торжественная",
+            "Нежная",
+            "Романтичная"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Мультфильм по сценарию",
+      "intro": "Задам чуть больше вопросов о вашем сценарии, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — до 5 дней после оплаты (в зависимости от сложности и длительности).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Опишите сюжет вашего сценария",
+          "hint": "подробное описание — полный текст сценария можно прислать боту отдельно после этого брифа"
+        },
+        {
+          "key": "characters",
+          "q": "Сколько персонажей, кто они и как выглядят?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Какие конкретные сцены/реплики ОБЯЗАТЕЛЬНО должны присутствовать дословно?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли что-то, чего точно НЕ должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Желаемый визуальный стиль?",
+          "options": [
+            "Реалистичная 3D-анимация",
+            "Сказочный",
+            "Современный плоский стиль"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Озвучка персонажей?",
+          "options": [
+            "Да, на украинском",
+            "Да, на английском",
+            "Не нужна"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настроение музыки?",
+          "hint": "конкретную известную песню вставить не можем (авторские права)",
+          "options": [
+            "Соответственно сюжету",
+            "Весёлая",
+            "Драматичная",
+            "Спокойная"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Желаемая длительность видео?",
+          "options": [
+            "30 сек",
+            "1 мин",
+            "2-3 мин",
+            "Дольше"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Где планируете показывать видео?",
+          "options": [
+            "Лично на телефоне",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "На большом экране"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Мультфильм о питомце",
+      "intro": "Задам чуть больше вопросов, чем обычно — чтобы результат точно совпал с тем, что вы представляете, ведь в стоимость входит только 1 бесплатная правка. Изготовление — 48-72 часа после оплаты.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "Кто ваш питомец?",
+          "options": [
+            "Кот",
+            "Пёс",
+            "Птица",
+            "Грызун (кролик/хомяк/свинка)",
+            "Экзотика (рептилия/рыба/черепаха)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "Как зовут питомца?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "Сколько лет питомцу?",
+          "options": [
+            "До 1 года",
+            "1-3 года",
+            "4-7 лет",
+            "8-12 лет",
+            "13-20 лет",
+            "20+ лет"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Опишите внешность питомца",
+          "hint": "порода, окрас, особые приметы. Или пришлите фото боту после этого брифа."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "Главная черта характера?",
+          "options": [
+            "Игривый/энергичный",
+            "Спокойный/ласковый",
+            "Озорной/непоседа",
+            "Гордый/независимый",
+            "Робкий/застенчивый"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Что ОБЯЗАТЕЛЬНО должно быть в видео?",
+          "hint": "привычка питомца, любимая игрушка/место, конкретная сценка"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Есть ли темы/детали, которых точно не должно быть?",
+          "options": [
+            "Нет ограничений",
+            "Да, напишу отдельно после брифа"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Пожелания по стилю?",
+          "options": [
+            "Ярко и весело",
+            "Тепло и сентиментально",
+            "С юмором"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Настроение музыки?",
+          "hint": "конкретную известную песню вставить не можем (авторские права)",
+          "options": [
+            "Весёлая",
+            "Спокойная",
+            "Энергичная",
+            "Трогательная"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "Согласны ли вы, чтобы мы показали вашего питомца (фото/фрагмент видео) в нашей рекламе или портфолио Cartobi?",
+          "hint": "Не обязательно — можно отказаться.",
+          "options": [
+            "Да, согласен(на)",
+            "Нет, не показывать"
+          ]
+        }
+      ]
+    }
+  },
+  "it": {
+    "romance": {
+      "title": "💕 Storia d’amore",
+      "intro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — fino a 5 giorni dopo il pagamento (a seconda di complessità e durata).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "Qual è l’occasione?",
+          "hint": "una proposta, un anniversario, una semplice sorpresa, una riconciliazione, ecc."
+        },
+        {
+          "key": "names",
+          "q": "Nomi di entrambi i protagonisti (chi regala e a chi)?"
+        },
+        {
+          "key": "appearance",
+          "q": "Descrivi l’aspetto di entrambi",
+          "hint": "colore dei capelli, età approssimativa, stile di abbigliamento. Oppure invia una foto al bot dopo questo brief (meglio 2 foto a testa — frontale e di profilo)."
+        },
+        {
+          "key": "story",
+          "q": "Brevemente, la storia della vostra relazione o il momento che vuoi mostrare?",
+          "hint": "come vi siete conosciuti, un ricordo comune, ecc."
+        },
+        {
+          "key": "mustHave",
+          "q": "Cosa DEVE assolutamente esserci nel video?",
+          "hint": "una frase specifica, un luogo, un dettaglio, un evento"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "C’è qualcosa che di sicuro NON deve esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "Dove si svolge la scena?",
+          "hint": "una città/luogo specifico, oppure possiamo inventare un’ambientazione suggestiva"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Preferenze di stile?",
+          "options": [
+            "Romantico e tenero",
+            "Vivace/fiabesco",
+            "Moderno realistico"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Che atmosfera musicale?",
+          "hint": "non possiamo inserire una canzone specifica famosa (diritti d’autore) — usiamo musica su licenza",
+          "options": [
+            "Tenera e lirica",
+            "Energica",
+            "Allegra"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Dove pensi di mostrare il video?",
+          "hint": "influisce sul formato del video. Formato video: 9:16 o 16:9.",
+          "options": [
+            "Di persona sul telefono",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "Su un grande schermo"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 Compleanno",
+      "intro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — fino a 5 giorni dopo il pagamento (a seconda di complessità e durata).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "Nome del festeggiato/a?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "Quanti anni compie?",
+          "options": [
+            "1-3 anni",
+            "4-6 anni",
+            "7-12 anni",
+            "13-17 anni",
+            "18-30 anni",
+            "31-50 anni",
+            "50+ anni"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Descrivi l’aspetto del festeggiato/a",
+          "hint": "colore dei capelli, stile. Oppure invia una foto al bot dopo questo brief."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "Interesse/hobby principale?",
+          "options": [
+            "Sport",
+            "Musica",
+            "Viaggi",
+            "Giochi/tecnologia",
+            "Cucina",
+            "Animali",
+            "Moda/bellezza",
+            "Altro — lo scriverò separatamente"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Cosa DEVE assolutamente esserci nel video?",
+          "hint": "una battuta interna, un evento specifico, una frase"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Ci sono temi/dettagli che di sicuro non devono esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "Da parte di chi è l’augurio?",
+          "hint": "nome/i — cosa vuoi augurare o dire"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Preferenze di stile?",
+          "options": [
+            "Allegro e vivace",
+            "Caldo e sentimentale",
+            "Con umorismo"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Che atmosfera musicale?",
+          "hint": "non possiamo inserire una canzone specifica famosa (diritti d’autore)",
+          "options": [
+            "Allegra",
+            "Festosa",
+            "Commovente",
+            "Energica"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Video aziendale",
+      "intro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — fino a 5 giorni dopo l’approvazione della sceneggiatura.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "Nome dell’azienda / brand?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "Obiettivo del video?",
+          "options": [
+            "Augurio al team/clienti",
+            "Presentazione prodotto",
+            "Video formativo",
+            "Altro — lo scriverò separatamente"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "Per chi è il video?",
+          "options": [
+            "Team interno",
+            "Clienti",
+            "Social media"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "Il messaggio principale che il video deve trasmettere?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Quali scene/momenti specifici DEVONO essere mostrati?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Ci sono temi/immagini che di sicuro non devono esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "Brand book/logo/colori aziendali?",
+          "hint": "descrivi, o invia dopo il brief"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "Serve del testo a schermo?",
+          "options": [
+            "Sì, in ucraino",
+            "Sì, in inglese",
+            "Non serve"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Voce narrante?",
+          "options": [
+            "Sì, tono formale",
+            "Sì, tono amichevole",
+            "Non serve"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Durata desiderata del video?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Più lungo"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Storia di matrimonio",
+      "intro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — fino a 5 giorni dopo il pagamento (a seconda di complessità e durata).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "Nomi dello sposo e della sposa?"
+        },
+        {
+          "key": "appearance",
+          "q": "Descrivi l’aspetto di entrambi",
+          "hint": "oppure invia una foto al bot dopo questo brief"
+        },
+        {
+          "key": "story",
+          "q": "Brevemente, la storia della coppia?",
+          "hint": "come vi siete conosciuti, da quanto state insieme, un momento speciale"
+        },
+        {
+          "key": "mustHave",
+          "q": "Cosa DEVE essere mostrato?",
+          "hint": "la proposta, il primo ballo, un luogo specifico del matrimonio"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "C’è qualcosa che di sicuro NON deve esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "Data del matrimonio?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "Dove pensi di mostrare il video?",
+          "options": [
+            "Al matrimonio come sorpresa",
+            "Sui social media",
+            "Come invito per gli ospiti"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Preferenze di stile?",
+          "options": [
+            "Fiabesco (principessa/principe)",
+            "Elegante realistico",
+            "Con umorismo"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Che atmosfera musicale?",
+          "hint": "non possiamo inserire una canzone specifica famosa (diritti d’autore)",
+          "options": [
+            "Solenne",
+            "Tenera",
+            "Romantica"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Cartone su sceneggiatura propria",
+      "intro": "Farò qualche domanda in più del solito sulla tua sceneggiatura — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — fino a 5 giorni dopo il pagamento (a seconda di complessità e durata).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Descrivi la trama della tua sceneggiatura",
+          "hint": "una descrizione dettagliata — puoi inviare il testo completo della sceneggiatura al bot separatamente dopo questo brief"
+        },
+        {
+          "key": "characters",
+          "q": "Quanti personaggi, chi sono e che aspetto hanno?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Quali scene/battute specifiche DEVONO essere presenti testualmente?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "C’è qualcosa che di sicuro NON deve esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Stile visivo desiderato?",
+          "options": [
+            "Animazione 3D realistica",
+            "Fiabesco",
+            "Stile piatto moderno"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Doppiaggio dei personaggi?",
+          "options": [
+            "Sì, in ucraino",
+            "Sì, in inglese",
+            "Non serve"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Che atmosfera musicale?",
+          "hint": "non possiamo inserire una canzone specifica famosa (diritti d’autore)",
+          "options": [
+            "In base alla trama",
+            "Allegra",
+            "Drammatica",
+            "Tranquilla"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Durata desiderata del video?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Più lungo"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Dove pensi di mostrare il video?",
+          "options": [
+            "Di persona sul telefono",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "Su un grande schermo"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Cartone sul tuo animale",
+      "intro": "Farò qualche domanda in più del solito — perché il risultato corrisponda esattamente a ciò che hai in mente, dato che il prezzo include solo 1 revisione gratuita. Realizzazione — 48-72 ore dopo il pagamento.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "Chi è il tuo animale?",
+          "options": [
+            "Gatto",
+            "Cane",
+            "Uccello",
+            "Roditore (coniglio/criceto/porcellino d’India)",
+            "Esotico (rettile/pesce/tartaruga)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "Come si chiama il tuo animale?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "Quanti anni ha il tuo animale?",
+          "options": [
+            "Meno di 1 anno",
+            "1-3 anni",
+            "4-7 anni",
+            "8-12 anni",
+            "13-20 anni",
+            "20+ anni"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Descrivi l’aspetto del tuo animale",
+          "hint": "razza, colore, tratti particolari. Oppure invia una foto al bot dopo questo brief."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "Tratto caratteriale principale?",
+          "options": [
+            "Giocoso/energico",
+            "Calmo/dolce",
+            "Birichino/vivace",
+            "Fiero/indipendente",
+            "Timido/pauroso"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Cosa DEVE assolutamente esserci nel video?",
+          "hint": "un’abitudine dell’animale, un giocattolo/posto preferito, una scena specifica"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Ci sono temi/dettagli che di sicuro non devono esserci?",
+          "options": [
+            "Nessuna restrizione",
+            "Sì, lo scriverò separatamente dopo il brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Preferenze di stile?",
+          "options": [
+            "Vivace e divertente",
+            "Caldo e sentimentale",
+            "Con umorismo"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Che atmosfera musicale?",
+          "hint": "non possiamo inserire una canzone specifica famosa (diritti d’autore)",
+          "options": [
+            "Allegra",
+            "Tranquilla",
+            "Energica",
+            "Commovente"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "Sei d’accordo che mostriamo il tuo animale (foto/frammento video) nella pubblicità o nel portfolio di Cartobi?",
+          "hint": "Facoltativo — puoi rifiutare.",
+          "options": [
+            "Sì, sono d’accordo",
+            "No, non mostrarlo"
+          ]
+        }
+      ]
+    }
+  },
+  "fr": {
+    "romance": {
+      "title": "💕 Histoire d’amour",
+      "intro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — jusqu’à 5 jours après le paiement (selon la complexité et la durée).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "Quelle est l’occasion ?",
+          "hint": "une demande en mariage, un anniversaire, une simple surprise, une réconciliation, etc."
+        },
+        {
+          "key": "names",
+          "q": "Prénoms des deux personnages (qui offre et à qui) ?"
+        },
+        {
+          "key": "appearance",
+          "q": "Décrivez l’apparence des deux",
+          "hint": "couleur des cheveux, âge approximatif, style vestimentaire. Ou envoyez une photo au bot après ce brief (de préférence 2 photos par personne — de face et de profil)."
+        },
+        {
+          "key": "story",
+          "q": "Brièvement, l’histoire de votre relation ou le moment que vous voulez montrer ?",
+          "hint": "comment vous vous êtes rencontrés, un souvenir commun, etc."
+        },
+        {
+          "key": "mustHave",
+          "q": "Que DOIT-il absolument y avoir dans la vidéo ?",
+          "hint": "une phrase précise, un lieu, un détail, un événement"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il quelque chose qui ne doit vraiment PAS y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "Où se déroule l’action ?",
+          "hint": "une ville/un lieu précis, ou nous pouvons imaginer un cadre pittoresque"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Préférence de style ?",
+          "options": [
+            "Romantique et tendre",
+            "Vif/féerique",
+            "Moderne réaliste"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Ambiance musicale ?",
+          "hint": "nous ne pouvons pas insérer une chanson connue précise (droits d’auteur) — nous utilisons de la musique sous licence",
+          "options": [
+            "Tendre et lyrique",
+            "Énergique",
+            "Joyeuse"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Où comptez-vous montrer la vidéo ?",
+          "hint": "influe sur le format de l’image. Format vidéo : 9:16 ou 16:9.",
+          "options": [
+            "En personne sur le téléphone",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "Sur grand écran"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 Anniversaire",
+      "intro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — jusqu’à 5 jours après le paiement (selon la complexité et la durée).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "Prénom de la personne fêtée ?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "Quel âge va-t-elle avoir ?",
+          "options": [
+            "1-3 ans",
+            "4-6 ans",
+            "7-12 ans",
+            "13-17 ans",
+            "18-30 ans",
+            "31-50 ans",
+            "50+ ans"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Décrivez l’apparence de la personne fêtée",
+          "hint": "couleur des cheveux, style. Ou envoyez une photo au bot après ce brief."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "Principal centre d’intérêt ?",
+          "options": [
+            "Sport",
+            "Musique",
+            "Voyages",
+            "Jeux/technologie",
+            "Cuisine",
+            "Animaux",
+            "Mode/beauté",
+            "Autre — je l’écrirai séparément"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Que DOIT-il absolument y avoir dans la vidéo ?",
+          "hint": "une blague interne, un événement précis, une phrase"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il des sujets/détails qui ne doivent vraiment pas y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "De la part de qui est le message ?",
+          "hint": "prénom(s) — ce que vous voulez souhaiter ou dire"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Préférence de style ?",
+          "options": [
+            "Joyeux et vif",
+            "Chaleureux et sentimental",
+            "Avec humour"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Ambiance musicale ?",
+          "hint": "nous ne pouvons pas insérer une chanson connue précise (droits d’auteur)",
+          "options": [
+            "Joyeuse",
+            "Festive",
+            "Émouvante",
+            "Énergique"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Vidéo d’entreprise",
+      "intro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — jusqu’à 5 jours après validation du scénario.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "Nom de l’entreprise / marque ?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "Objectif de la vidéo ?",
+          "options": [
+            "Message à l’équipe/aux clients",
+            "Présentation de produit",
+            "Vidéo de formation",
+            "Autre — je l’écrirai séparément"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "Pour qui est la vidéo ?",
+          "options": [
+            "Équipe interne",
+            "Clients",
+            "Réseaux sociaux"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "Le message principal que la vidéo doit transmettre ?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Quelles scènes/moments précis DOIVENT être montrés ?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il des sujets/images qui ne doivent vraiment pas y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "Charte graphique/logo/couleurs de marque ?",
+          "hint": "décrivez-les, ou envoyez-les après le brief"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "Faut-il du texte à l’écran ?",
+          "options": [
+            "Oui, en ukrainien",
+            "Oui, en anglais",
+            "Pas nécessaire"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Voix off de narrateur ?",
+          "options": [
+            "Oui, ton formel",
+            "Oui, ton amical",
+            "Pas nécessaire"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Durée souhaitée de la vidéo ?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Plus long"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Histoire de mariage",
+      "intro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — jusqu’à 5 jours après le paiement (selon la complexité et la durée).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "Prénoms des mariés ?"
+        },
+        {
+          "key": "appearance",
+          "q": "Décrivez l’apparence des deux",
+          "hint": "ou envoyez une photo au bot après ce brief"
+        },
+        {
+          "key": "story",
+          "q": "Brièvement, l’histoire du couple ?",
+          "hint": "comment vous vous êtes rencontrés, depuis combien de temps, un moment spécial"
+        },
+        {
+          "key": "mustHave",
+          "q": "Que DOIT-il être montré ?",
+          "hint": "la demande en mariage, la première danse, un lieu précis du mariage"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il quelque chose qui ne doit vraiment PAS y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "Date du mariage ?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "Où comptez-vous montrer la vidéo ?",
+          "options": [
+            "Au mariage en surprise",
+            "Sur les réseaux sociaux",
+            "Comme invitation aux invités"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Préférence de style ?",
+          "options": [
+            "Féerique (princesse/prince)",
+            "Élégant réaliste",
+            "Avec humour"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Ambiance musicale ?",
+          "hint": "nous ne pouvons pas insérer une chanson connue précise (droits d’auteur)",
+          "options": [
+            "Solennelle",
+            "Tendre",
+            "Romantique"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Dessin animé sur votre scénario",
+      "intro": "Je vais poser un peu plus de questions que d’habitude sur votre scénario — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — jusqu’à 5 jours après le paiement (selon la complexité et la durée).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Décrivez l’intrigue de votre scénario",
+          "hint": "une description détaillée — vous pouvez envoyer le texte complet du scénario au bot séparément après ce brief"
+        },
+        {
+          "key": "characters",
+          "q": "Combien de personnages, qui sont-ils et à quoi ressemblent-ils ?"
+        },
+        {
+          "key": "mustHave",
+          "q": "Quelles scènes/répliques précises DOIVENT figurer mot pour mot ?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il quelque chose qui ne doit vraiment PAS y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Style visuel souhaité ?",
+          "options": [
+            "Animation 3D réaliste",
+            "Féerique",
+            "Style plat moderne"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "Doublage des personnages ?",
+          "options": [
+            "Oui, en ukrainien",
+            "Oui, en anglais",
+            "Pas nécessaire"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Ambiance musicale ?",
+          "hint": "nous ne pouvons pas insérer une chanson connue précise (droits d’auteur)",
+          "options": [
+            "Selon l’intrigue",
+            "Joyeuse",
+            "Dramatique",
+            "Calme"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "Durée souhaitée de la vidéo ?",
+          "options": [
+            "30 sec",
+            "1 min",
+            "2-3 min",
+            "Plus long"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "Où comptez-vous montrer la vidéo ?",
+          "options": [
+            "En personne sur le téléphone",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "Sur grand écran"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Dessin animé sur votre animal",
+      "intro": "Je vais poser un peu plus de questions que d’habitude — pour que le résultat corresponde exactement à ce que vous imaginez, car le prix n’inclut qu’une seule retouche gratuite. Réalisation — 48-72 heures après le paiement.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "Qui est votre animal ?",
+          "options": [
+            "Chat",
+            "Chien",
+            "Oiseau",
+            "Rongeur (lapin/hamster/cochon d’Inde)",
+            "Exotique (reptile/poisson/tortue)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "Le nom de votre animal ?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "Quel âge a votre animal ?",
+          "options": [
+            "Moins d’1 an",
+            "1-3 ans",
+            "4-7 ans",
+            "8-12 ans",
+            "13-20 ans",
+            "20+ ans"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Décrivez l’apparence de votre animal",
+          "hint": "race, couleur, signes particuliers. Ou envoyez une photo au bot après ce brief."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "Principal trait de caractère ?",
+          "options": [
+            "Joueur/énergique",
+            "Calme/doux",
+            "Espiègle/agité",
+            "Fier/indépendant",
+            "Timide/craintif"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "Que DOIT-il absolument y avoir dans la vidéo ?",
+          "hint": "une habitude de votre animal, un jouet/endroit préféré, une scène précise"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "Y a-t-il des sujets/détails qui ne doivent vraiment pas y être ?",
+          "options": [
+            "Aucune restriction",
+            "Oui, je l’écrirai séparément après le brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "Préférence de style ?",
+          "options": [
+            "Vif et amusant",
+            "Chaleureux et sentimental",
+            "Avec humour"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "Ambiance musicale ?",
+          "hint": "nous ne pouvons pas insérer une chanson connue précise (droits d’auteur)",
+          "options": [
+            "Joyeuse",
+            "Calme",
+            "Énergique",
+            "Émouvante"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "Acceptez-vous que nous montrions votre animal (photo/extrait vidéo) dans les publicités ou le portfolio de Cartobi ?",
+          "hint": "Facultatif — vous pouvez refuser.",
+          "options": [
+            "Oui, j’accepte",
+            "Non, ne pas le montrer"
+          ]
+        }
+      ]
+    }
+  },
+  "es": {
+    "romance": {
+      "title": "💕 Historia de amor",
+      "intro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — hasta 5 días después del pago (según la complejidad y duración).",
+      "questions": [
+        {
+          "key": "occasion",
+          "q": "¿Cuál es la ocasión?",
+          "hint": "una propuesta, un aniversario, una simple sorpresa, una reconciliación, etc."
+        },
+        {
+          "key": "names",
+          "q": "¿Nombres de ambos personajes (quién regala y a quién)?"
+        },
+        {
+          "key": "appearance",
+          "q": "Describe el aspecto de ambos",
+          "hint": "color de pelo, edad aproximada, estilo de ropa. O envía una foto al bot después de este brief (mejor 2 fotos por persona — de frente y de perfil)."
+        },
+        {
+          "key": "story",
+          "q": "Brevemente, ¿la historia de su relación o el momento que quieres mostrar?",
+          "hint": "cómo se conocieron, un recuerdo compartido, etc."
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué DEBE haber sí o sí en el vídeo?",
+          "hint": "una frase concreta, un lugar, un detalle, un evento"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay algo que definitivamente NO debe aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "setting",
+          "q": "¿Dónde ocurre la acción?",
+          "hint": "una ciudad/lugar concreto, o podemos inventar un entorno pintoresco"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "¿Preferencia de estilo?",
+          "options": [
+            "Romántico y tierno",
+            "Vivo/de cuento",
+            "Moderno realista"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "¿Qué ambiente musical?",
+          "hint": "no podemos usar una canción concreta conocida (derechos de autor) — usamos música con licencia",
+          "options": [
+            "Tierna y lírica",
+            "Enérgica",
+            "Alegre"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "¿Dónde piensas mostrar el vídeo?",
+          "hint": "afecta al formato de la imagen. Tamaño de vídeo: 9:16 o 16:9.",
+          "options": [
+            "En persona en el teléfono",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "En una pantalla grande"
+          ]
+        }
+      ]
+    },
+    "birthday": {
+      "title": "🎉 Cumpleaños",
+      "intro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — hasta 5 días después del pago (según la complejidad y duración).",
+      "questions": [
+        {
+          "key": "name",
+          "q": "¿Nombre del homenajeado/a?"
+        },
+        {
+          "key": "age",
+          "type": "buttons",
+          "q": "¿Cuántos años cumple?",
+          "options": [
+            "1-3 años",
+            "4-6 años",
+            "7-12 años",
+            "13-17 años",
+            "18-30 años",
+            "31-50 años",
+            "50+ años"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Describe el aspecto del homenajeado/a",
+          "hint": "color de pelo, estilo. O envía una foto al bot después de este brief."
+        },
+        {
+          "key": "interests",
+          "type": "buttons",
+          "q": "¿Principal interés/afición?",
+          "options": [
+            "Deporte",
+            "Música",
+            "Viajes",
+            "Juegos/tecnología",
+            "Cocina",
+            "Animales",
+            "Moda/belleza",
+            "Otro — lo escribiré aparte"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué DEBE haber sí o sí en el vídeo?",
+          "hint": "una broma interna, un evento concreto, una frase"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay temas/detalles que definitivamente no deben aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "from",
+          "q": "¿De parte de quién es el saludo?",
+          "hint": "nombre(s) — qué quieres desear o decir"
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "¿Preferencia de estilo?",
+          "options": [
+            "Divertido y alegre",
+            "Cálido y sentimental",
+            "Con humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "¿Qué ambiente musical?",
+          "hint": "no podemos usar una canción concreta conocida (derechos de autor)",
+          "options": [
+            "Alegre",
+            "Festiva",
+            "Emotiva",
+            "Enérgica"
+          ]
+        }
+      ]
+    },
+    "corporate": {
+      "title": "🏢 Vídeo corporativo",
+      "intro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — hasta 5 días después de aprobar el guion.",
+      "questions": [
+        {
+          "key": "company",
+          "q": "¿Nombre de la empresa / marca?"
+        },
+        {
+          "key": "goal",
+          "type": "buttons",
+          "q": "¿Objetivo del vídeo?",
+          "options": [
+            "Saludo al equipo/clientes",
+            "Presentación de producto",
+            "Vídeo formativo",
+            "Otro — lo escribiré aparte"
+          ]
+        },
+        {
+          "key": "audience",
+          "type": "buttons",
+          "q": "¿Para quién es el vídeo?",
+          "options": [
+            "Equipo interno",
+            "Clientes",
+            "Redes sociales"
+          ]
+        },
+        {
+          "key": "keyMessage",
+          "q": "¿La idea/mensaje principal que debe transmitir el vídeo?"
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué escenas/momentos concretos DEBEN mostrarse?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay temas/imágenes que definitivamente no deben aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "brand",
+          "q": "¿Manual de marca/logo/colores corporativos?",
+          "hint": "descríbelos, o envíalos después del brief"
+        },
+        {
+          "key": "onScreenText",
+          "type": "buttons",
+          "q": "¿Necesitas texto en pantalla?",
+          "options": [
+            "Sí, en ucraniano",
+            "Sí, en inglés",
+            "No es necesario"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "¿Locución de narrador?",
+          "options": [
+            "Sí, tono formal",
+            "Sí, tono amistoso",
+            "No es necesaria"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "¿Duración deseada del vídeo?",
+          "options": [
+            "30 seg",
+            "1 min",
+            "2-3 min",
+            "Más largo"
+          ]
+        }
+      ]
+    },
+    "wedding": {
+      "title": "💍 Historia de boda",
+      "intro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — hasta 5 días después del pago (según la complejidad y duración).",
+      "questions": [
+        {
+          "key": "names",
+          "q": "¿Nombres de los novios?"
+        },
+        {
+          "key": "appearance",
+          "q": "Describe el aspecto de ambos",
+          "hint": "o envía una foto al bot después de este brief"
+        },
+        {
+          "key": "story",
+          "q": "Brevemente, ¿la historia de la pareja?",
+          "hint": "cómo se conocieron, cuánto tiempo llevan juntos, un momento especial"
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué DEBE mostrarse?",
+          "hint": "la propuesta, el primer baile, un lugar concreto de la boda"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay algo que definitivamente NO debe aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "weddingDate",
+          "q": "¿Fecha de la boda?"
+        },
+        {
+          "key": "usage",
+          "type": "buttons",
+          "q": "¿Dónde piensas mostrar el vídeo?",
+          "options": [
+            "En la boda como sorpresa",
+            "En redes sociales",
+            "Como invitación para los invitados"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "¿Preferencia de estilo?",
+          "options": [
+            "De cuento (princesa/príncipe)",
+            "Elegante realista",
+            "Con humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "¿Qué ambiente musical?",
+          "hint": "no podemos usar una canción concreta conocida (derechos de autor)",
+          "options": [
+            "Solemne",
+            "Tierna",
+            "Romántica"
+          ]
+        }
+      ]
+    },
+    "script": {
+      "title": "📝 Dibujo animado con guion propio",
+      "intro": "Haré algunas preguntas más de lo habitual sobre tu guion — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — hasta 5 días después del pago (según la complejidad y duración).",
+      "questions": [
+        {
+          "key": "scriptText",
+          "q": "Describe la trama de tu guion",
+          "hint": "una descripción detallada — puedes enviar el texto completo del guion al bot por separado después de este brief"
+        },
+        {
+          "key": "characters",
+          "q": "¿Cuántos personajes hay, quiénes son y qué aspecto tienen?"
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué escenas/frases concretas DEBEN estar presentes textualmente?"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay algo que definitivamente NO debe aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "¿Estilo visual deseado?",
+          "options": [
+            "Animación 3D realista",
+            "De cuento",
+            "Estilo plano moderno"
+          ]
+        },
+        {
+          "key": "voiceover",
+          "type": "buttons",
+          "q": "¿Doblaje de los personajes?",
+          "options": [
+            "Sí, en ucraniano",
+            "Sí, en inglés",
+            "No es necesario"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "¿Qué ambiente musical?",
+          "hint": "no podemos usar una canción concreta conocida (derechos de autor)",
+          "options": [
+            "Según la trama",
+            "Alegre",
+            "Dramática",
+            "Tranquila"
+          ]
+        },
+        {
+          "key": "length",
+          "type": "buttons",
+          "q": "¿Duración deseada del vídeo?",
+          "options": [
+            "30 seg",
+            "1 min",
+            "2-3 min",
+            "Más largo"
+          ]
+        },
+        {
+          "key": "platform",
+          "type": "buttons",
+          "q": "¿Dónde piensas mostrar el vídeo?",
+          "options": [
+            "En persona en el teléfono",
+            "Instagram/TikTok/Shorts",
+            "Facebook",
+            "En una pantalla grande"
+          ]
+        }
+      ]
+    },
+    "pets": {
+      "title": "🐾 Dibujo animado de tu mascota",
+      "intro": "Haré algunas preguntas más de lo habitual — para que el resultado coincida exactamente con lo que imaginas, ya que el precio incluye solo 1 revisión gratuita. Entrega — 48-72 horas después del pago.",
+      "questions": [
+        {
+          "key": "petType",
+          "type": "buttons",
+          "q": "¿Quién es tu mascota?",
+          "options": [
+            "Gato",
+            "Perro",
+            "Ave",
+            "Roedor (conejo/hámster/cobaya)",
+            "Exótico (reptil/pez/tortuga)"
+          ]
+        },
+        {
+          "key": "petName",
+          "q": "¿Nombre de tu mascota?"
+        },
+        {
+          "key": "petAge",
+          "type": "buttons",
+          "q": "¿Cuántos años tiene tu mascota?",
+          "options": [
+            "Menos de 1 año",
+            "1-3 años",
+            "4-7 años",
+            "8-12 años",
+            "13-20 años",
+            "20+ años"
+          ]
+        },
+        {
+          "key": "appearance",
+          "q": "Describe el aspecto de tu mascota",
+          "hint": "raza, color, señas particulares. O envía una foto al bot después de este brief."
+        },
+        {
+          "key": "character",
+          "type": "buttons",
+          "q": "¿Principal rasgo de carácter?",
+          "options": [
+            "Juguetón/enérgico",
+            "Tranquilo/cariñoso",
+            "Travieso/inquieto",
+            "Orgulloso/independiente",
+            "Tímido/miedoso"
+          ]
+        },
+        {
+          "key": "mustHave",
+          "q": "¿Qué DEBE haber sí o sí en el vídeo?",
+          "hint": "una costumbre de tu mascota, un juguete/lugar favorito, una escena concreta"
+        },
+        {
+          "key": "excludeThis",
+          "type": "buttons",
+          "q": "¿Hay temas/detalles que definitivamente no deben aparecer?",
+          "options": [
+            "Sin restricciones",
+            "Sí, lo escribiré aparte después del brief"
+          ]
+        },
+        {
+          "key": "style",
+          "type": "buttons",
+          "q": "¿Preferencia de estilo?",
+          "options": [
+            "Vivo y divertido",
+            "Cálido y sentimental",
+            "Con humor"
+          ]
+        },
+        {
+          "key": "music",
+          "type": "buttons",
+          "q": "¿Qué ambiente musical?",
+          "hint": "no podemos usar una canción concreta conocida (derechos de autor)",
+          "options": [
+            "Alegre",
+            "Tranquila",
+            "Enérgica",
+            "Emotiva"
+          ]
+        },
+        {
+          "key": "promoConsent",
+          "type": "buttons",
+          "q": "¿Aceptas que mostremos a tu mascota (foto/fragmento de vídeo) en la publicidad o el portfolio de Cartobi?",
+          "hint": "Opcional — puedes rechazarlo.",
+          "options": [
+            "Sí, acepto",
+            "No, no mostrarlo"
+          ]
+        }
+      ]
+    }
+  }
+};
 
+const KIDS_TARIFFS_I18N = {
+  "ua": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 99,
+      "desc": "1 персонаж, хронометраж 40-50 секунд, 1-5 реплік персонажа (або без реплік), фонова музика. Розмір відео: 9:16 або 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Популярний",
+      "price": 199,
+      "desc": "До 2 персонажів у кадрі, хронометраж 60-90 секунд, авторський сюжет, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Хронометраж 90-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9."
+    }
+  ],
+  "en": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 99,
+      "desc": "1 character, runtime 40-50 seconds, 1-5 character lines (or none), background music. Video size: 9:16 or 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popular",
+      "price": 199,
+      "desc": "Up to 2 characters in frame, runtime 60-90 seconds, original story, voiceover narration and/or lip-synced dialogue. Video size: 9:16 or 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Runtime 90-180 seconds, extended story, voiceover narration and/or lip-synced dialogue. Video size: 9:16 or 16:9."
+    }
+  ],
+  "ru": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 99,
+      "desc": "1 персонаж, хронометраж 40-50 секунд, 1-5 реплик персонажа (или без реплик), фоновая музыка. Размер видео: 9:16 или 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Популярный",
+      "price": 199,
+      "desc": "До 2 персонажей в кадре, хронометраж 60-90 секунд, авторский сюжет, закадровый текст и/или диалоги с синхронизацией речи. Размер видео: 9:16 или 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Хронометраж 90-180 секунд, расширенная история, закадровый текст и/или диалоги с синхронизацией речи. Размер видео: 9:16 или 16:9."
+    }
+  ],
+  "it": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 99,
+      "desc": "1 personaggio, durata 40-50 secondi, 1-5 battute del personaggio (o nessuna), musica di sottofondo. Formato video: 9:16 o 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popolare",
+      "price": 199,
+      "desc": "Fino a 2 personaggi in scena, durata 60-90 secondi, trama originale, voce narrante e/o dialoghi con sincronizzazione labiale. Formato video: 9:16 o 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Durata 90-180 secondi, storia estesa, voce narrante e/o dialoghi con sincronizzazione labiale. Formato video: 9:16 o 16:9."
+    }
+  ],
+  "fr": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 99,
+      "desc": "1 personnage, durée 40-50 secondes, 1-5 répliques du personnage (ou aucune), musique de fond. Format vidéo : 9:16 ou 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Populaire",
+      "price": 199,
+      "desc": "Jusqu’à 2 personnages à l’écran, durée 60-90 secondes, scénario original, voix off et/ou dialogues avec synchronisation labiale. Format vidéo : 9:16 ou 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Durée 90-180 secondes, histoire étendue, voix off et/ou dialogues avec synchronisation labiale. Format vidéo : 9:16 ou 16:9."
+    }
+  ],
+  "es": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 99,
+      "desc": "1 personaje, duración 40-50 segundos, 1-5 frases del personaje (o ninguna), música de fondo. Tamaño de vídeo: 9:16 o 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popular",
+      "price": 199,
+      "desc": "Hasta 2 personajes en pantalla, duración 60-90 segundos, historia original, narración en off y/o diálogos con sincronización labial. Tamaño de vídeo: 9:16 o 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 399,
+      "desc": "Duración 90-180 segundos, historia ampliada, narración en off y/o diálogos con sincronización labial. Tamaño de vídeo: 9:16 o 16:9."
+    }
+  ]
+};
+
+const PET_TARIFFS_I18N = {
+  "ua": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 79,
+      "desc": "1 улюбленець, хронометраж 40-50 секунд, фонова музика. Розмір відео: 9:16 або 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Популярний",
+      "price": 149,
+      "desc": "До 2 тварин у кадрі, хронометраж 60-90 секунд, авторський сюжет, елементи озвучки. Розмір відео: 9:16 або 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Хронометраж 90-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням. Розмір відео: 9:16 або 16:9."
+    }
+  ],
+  "en": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 79,
+      "desc": "1 pet, runtime 40-50 seconds, background music. Video size: 9:16 or 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popular",
+      "price": 149,
+      "desc": "Up to 2 animals in frame, runtime 60-90 seconds, original story, voiceover elements. Video size: 9:16 or 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Runtime 90-180 seconds, extended story, voiceover narration and/or lip-synced dialogue. Video size: 9:16 or 16:9."
+    }
+  ],
+  "ru": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 79,
+      "desc": "1 питомец, хронометраж 40-50 секунд, фоновая музыка. Размер видео: 9:16 или 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Популярный",
+      "price": 149,
+      "desc": "До 2 животных в кадре, хронометраж 60-90 секунд, авторский сюжет, элементы озвучки. Размер видео: 9:16 или 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Хронометраж 90-180 секунд, расширенная история, закадровый текст и/или диалоги с синхронизацией речи. Размер видео: 9:16 или 16:9."
+    }
+  ],
+  "it": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 79,
+      "desc": "1 animale, durata 40-50 secondi, musica di sottofondo. Formato video: 9:16 o 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popolare",
+      "price": 149,
+      "desc": "Fino a 2 animali in scena, durata 60-90 secondi, trama originale, elementi di doppiaggio. Formato video: 9:16 o 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Durata 90-180 secondi, storia estesa, voce narrante e/o dialoghi con sincronizzazione labiale. Formato video: 9:16 o 16:9."
+    }
+  ],
+  "fr": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 79,
+      "desc": "1 animal, durée 40-50 secondes, musique de fond. Format vidéo : 9:16 ou 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Populaire",
+      "price": 149,
+      "desc": "Jusqu’à 2 animaux à l’écran, durée 60-90 secondes, scénario original, éléments de doublage. Format vidéo : 9:16 ou 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Durée 90-180 secondes, histoire étendue, voix off et/ou dialogues avec synchronisation labiale. Format vidéo : 9:16 ou 16:9."
+    }
+  ],
+  "es": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 79,
+      "desc": "1 mascota, duración 40-50 segundos, música de fondo. Tamaño de vídeo: 9:16 o 16:9."
+    },
+    {
+      "key": "popular",
+      "label": "Popular",
+      "price": 149,
+      "desc": "Hasta 2 animales en pantalla, duración 60-90 segundos, historia original, elementos de doblaje. Tamaño de vídeo: 9:16 o 16:9."
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 299,
+      "desc": "Duración 90-180 segundos, historia ampliada, narración en off y/o diálogos con sincronización labial. Tamaño de vídeo: 9:16 o 16:9."
+    }
+  ]
+};
+
+const ADULT_TARIFFS_I18N = {
+  "ua": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 199,
+      "desc": "2 персонажі, хронометраж 60-90 секунд, компактна, але щира історія, до 5 діалогів персонажів"
+    },
+    {
+      "key": "expanded",
+      "label": "Популярний",
+      "price": 399,
+      "desc": "2-4 персонажі, хронометраж 90-120 секунд, авторський сюжет, закадровий текст та/або діалоги із синхронізованим мовленням"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Хронометраж 120-180 секунд, розширена історія, закадровий текст та/або діалоги із синхронізованим мовленням"
+    }
+  ],
+  "en": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 199,
+      "desc": "2 characters, runtime 60-90 seconds, compact but heartfelt story, up to 5 character dialogue lines"
+    },
+    {
+      "key": "expanded",
+      "label": "Popular",
+      "price": 399,
+      "desc": "2-4 characters, runtime 90-120 seconds, original story, voiceover narration and/or lip-synced dialogue"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Runtime 120-180 seconds, extended story, voiceover narration and/or lip-synced dialogue"
+    }
+  ],
+  "ru": [
+    {
+      "key": "start",
+      "label": "Старт",
+      "price": 199,
+      "desc": "2 персонажа, хронометраж 60-90 секунд, компактная, но искренняя история, до 5 диалогов персонажей"
+    },
+    {
+      "key": "expanded",
+      "label": "Популярный",
+      "price": 399,
+      "desc": "2-4 персонажа, хронометраж 90-120 секунд, авторский сюжет, закадровый текст и/или диалоги с синхронизацией речи"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Хронометраж 120-180 секунд, расширенная история, закадровый текст и/или диалоги с синхронизацией речи"
+    }
+  ],
+  "it": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 199,
+      "desc": "2 personaggi, durata 60-90 secondi, storia compatta ma sincera, fino a 5 battute di dialogo"
+    },
+    {
+      "key": "expanded",
+      "label": "Popolare",
+      "price": 399,
+      "desc": "2-4 personaggi, durata 90-120 secondi, trama originale, voce narrante e/o dialoghi con sincronizzazione labiale"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Durata 120-180 secondi, storia estesa, voce narrante e/o dialoghi con sincronizzazione labiale"
+    }
+  ],
+  "fr": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 199,
+      "desc": "2 personnages, durée 60-90 secondes, histoire compacte mais sincère, jusqu’à 5 répliques de dialogue"
+    },
+    {
+      "key": "expanded",
+      "label": "Populaire",
+      "price": 399,
+      "desc": "2-4 personnages, durée 90-120 secondes, scénario original, voix off et/ou dialogues avec synchronisation labiale"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Durée 120-180 secondes, histoire étendue, voix off et/ou dialogues avec synchronisation labiale"
+    }
+  ],
+  "es": [
+    {
+      "key": "start",
+      "label": "Start",
+      "price": 199,
+      "desc": "2 personajes, duración 60-90 segundos, historia compacta pero sincera, hasta 5 frases de diálogo"
+    },
+    {
+      "key": "expanded",
+      "label": "Popular",
+      "price": 399,
+      "desc": "2-4 personajes, duración 90-120 segundos, historia original, narración en off y/o diálogos con sincronización labial"
+    },
+    {
+      "key": "premium",
+      "label": "Premium",
+      "price": 799,
+      "desc": "Duración 120-180 segundos, historia ampliada, narración en off y/o diálogos con sincronización labial"
+    }
+  ]
+};
+
+const ADULT_GENRES_I18N = {
+  "ua": [
+    {
+      "key": "romance",
+      "label": "💕 Романтична історія"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 День народження"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Корпоративне відео"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Весільна історія"
+    }
+  ],
+  "en": [
+    {
+      "key": "romance",
+      "label": "💕 Love Story"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 Birthday"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Corporate Video"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Wedding Story"
+    }
+  ],
+  "ru": [
+    {
+      "key": "romance",
+      "label": "💕 Романтическая история"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 День рождения"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Корпоративное видео"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Свадебная история"
+    }
+  ],
+  "it": [
+    {
+      "key": "romance",
+      "label": "💕 Storia d’amore"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 Compleanno"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Video aziendale"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Storia di matrimonio"
+    }
+  ],
+  "fr": [
+    {
+      "key": "romance",
+      "label": "💕 Histoire d’amour"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 Anniversaire"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Vidéo d’entreprise"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Histoire de mariage"
+    }
+  ],
+  "es": [
+    {
+      "key": "romance",
+      "label": "💕 Historia de amor"
+    },
+    {
+      "key": "birthday",
+      "label": "🎉 Cumpleaños"
+    },
+    {
+      "key": "corporate",
+      "label": "🏢 Vídeo corporativo"
+    },
+    {
+      "key": "wedding",
+      "label": "💍 Historia de boda"
+    }
+  ]
+};
+
+const KIDS_ADDONS_I18N = {
+  "ua": [
+    {
+      "key": "voice",
+      "label": "🎤 Озвучка імені",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Другий персонаж",
+      "price": 30
+    }
+  ],
+  "en": [
+    {
+      "key": "voice",
+      "label": "🎤 Name voiceover",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Second character",
+      "price": 30
+    }
+  ],
+  "ru": [
+    {
+      "key": "voice",
+      "label": "🎤 Озвучка имени",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Второй персонаж",
+      "price": 30
+    }
+  ],
+  "it": [
+    {
+      "key": "voice",
+      "label": "🎤 Doppiaggio del nome",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Secondo personaggio",
+      "price": 30
+    }
+  ],
+  "fr": [
+    {
+      "key": "voice",
+      "label": "🎤 Voix off du prénom",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Deuxième personnage",
+      "price": 30
+    }
+  ],
+  "es": [
+    {
+      "key": "voice",
+      "label": "🎤 Locución del nombre",
+      "price": 25
+    },
+    {
+      "key": "second",
+      "label": "👨‍👩‍👧 Segundo personaje",
+      "price": 30
+    }
+  ]
+};
+
+const KIDS_GENRES_I18N = {
+  "ua": [
+    "Космос",
+    "Дракони",
+    "Казка",
+    "Машинки",
+    "Супергерої"
+  ],
+  "en": [
+    "Space",
+    "Dragons",
+    "Fairy Tale",
+    "Cars",
+    "Superheroes"
+  ],
+  "ru": [
+    "Космос",
+    "Драконы",
+    "Сказка",
+    "Машинки",
+    "Супергерои"
+  ],
+  "it": [
+    "Spazio",
+    "Draghi",
+    "Fiaba",
+    "Macchine",
+    "Supereroi"
+  ],
+  "fr": [
+    "Espace",
+    "Dragons",
+    "Conte de fées",
+    "Voitures",
+    "Super-héros"
+  ],
+  "es": [
+    "Espacio",
+    "Dragones",
+    "Cuento de hadas",
+    "Coches",
+    "Superhéroes"
+  ]
+};
+
+// ---------- UI перемикача мови ----------
+const langSwitcherEl = document.getElementById('langSwitcher');
+function renderLangSwitcher() {
+  langSwitcherEl.innerHTML = '';
+  SUPPORTED_BRIEF_LANGS.forEach((l) => {
+    const chip = document.createElement('div');
+    chip.className = 'lang-chip' + (l === currentLang ? ' selected' : '');
+    chip.textContent = LANG_LABELS[l];
+    chip.onclick = () => {
+      if (l === currentLang) return;
+      currentLang = l;
+      localStorage.setItem('cartobi_brief_lang', l);
+      renderLangSwitcher();
+      applyStaticTexts();
+      form.innerHTML = '';
+      Object.keys(answers).forEach((k) => delete answers[k]);
+      totalBar.classList.remove('show');
+      if (track === 'adult') renderGenrePicker(); else renderForm();
+    };
+    langSwitcherEl.appendChild(chip);
+  });
+}
+
+function applyStaticTexts() {
+  const t = UI_TXT[currentLang];
+  document.title = 'Cartobi — ' + t.formTitle;
+  document.getElementById('totalLabelEl').textContent = t.totalLabel;
+  document.getElementById('totalSubEl').textContent = t.totalSub;
+  submitBtn.textContent = t.submitBtn;
+}
 const form = document.getElementById('briefForm');
 const titleEl = document.getElementById('title');
 const introEl = document.getElementById('intro');
 const submitBtn = document.getElementById('submitBtn');
 const totalBar = document.getElementById('totalBar');
 const totalVal = document.getElementById('totalVal');
+renderLangSwitcher();
+applyStaticTexts();
 
 const answers = {}; // key -> value, зібрані тут і надсилаються боту одним payload
 
@@ -273,7 +3939,7 @@ function chipsField(container, key, options, multi) {
 
 function textField(container, key, placeholder) {
   const el = document.createElement('textarea');
-  el.placeholder = placeholder || 'Ваша відповідь…';
+  el.placeholder = placeholder || UI_TXT[currentLang].yourAnswer;
   el.rows = 2;
   el.oninput = () => { answers[key] = el.value.trim(); validateForm(); };
   container.appendChild(el);
@@ -297,7 +3963,7 @@ function addQuestion(idx, total, q) {
   }
   const err = document.createElement('div');
   err.className = 'err';
-  err.textContent = 'Це поле обов\'язкове';
+  err.textContent = UI_TXT[currentLang].requiredErr;
   wrap.appendChild(err);
   form.appendChild(wrap);
 }
@@ -332,15 +3998,16 @@ function renderTariffBlock(tariffs, label, unit) {
 }
 
 function renderGenrePicker() {
-  titleEl.textContent = '💌 Дорослі формати';
-  introEl.textContent = 'Оберіть, що саме хочете створити — далі покажемо питання саме під цей формат.';
+  const t = UI_TXT[currentLang];
+  titleEl.textContent = t.genrePickerTitle;
+  introEl.textContent = t.genrePickerIntro;
   photoNoticeEl.style.display = 'none';
   const wrap = document.createElement('div');
   wrap.className = 'q';
-  wrap.innerHTML = '<div class="q-label">Який жанр?</div>';
+  wrap.innerHTML = `<div class="q-label">${t.whichGenre}</div>`;
   const chips = document.createElement('div');
   chips.className = 'chips';
-  ADULT_GENRES.forEach((g) => {
+  ADULT_GENRES_I18N[currentLang].forEach((g) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
     chip.textContent = g.label;
@@ -360,37 +4027,38 @@ function renderGenrePicker() {
 
 function renderForm() {
   isKids = track === 'kids';
+  const t = UI_TXT[currentLang];
 
   if (isKids) {
-    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото дитини (краще 2 фото — анфас і профіль)</b> — це обов\'язковий крок, без нього не можемо зробити персонажа.';
+    photoNoticeEl.innerHTML = t.photoNoticeKids;
   } else if (track === 'pets') {
-    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов\'язковий крок, без нього не можемо зробити персонажа схожим.';
+    photoNoticeEl.innerHTML = t.photoNoticePets;
   } else {
-    photoNoticeEl.innerHTML = '📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов\'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.';
+    photoNoticeEl.innerHTML = t.photoNoticeAdult;
   }
 
   if (isKids) {
-    titleEl.textContent = '🎬 Персональний мультфільм';
-    introEl.textContent = 'Дам трохи більше питань, ніж зазвичай — щоб результат точно збігся з тим, що ви уявляєте, адже у вартість входить лише 1 безкоштовна правка.';
+    titleEl.textContent = t.kidsTitle;
+    introEl.textContent = t.kidsIntro;
 
-    allQuestions = [{ key: 'name', q: 'Ім\'я героя?' }];
-    if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: 'Який жанр?', options: KIDS_GENRES });
-    allQuestions.push({ key: 'gender', type: 'buttons', q: 'Хлопчик чи дівчинка?', options: ['Хлопчик', 'Дівчинка'] });
+    allQuestions = [{ key: 'name', q: t.kidsHeroName }];
+    if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: t.kidsGenreQ, options: KIDS_GENRES_I18N[currentLang] });
+    allQuestions.push({ key: 'gender', type: 'buttons', q: t.kidsGenderQ, options: [t.kidsBoy, t.kidsGirl] });
 
     allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length + 2, q));
 
     if (presetGenre) answers.interest = presetGenre;
 
-    renderTariffBlock(KIDS_TARIFFS, 'Оберіть тариф');
+    renderTariffBlock(KIDS_TARIFFS_I18N[currentLang], t.chooseTariff);
 
     // Допродажі — мультивибір
     const addonsWrap = document.createElement('div');
     addonsWrap.className = 'q';
-    addonsWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 2}/${allQuestions.length + 2}</span>Додати трохи магії? (необов'язково)</div>`;
+    addonsWrap.innerHTML = `<div class="q-label"><span class="q-num">${allQuestions.length + 2}/${allQuestions.length + 2}</span>${t.addMagic}</div>`;
     const addonsChips = document.createElement('div');
     addonsChips.className = 'chips';
     answers.addons = [];
-    KIDS_ADDONS.forEach((a) => {
+    KIDS_ADDONS_I18N[currentLang].forEach((a) => {
       const chip = document.createElement('div');
       chip.className = 'chip';
       chip.innerHTML = `${a.label} — <span class="price-tag">+$${a.price}</span>`;
@@ -405,18 +4073,21 @@ function renderForm() {
     addonsWrap.appendChild(addonsChips);
     form.appendChild(addonsWrap);
   } else {
-    const brief = ADULT_BRIEFS[track] || ADULT_BRIEFS.romance;
+    const brief = ADULT_BRIEFS_I18N[currentLang][track] || ADULT_BRIEFS_I18N[currentLang].romance;
     titleEl.textContent = brief.title;
     introEl.textContent = brief.intro;
     allQuestions = brief.questions;
     allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
 
     if (track === 'pets') {
-      renderTariffBlock(PET_TARIFFS, 'Оберіть рівень');
+      renderTariffBlock(PET_TARIFFS_I18N[currentLang], t.chooseLevel);
     } else {
       // романтика / день народження / корпоратив / весілля / сценарій —
-      // єдина сітка рівнів, як домовились з Ігорем
-      renderTariffBlock(ADULT_TARIFFS, 'Оберіть рівень', '/1.5 хв');
+      // єдина сітка рівнів, як домовились з Ігорем. 10.08: прибрав хибний
+      // юніт "/1.5 хв" — тарифи вже давно фіксовані пакети (Старт/
+      // Популярний/Premium), а не почасова оплата, юніт після ціни був
+      // залишком старої моделі і зараз показував би оманливе "$199/1.5 хв".
+      renderTariffBlock(ADULT_TARIFFS_I18N[currentLang], t.chooseLevel);
     }
   }
   submitBtn.style.display = '';
@@ -435,22 +4106,22 @@ if (track === 'adult') {
 
 function updateTotals() {
   if (isKids) {
-    const t = KIDS_TARIFFS.find((x) => x.key === answers.tariff);
+    const t = KIDS_TARIFFS_I18N[currentLang].find((x) => x.key === answers.tariff);
     let total = t ? t.price : 0;
     (answers.addons || []).forEach((k) => {
-      const a = KIDS_ADDONS.find((x) => x.key === k);
+      const a = KIDS_ADDONS_I18N[currentLang].find((x) => x.key === k);
       if (a) total += a.price;
     });
     totalVal.textContent = '$' + total;
     return;
   }
   if (track === 'pets') {
-    const t = PET_TARIFFS.find((x) => x.key === answers.tariff);
+    const t = PET_TARIFFS_I18N[currentLang].find((x) => x.key === answers.tariff);
     totalVal.textContent = '$' + (t ? t.price : 0);
     return;
   }
-  if (ADULT_BRIEFS[track]) {
-    const t = ADULT_TARIFFS.find((x) => x.key === answers.tariff);
+  if (ADULT_BRIEFS_I18N[currentLang][track]) {
+    const t = ADULT_TARIFFS_I18N[currentLang].find((x) => x.key === answers.tariff);
     totalVal.textContent = '$' + (t ? t.price : 0);
     return;
   }
@@ -465,7 +4136,7 @@ function requiredKeys() {
   // усі текстові поля обов'язкові; для полів-кнопок теж (крім явно
   // необов'язкових — тут таких немає, кожне питання варте відповіді)
   const keys = allQuestions.map((q) => q.key);
-  if (track === 'pets' || ADULT_BRIEFS[track]) keys.push('tariff');
+  if (track === 'pets' || ADULT_BRIEFS_I18N[currentLang][track]) keys.push('tariff');
   return keys;
 }
 
@@ -490,7 +4161,7 @@ submitBtn.addEventListener('click', () => {
     if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-  const payload = { track, answers, presetGenre: presetGenre || null };
+  const payload = { track, answers, presetGenre: presetGenre || null, lang: currentLang };
   if (tg) {
     tg.sendData(JSON.stringify(payload));
     tg.close();
