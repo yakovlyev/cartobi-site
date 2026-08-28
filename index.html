@@ -1,32 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk-UA">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8M8BE7D8CG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-8M8BE7D8CG');
-</script>
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '28171298619179988');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
+<!-- GA4 + Meta Pixel: loaded ONLY after cookie consent — see loadTrackers() near cookie-banner logic below -->
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -416,6 +391,7 @@ src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
        просто з порожніми полями по боках на широких екранах — це набагато
        безпечніше, ніж було. */
   }
+  #cookie-banner-text a{color:#ffcb3d;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -990,6 +966,66 @@ src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
     const OFERTA_PAGES = { ua:'oferta.html', en:'oferta-en.html', ru:'oferta-ru.html', it:'oferta-it.html', fr:'oferta-fr.html', es:'oferta-es.html' };
     link.href = OFERTA_PAGES[lang] || 'oferta-en.html';
   }
+  const COOKIE_TXT = {
+    ua: { text: 'Ми використовуємо файли cookie для аналітики відвідувань та показу релевантної реклами. Ви можете прийняти або відхилити необов\u2019язкові cookie — сайт однаково працюватиме. Детальніше в', link: 'Публічній оферті', decline: 'Відхилити', accept: 'Прийняти всі' },
+    en: { text: 'We use cookies for visit analytics and relevant advertising. You can accept or decline non-essential cookies — the site will work either way. More in the', link: 'Public Offer', decline: 'Decline', accept: 'Accept all' },
+    ru: { text: 'Мы используем файлы cookie для аналитики посещений и показа релевантной рекламы. Вы можете принять или отклонить необязательные cookie — сайт будет работать в любом случае. Подробнее в', link: 'Публичной оферте', decline: 'Отклонить', accept: 'Принять все' },
+    it: { text: 'Utilizziamo i cookie per analizzare le visite e mostrare pubblicità pertinente. Puoi accettare o rifiutare i cookie non essenziali — il sito funzionerà comunque. Maggiori info nell\u2019', link: 'Offerta pubblica', decline: 'Rifiuta', accept: 'Accetta tutti' },
+    fr: { text: 'Nous utilisons des cookies pour analyser les visites et afficher des publicités pertinentes. Vous pouvez accepter ou refuser les cookies non essentiels — le site fonctionnera quand même. Plus d\u2019infos dans l\u2019', link: 'Offre publique', decline: 'Refuser', accept: 'Tout accepter' },
+    es: { text: 'Usamos cookies para analizar visitas y mostrar publicidad relevante. Puedes aceptar o rechazar las cookies no esenciales — el sitio funcionará de todos modos. Más información en la', link: 'Oferta pública', decline: 'Rechazar', accept: 'Aceptar todo' },
+    pl: { text: 'Używamy plików cookie do analizy odwiedzin i wyświetlania trafnych reklam. Możesz zaakceptować lub odrzucić opcjonalne pliki cookie — strona będzie działać w obu przypadkach. Więcej w', link: 'Ofercie publicznej', decline: 'Odrzuć', accept: 'Akceptuj wszystko' },
+    de: { text: 'Wir verwenden Cookies für Besuchsanalysen und relevante Werbung. Sie können nicht notwendige Cookies akzeptieren oder ablehnen — die Website funktioniert in jedem Fall. Mehr im', link: 'Öffentlichen Angebot', decline: 'Ablehnen', accept: 'Alle akzeptieren' },
+    pt: { text: 'Usamos cookies para análise de visitas e publicidade relevante. Você pode aceitar ou recusar cookies não essenciais — o site funcionará de qualquer forma. Mais na', link: 'Oferta pública', decline: 'Recusar', accept: 'Aceitar tudo' },
+    tr: { text: 'Ziyaret analitiği ve ilgili reklamlar için çerezler kullanıyoruz. Zorunlu olmayan çerezleri kabul edebilir veya reddedebilirsiniz — site her durumda çalışır. Daha fazlası', link: 'Kamu Teklifi', decline: 'Reddet', accept: 'Tümünü kabul et' },
+  };
+  const COOKIE_OFERTA_PAGES = { ua:'oferta.html', en:'oferta-en.html', ru:'oferta-ru.html', it:'oferta-it.html', fr:'oferta-fr.html', es:'oferta-es.html' };
+  function loadTrackers() {
+    if (window._trackersLoaded) return;
+    window._trackersLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    var ga = document.createElement('script');
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-8M8BE7D8CG';
+    document.head.appendChild(ga);
+    gtag('js', new Date());
+    gtag('config', 'G-8M8BE7D8CG');
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '28171298619179988');
+    fbq('track', 'PageView');
+  }
+  function cookieChoice(accepted) {
+    localStorage.setItem('cartobi_cookie_consent', accepted ? 'accepted' : 'declined');
+    var banner = document.getElementById('cookie-banner');
+    if (banner) banner.style.display = 'none';
+    if (accepted) loadTrackers();
+  }
+  function renderCookieBanner(lang) {
+    var t = COOKIE_TXT[lang] || COOKIE_TXT.ua;
+    var textEl = document.getElementById('cookie-banner-text');
+    var declineEl = document.getElementById('cookie-banner-decline');
+    var acceptEl = document.getElementById('cookie-banner-accept');
+    if (!textEl) return;
+    var ofertaHref = COOKIE_OFERTA_PAGES[lang] || COOKIE_OFERTA_PAGES.en;
+    textEl.innerHTML = t.text + ' <a href="' + ofertaHref + '">' + t.link + '</a>.';
+    declineEl.textContent = t.decline;
+    acceptEl.textContent = t.accept;
+  }
+  function initCookieBanner() {
+    var consent = localStorage.getItem('cartobi_cookie_consent');
+    if (consent === 'accepted') { loadTrackers(); return; }
+    if (consent === 'declined') { return; }
+    var banner = document.getElementById('cookie-banner');
+    if (banner) banner.style.display = 'block';
+  }
   function setLang(lang) {
     document.getElementById('lang-dropdown').classList.remove('open');
     if (lang === 'ua') {
@@ -1001,6 +1037,7 @@ src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
       renderScrollHint('ua');
       renderOferta('ua');
       renderZoryanaName('ua');
+      renderCookieBanner('ua');
       if (!zoryanaRecognition) zoryanaMicShowIdleHint();
       buildLangDropdown();
       return;
@@ -1014,6 +1051,7 @@ src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
       renderScrollHint(lang);
       renderOferta(lang);
       renderZoryanaName(lang);
+      renderCookieBanner(lang);
       if (!zoryanaRecognition) zoryanaMicShowIdleHint();
       buildLangDropdown();
       if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
@@ -2330,7 +2368,25 @@ src="https://www.facebook.com/tr?id=28171298619179988&ev=PageView&noscript=1"
   // платформі.
   window.addEventListener('scroll', updateScrollHint, { passive: true });
   window.addEventListener('resize', updateScrollHint);
+  initCookieBanner();
+  renderCookieBanner(currentLang);
 </script>
+
+<div id="cookie-banner" style="display:none;position:fixed;left:0;right:0;bottom:0;background:#120e33;
+  border-top:1px solid rgba(255,255,255,0.08);color:#e8e5f5;padding:18px 20px 22px;
+  box-shadow:0 -8px 30px rgba(0,0,0,.45);font-size:13.5px;line-height:1.5;z-index:200;font-family:Arial,sans-serif;">
+  <div style="max-width:640px;margin:0 auto;">
+    <p id="cookie-banner-text" style="margin:0 0 14px;"></p>
+    <div style="display:flex;gap:10px;">
+      <button id="cookie-banner-decline" onclick="cookieChoice(false)" style="flex:1;border:1px solid rgba(255,255,255,0.25);
+        border-radius:24px;padding:12px 16px;font-weight:700;font-size:14px;cursor:pointer;font-family:Arial,sans-serif;
+        background:transparent;color:#cfcbe6;"></button>
+      <button id="cookie-banner-accept" onclick="cookieChoice(true)" style="flex:1;border:none;border-radius:24px;
+        padding:12px 16px;font-weight:700;font-size:14px;cursor:pointer;font-family:Arial,sans-serif;
+        background:linear-gradient(135deg,#ff9a3c,#e2842c);color:#fff;"></button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
