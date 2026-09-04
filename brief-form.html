@@ -4762,7 +4762,7 @@ function textField(container, key, placeholder) {
   const el = document.createElement(key === 'phone' ? 'input' : 'textarea');
   if (key === 'phone') {
     el.type = 'tel';
-    el.autocomplete = 'tel';
+    el.autocomplete = 'off';
     el.inputMode = 'tel';
   } else {
     el.rows = 2;
