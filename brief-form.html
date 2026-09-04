@@ -4762,7 +4762,14 @@ function textField(container, key, placeholder) {
   const el = document.createElement(key === 'phone' ? 'input' : 'textarea');
   if (key === 'phone') {
     el.type = 'tel';
-    el.autocomplete = 'off';
+    // Chrome ЗНАРОЧНО ігнорує autocomplete="off" саме для полів, які він
+    // розпізнає як телефон/адресу/оплату (задокументована політика ще з
+    // 2014-2015 — https://dev.to/leonardofaria/disabling-autofill-in-chrome).
+    // Робочий обхід — нестандартне значення, якого немає у словнику Chrome,
+    // той самий трюк, що для полів пароля ("new-password"). Саме випадаюча
+    // підказка автозаповнення (не "off", яке Chrome тихо ігнорує) і
+    // спричиняла "стрибок" верстки, який Ігор зловив 04.09.
+    el.autocomplete = 'new-phone-cartobi';
     el.inputMode = 'tel';
   } else {
     el.rows = 2;
