@@ -29,12 +29,12 @@
   .q-label{font-size:14.5px; font-weight:700; margin-bottom:9px; line-height:1.4;}
   .q-num{color:var(--accent); font-weight:800; margin-right:4px;}
   .q-hint{font-size:12px; color:var(--muted); margin-top:5px; line-height:1.4;}
-  textarea, input[type=text]{
+  textarea, input[type=text], input[type=tel]{
     width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:12px;
     color:var(--text); font-size:14.5px; padding:11px 13px; font-family:inherit;
     resize:vertical; min-height:44px;
   }
-  textarea:focus, input[type=text]:focus{outline:none; border-color:var(--accent);}
+  textarea:focus, input[type=text]:focus, input[type=tel]:focus{outline:none; border-color:var(--accent);}
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
   .chip{
     background:var(--card); border:1.5px solid var(--border); border-radius:100px;
@@ -4754,9 +4754,20 @@ function chipsField(container, key, options, multi) {
 }
 
 function textField(container, key, placeholder) {
-  const el = document.createElement('textarea');
+  // Телефон — окремий, однорядковий інпут з типом "tel" (цифрова
+  // клавіатура на мобільному, без зайвої висоти textarea). Раніше й
+  // телефон рендерився як звичайна багаторядкова textarea — на мобільному
+  // це викликало "стрибок" верстки при фокусі та неправильну клавіатуру.
+  // Ігор зловив це в живому тесті 04.09.
+  const el = document.createElement(key === 'phone' ? 'input' : 'textarea');
+  if (key === 'phone') {
+    el.type = 'tel';
+    el.autocomplete = 'tel';
+    el.inputMode = 'tel';
+  } else {
+    el.rows = 2;
+  }
   el.placeholder = placeholder || UI_TXT[currentLang].yourAnswer;
-  el.rows = 2;
   el.oninput = () => { answers[key] = el.value.trim(); validateForm(); };
   container.appendChild(el);
 }
