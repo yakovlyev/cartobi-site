@@ -614,7 +614,7 @@
   // ---------- Аналітика відвідувань — пише напряму в Supabase ----------
   // Публічний (publishable) ключ навмисно можна тримати у клієнтському коді —
   // він дає лише те, що дозволяє RLS-політика (тільки INSERT у cartobi_visits).
-  (function trackVisit() {
+  function trackVisit() {
     try {
       const SUPABASE_URL = 'https://hfrkqdursauhndzmfepc.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_Ff-561WRrgTunEISE0arzA_ZCVrFpSZ';
@@ -634,7 +634,7 @@
         body: JSON.stringify({ source, page: 'landing' }),
       }).catch(() => {}); // трекінг ніколи не повинен ламати сайт користувачу
     } catch (e) { /* тихо ігноруємо */ }
-  })();
+  }
 
   const LANGUAGES = [
     { code: 'ua', label: 'Українська' },
@@ -980,8 +980,12 @@
   };
   const COOKIE_OFERTA_PAGES = { ua:'oferta.html', en:'oferta-en.html', ru:'oferta-ru.html', it:'oferta-it.html', fr:'oferta-fr.html', es:'oferta-es.html' };
   function loadTrackers() {
+    var consent = null;
+    try { consent = localStorage.getItem('cartobi_cookie_consent'); } catch (e) { return; }
+    if (consent !== 'accepted') return;
     if (window._trackersLoaded) return;
     window._trackersLoaded = true;
+    trackVisit();
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     window.gtag = gtag;
@@ -1003,10 +1007,14 @@
     fbq('track', 'PageView');
   }
   function cookieChoice(accepted) {
-    localStorage.setItem('cartobi_cookie_consent', accepted ? 'accepted' : 'declined');
+    var stored = false;
+    try {
+      localStorage.setItem('cartobi_cookie_consent', accepted ? 'accepted' : 'declined');
+      stored = true;
+    } catch (e) { /* без збереженого consent аналітику не запускаємо */ }
     var banner = document.getElementById('cookie-banner');
     if (banner) banner.style.display = 'none';
-    if (accepted) loadTrackers();
+    if (accepted && stored) loadTrackers();
   }
   function renderCookieBanner(lang) {
     var t = COOKIE_TXT[lang] || COOKIE_TXT.ua;
@@ -1020,7 +1028,8 @@
     acceptEl.textContent = t.accept;
   }
   function initCookieBanner() {
-    var consent = localStorage.getItem('cartobi_cookie_consent');
+    var consent = null;
+    try { consent = localStorage.getItem('cartobi_cookie_consent'); } catch (e) { /* no consent */ }
     if (consent === 'accepted') { loadTrackers(); return; }
     if (consent === 'declined') { return; }
     var banner = document.getElementById('cookie-banner');

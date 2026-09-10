@@ -99,7 +99,9 @@ let track = params.get('track') || 'romance';
 const presetGenre = params.get('genre'); // тільки для kids, якщо жанр обрано на сайті заздалегідь
 
 // ---------- Аналітика: яку саме форму відкрили (лійка сайт → бриф) ----------
-(function trackFormOpen() {
+const ALLOWED_TRACKS = new Set(['kids', 'pets', 'adult', 'romance', 'birthday', 'corporate', 'wedding']);
+if (!ALLOWED_TRACKS.has(track)) track = 'romance';
+function trackFormOpen() {
   try {
     fetch('https://hfrkqdursauhndzmfepc.supabase.co/rest/v1/cartobi_visits', {
       method: 'POST',
@@ -111,7 +113,10 @@ const presetGenre = params.get('genre'); // тільки для kids, якщо �
       body: JSON.stringify({ source: 'telegram_bot', page: `brief_${track}` }),
     }).catch(() => {});
   } catch (e) { /* тихо ігноруємо */ }
-})();
+}
+try {
+  if (localStorage.getItem('cartobi_cookie_consent') === 'accepted') trackFormOpen();
+} catch (e) { /* без доступу до consent storage аналітику не запускаємо */ }
 
 // ---------- Мова: визначення + перемикач ----------
 // Бот сам по собі не знає мову користувача (Mini App відкривається лише
