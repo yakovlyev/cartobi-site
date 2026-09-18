@@ -4991,7 +4991,12 @@ function validateForm() {
   return missing;
 }
 
+let briefAlreadySubmitted = false;
 submitBtn.addEventListener('click', () => {
+  // Захист від подвійного відправлення (швидкий подвійний клік/тап до
+  // того, як tg.close() реально знищить WebView) - без цього прапорця
+  // клік міг спрацювати вдруге і надіслати той самий бриф двічі.
+  if (briefAlreadySubmitted) return;
   const missing = validateForm();
   if (missing.length) {
     missing.forEach((k) => {
@@ -5003,6 +5008,7 @@ submitBtn.addEventListener('click', () => {
     if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+  briefAlreadySubmitted = true;
   const payload = { track, answers, presetGenre: presetGenre || null, lang: currentLang };
   if (tg) {
     tg.sendData(JSON.stringify(payload));
