@@ -624,6 +624,11 @@
         try { source = new URL(document.referrer).hostname; } catch (e) { source = 'unknown'; }
       }
       if (!source) source = 'direct';
+      // Небезпечне вхідне значення (пункт CLAUDE.md: URL-параметри — недовірені
+      // дані) - прибираємо керуючі/HTML-подібні символи і обмежуємо довжину,
+      // щоб довільний ?utm_source= не потрапив у БД як є (роздування сховища,
+      // потенційний stored-XSS у будь-якому майбутньому переглядачі цих даних).
+      source = String(source).replace(/[<>"'`\x00-\x1F]/g, '').slice(0, 200);
       fetch(`${SUPABASE_URL}/rest/v1/cartobi_visits`, {
         method: 'POST',
         headers: {

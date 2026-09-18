@@ -13,7 +13,7 @@ function extract(startCandidates, endMarker) {
   return html.slice(start, end);
 }
 
-function boot(storedConsent = null, storageThrows = false, storageWriteThrows = false) {
+function boot(storedConsent = null, storageThrows = false, storageWriteThrows = false, locationSearch = '') {
   const requests = [];
   const scripts = [];
   const storage = new Map();
@@ -26,7 +26,7 @@ function boot(storedConsent = null, storageThrows = false, storageWriteThrows = 
     Date,
     JSON,
     Promise,
-    location: { search: '' },
+    location: { search: locationSearch },
     fetch: (...args) => {
       requests.push(args);
       return Promise.resolve({ ok: true });
@@ -60,6 +60,30 @@ function boot(storedConsent = null, storageThrows = false, storageWriteThrows = 
 
   return { context, requests, scripts, storage, banner };
 }
+
+test('untrusted utm_source query parameter is bounded in length before reaching the analytics insert body', () => {
+  const oversized = 'x'.repeat(5000);
+  const app = boot('accepted', false, false, `?utm_source=${oversized}`);
+  app.context.trackVisit();
+  assert.equal(app.requests.length, 1);
+  const sentBody = JSON.parse(app.requests[0][1].body);
+  assert.ok(sentBody.source.length <= 200, `expected source to be bounded, got length ${sentBody.source.length}`);
+});
+
+test('untrusted utm_source with control/HTML-shaped characters is not passed through raw into the analytics insert body', () => {
+  const malicious = '<script>alert(1)</script>' + '\x00\x01\x02';
+  const app = boot('accepted', false, false, `?utm_source=${encodeURIComponent(malicious)}`);
+  app.context.trackVisit();
+  const sentBody = JSON.parse(app.requests[0][1].body);
+  assert.ok(!sentBody.source.includes('<script>'), 'raw script tag content must not pass through unmodified');
+});
+
+test('a normal, reasonable utm_source value still passes through unchanged', () => {
+  const app = boot('accepted', false, false, '?utm_source=instagram_bio');
+  app.context.trackVisit();
+  const sentBody = JSON.parse(app.requests[0][1].body);
+  assert.equal(sentBody.source, 'instagram_bio');
+});
 
 test('fresh visitor sends no analytics before consent', () => {
   const app = boot();
