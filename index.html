@@ -9,6 +9,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cartobi — мультфільми на замовлення</title>
 <meta name="description" content="Замовляйте персоналізований мультфільм на замовлення для дітей та дорослих. Унікальна анімація, де ваша дитина — головний герой. Найкращий подарунок дитині від Cartobi!">
+<link rel="canonical" href="https://cartobi.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cartobi">
+<meta property="og:url" content="https://cartobi.com/">
+<meta property="og:title" content="Cartobi — мультфільми на замовлення">
+<meta property="og:description" content="Замовляйте персоналізований мультфільм на замовлення для дітей та дорослих. Унікальна анімація, де ваша дитина — головний герой.">
+<meta property="og:image" content="https://cartobi.com/hero-kids.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cartobi — мультфільми на замовлення">
+<meta name="twitter:description" content="Замовляйте персоналізований мультфільм на замовлення для дітей та дорослих. Унікальна анімація, де ваша дитина — головний герой.">
+<meta name="twitter:image" content="https://cartobi.com/hero-kids.jpg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -624,7 +635,7 @@
         try { source = new URL(document.referrer).hostname; } catch (e) { source = 'unknown'; }
       }
       if (!source) source = 'direct';
-      fetch(`${SUPABASE_URL}/rest/v1/cartobi_visits`, {
+      const sendVisit = () => fetch(`${SUPABASE_URL}/rest/v1/cartobi_visits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -632,7 +643,14 @@
           'Authorization': `Bearer ${SUPABASE_KEY}`,
         },
         body: JSON.stringify({ source, page: 'landing' }),
-      }).catch(() => {}); // трекінг ніколи не повинен ламати сайт користувачу
+      });
+      // Supabase інколи повертає 503 на перший запит після простою (холодний старт) —
+      // одна тиха повторна спроба через 1.5с підвищує шанс, що візит реально збережеться.
+      sendVisit().then((res) => {
+        if (!res.ok) setTimeout(() => { sendVisit().catch(() => {}); }, 1500);
+      }).catch(() => {
+        setTimeout(() => { sendVisit().catch(() => {}); }, 1500);
+      }); // трекінг ніколи не повинен ламати сайт користувачу
     } catch (e) { /* тихо ігноруємо */ }
   })();
 
@@ -1026,9 +1044,33 @@
     var banner = document.getElementById('cookie-banner');
     if (banner) banner.style.display = 'block';
   }
+  const SEO_META = {
+    ua: { htmlLang: 'uk-UA', title: 'Cartobi — мультфільми на замовлення', desc: 'Замовляйте персоналізований мультфільм на замовлення для дітей та дорослих. Унікальна анімація, де ваша дитина — головний герой. Найкращий подарунок дитині від Cartobi!' },
+    en: { htmlLang: 'en', title: 'Cartobi — Custom Animated Cartoons', desc: 'Order a personalized animated cartoon for kids and adults. Unique animation starring your child. A wonderful gift from Cartobi.' },
+    ru: { htmlLang: 'ru', title: 'Cartobi — мультфильмы на заказ', desc: 'Заказывайте персонализированный мультфильм для детей и взрослых. Уникальная анимация, где ваш ребёнок — главный герой. Отличный подарок от Cartobi.' },
+    it: { htmlLang: 'it', title: 'Cartobi — Cartoni animati personalizzati', desc: 'Ordina un cartone animato personalizzato per bambini e adulti. Animazione unica con tuo figlio come protagonista. Un bel regalo da Cartobi.' },
+    fr: { htmlLang: 'fr', title: 'Cartobi — Dessins animés personnalisés', desc: 'Commandez un dessin animé personnalisé pour enfants et adultes. Une animation unique où votre enfant est le héros. Un beau cadeau de la part de Cartobi.' },
+    es: { htmlLang: 'es', title: 'Cartobi — Dibujos animados personalizados', desc: 'Pide un dibujo animado personalizado para niños y adultos. Una animación única donde tu hijo es el protagonista. Un bonito regalo de Cartobi.' },
+    pl: { htmlLang: 'pl', title: 'Cartobi — Kreskówki na zamówienie', desc: 'Zamów spersonalizowaną kreskówkę dla dzieci i dorosłych. Wyjątkowa animacja, w której Twoje dziecko jest głównym bohaterem. Wspaniały prezent od Cartobi.' },
+    de: { htmlLang: 'de', title: 'Cartobi — Personalisierte Zeichentrickfilme', desc: 'Bestellen Sie einen personalisierten Zeichentrickfilm für Kinder und Erwachsene. Einzigartige Animation mit Ihrem Kind in der Hauptrolle. Ein schönes Geschenk von Cartobi.' },
+    pt: { htmlLang: 'pt', title: 'Cartobi — Desenhos animados personalizados', desc: 'Encomende um desenho animado personalizado para crianças e adultos. Animação única com o seu filho como protagonista. Um ótimo presente da Cartobi.' },
+    tr: { htmlLang: 'tr', title: 'Cartobi — Kişiye Özel Çizgi Filmler', desc: "Çocuklar ve yetişkinler için kişiye özel bir çizgi film sipariş edin. Çocuğunuzun baş kahraman olduğu eşsiz bir animasyon. Cartobi'den güzel bir hediye." },
+  };
+  function updateSeoMeta(lang) {
+    const m = SEO_META[lang] || SEO_META.ua;
+    document.documentElement.lang = m.htmlLang;
+    document.title = m.title;
+    const descTag = document.querySelector('meta[name="description"]');
+    if (descTag) descTag.setAttribute('content', m.desc);
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', m.title);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', m.desc);
+  }
   function setLang(lang) {
     document.getElementById('lang-dropdown').classList.remove('open');
     if (lang === 'ua') {
+      updateSeoMeta('ua');
       currentLang = 'ua';
       document.getElementById('lang-current').textContent = 'UA';
       renderPetLabels('ua');
@@ -1044,6 +1086,7 @@
     }
     if (SUPPORTED_LANGS.includes(lang)) {
       currentLang = lang;
+      updateSeoMeta(lang);
       document.getElementById('lang-current').textContent = lang.toUpperCase();
       renderPetLabels(lang);
       renderKidsText(lang);
