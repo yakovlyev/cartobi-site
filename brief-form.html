@@ -4986,7 +4986,9 @@ function validateForm() {
   return missing;
 }
 
+let formAlreadySubmitted = false;
 submitBtn.addEventListener('click', () => {
+  if (formAlreadySubmitted) return;
   const missing = validateForm();
   if (missing.length) {
     missing.forEach((k) => {
@@ -4998,13 +5000,17 @@ submitBtn.addEventListener('click', () => {
     if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+  formAlreadySubmitted = true;
+  submitBtn.disabled = true;
   const payload = { track, answers, presetGenre: presetGenre || null, lang: currentLang };
   if (tg) {
     tg.sendData(JSON.stringify(payload));
     tg.close();
   } else {
     // локальний перегляд поза Telegram — просто показуємо, що зібралось
-    alert('Поза Telegram WebApp — дані для перевірки:\n\n' + JSON.stringify(payload, null, 2));
+    alert('Поза Telegram WebApp — дані для перевірки:\\n\\n' + JSON.stringify(payload, null, 2));
+    formAlreadySubmitted = false;
+    submitBtn.disabled = false;
   }
 });
 
