@@ -577,6 +577,8 @@
 <div style="text-align:center; padding:18px 16px 26px; background:#0A0722;">
   <a href="oferta.html" id="oferta-link" style="color:#8b87a8; font-size:13px; font-family:Arial,sans-serif; text-decoration:underline;">Публічна оферта</a>
   <span style="color:#4a4568; font-size:13px; margin:0 6px;">·</span>
+  <a href="privacy.html" id="privacy-link" style="color:#8b87a8; font-size:13px; font-family:Arial,sans-serif; text-decoration:underline;">Політика конфіденційності</a>
+  <span style="color:#4a4568; font-size:13px; margin:0 6px;">·</span>
   <span style="color:#4a4568; font-size:13px; font-family:Arial,sans-serif;">© 2026 Cartobi Animation Studio</span>
 </div>
 
@@ -985,6 +987,12 @@
     link.textContent = OFERTA_TXT[lang] || OFERTA_TXT.ua;
     const OFERTA_PAGES = { ua:'oferta.html', en:'oferta-en.html', ru:'oferta-ru.html', it:'oferta-it.html', fr:'oferta-fr.html', es:'oferta-es.html' };
     link.href = OFERTA_PAGES[lang] || 'oferta-en.html';
+    const pl = document.getElementById('privacy-link');
+    if (pl) {
+      const PRIVACY_TXT = { ua:'Політика конфіденційності', en:'Privacy Policy', ru:'Privacy Policy', it:'Informativa sulla privacy', fr:'Politique de confidentialité', es:'Política de privacidad', pl:'Polityka prywatności', de:'Datenschutzerklärung', pt:'Política de privacidade', tr:'Gizlilik Politikası' };
+      pl.textContent = PRIVACY_TXT[lang] || PRIVACY_TXT.en;
+      pl.href = 'privacy.html?lang=' + (lang === 'ua' ? 'ua' : 'en');
+    }
   }
   const COOKIE_TXT = {
     ua: { text: 'Ми використовуємо файли cookie для аналітики відвідувань та показу релевантної реклами. Ви можете прийняти або відхилити необов\u2019язкові cookie — сайт однаково працюватиме. Детальніше в', link: 'Публічній оферті', decline: 'Відхилити', accept: 'Прийняти всі' },
@@ -1192,7 +1200,7 @@
       timing: 'Дитяча лінійка та улюбленці — від 48 до 72 годин після оплати. Дорослі формати (романтика, день народження, весілля, корпоратив, свій сценарій) — від 5 до 7 днів після затвердження сценарію, залежно від хронометражу мультфільму.',
       how: 'Все просто: обираєте жанр. Заповнюєте коротку анкету в Telegram-боті. Ми пишемо сценарій. Готовий мультфільм приходить вам у той самий чат.',
       materials: 'Лише фото героя та ваша ідея! Для дитячих мультфільмів — краще 2 чіткі фото обличчя (анфас і профіль). Для складніших історій — короткий опис характеру або події.',
-      revisions: 'Звісно! Ми разом працюємо над сценарієм, а потім я покажу вам чорновий варіант анімації, щоб ви могли додати свої побажання.',
+      revisions: 'Для дитячих мультфільмів у вартість входить одна безкоштовна правка готового відео. У дорослих форматах ви затверджуєте сценарій до початку роботи, тому все погоджуємо заздалегідь.',
       format: 'Ви отримаєте файл у високій якості — Full HD або 4K, зручно дивитися на телевізорі, смартфоні або показати в соцмережах. Розмір відео: 9:16 (вертикальний) або 16:9 (горизонтальний) — оберете у брифі.',
       privacy: 'Ваша приватність — мій пріоритет. Фото використовуються тільки для створення мультфільму і нікому не передаються. За бажанням ми видаляємо їх одразу після завершення.',
       satisfaction: 'Я зроблю все, щоб ви посміхалися! Ми вносимо правки, поки результат не стане ідеальним — ваші емоції для нас найголовніше.',
@@ -1270,7 +1278,7 @@
       timing: 'Kids line — from 48 to 72 hours. Adult formats — from 5 to 7 days after the script is approved.',
       how: "It's simple: pick a genre. Fill a short brief in our Telegram bot. We write the script. Your finished cartoon arrives in that same chat.",
       materials: "Just a photo of the hero and your idea! For kids' cartoons — preferably 2 clear face photos (front and profile). For more complex stories — a short description of the character or event.",
-      revisions: "Of course! We work on the script together, and then I'll show you a draft animation so you can add your suggestions.",
+      revisions: "For children's cartoons, the price includes one free revision of the finished video. In adult formats you approve the script before we start, so everything is agreed in advance.",
       format: "You'll get a high-quality file — Full HD or 4K — perfect for watching on TV, on your phone, or sharing on social media. Video size: 9:16 (vertical) or 16:9 (horizontal) — you'll choose in the brief.",
       privacy: "Your privacy is my priority. Photos are used only to create the cartoon and are never shared. On request, we delete them right after completion.",
       satisfaction: "I'll do everything to make you smile! We make revisions until the result is perfect — your emotions matter most to us.",
@@ -1348,7 +1356,7 @@
       timing: 'Детская линейка — от 48 до 72 часов. Взрослые форматы — от 5 до 7 дней после утверждения сценария.',
       how: 'Всё просто: выбираете жанр. Заполняете короткую анкету в Telegram-боте. Мы пишем сценарий. Готовый мультфильм приходит вам в тот же чат.',
       materials: 'Только фото героя и ваша идея! Для детских мультфильмов — лучше 2 чётких фото лица (анфас и профиль). Для более сложных историй — короткое описание характера или события.',
-      revisions: 'Конечно! Мы вместе работаем над сценарием, а потом я покажу вам черновой вариант анимации, чтобы вы могли добавить свои пожелания.',
+      revisions: 'Для детских мультфильмов в стоимость входит одна бесплатная правка готового видео. Во взрослых форматах вы утверждаете сценарий до начала работы, поэтому всё согласуем заранее.',
       format: 'Вы получите файл в высоком качестве — Full HD или 4K, удобно смотреть на телевизоре, смартфоне или показать в соцсетях. Размер видео: 9:16 (вертикальный) или 16:9 (горизонтальный) — выберете в брифе.',
       privacy: 'Ваша приватность — мой приоритет. Фото используются только для создания мультфильма и никому не передаются. По желанию мы удаляем их сразу после завершения.',
       satisfaction: 'Я сделаю всё, чтобы вы улыбались! Мы вносим правки, пока результат не станет идеальным — ваши эмоции для нас самое главное.',
@@ -1426,7 +1434,7 @@
       timing: 'Linea bambini — da 48 a 72 ore. Formati adulti — da 5 a 7 giorni dopo l\'approvazione della sceneggiatura.',
       how: 'È semplice: scegli un genere. Compili un breve brief nel nostro bot Telegram. Scriviamo la sceneggiatura. Il tuo cartone arriva nella stessa chat.',
       materials: 'Solo una foto del protagonista e la tua idea! Per i cartoni per bambini — preferibilmente 2 foto nitide del viso (frontale e di profilo). Per storie più complesse — una breve descrizione del personaggio o dell\u2019evento.',
-      revisions: 'Certo! Lavoriamo insieme sulla sceneggiatura, poi ti mostro una bozza dell\u2019animazione così puoi aggiungere i tuoi suggerimenti.',
+      revisions: 'Per i cartoni per bambini il prezzo include una revisione gratuita del video finito. Nei formati per adulti approvi la sceneggiatura prima che iniziamo, quindi concordiamo tutto in anticipo.',
       format: 'Riceverai un file in alta qualità — Full HD o 4K — perfetto per guardarlo in TV, sul telefono o condividerlo sui social. Dimensione video: 9:16 (verticale) o 16:9 (orizzontale) — sceglierai nel brief.',
       privacy: 'La tua privacy è la mia priorità. Le foto sono usate solo per creare il cartone e non vengono mai condivise. Su richiesta le cancelliamo subito dopo il completamento.',
       satisfaction: 'Farò di tutto per farti sorridere! Apportiamo modifiche finché il risultato non è perfetto — le tue emozioni sono la cosa più importante per noi.',
@@ -1504,7 +1512,7 @@
       timing: 'Ligne enfants — 48 à 72 heures. Formats adultes — 5 à 7 jours après approbation du scénario.',
       how: "C'est simple : choisissez un genre. Remplissez un court brief dans notre bot Telegram. Nous écrivons le scénario. Votre dessin animé arrive dans le même chat.",
       materials: 'Juste une photo du héros et votre idée ! Pour les dessins animés enfants — de préférence 2 photos nettes du visage (de face et de profil). Pour des histoires plus complexes — une courte description du personnage ou de l\u2019événement.',
-      revisions: 'Bien sûr ! Nous travaillons ensemble sur le scénario, puis je vous montre une ébauche de l\u2019animation pour que vous puissiez ajouter vos souhaits.',
+      revisions: 'Pour les dessins animés pour enfants, le prix inclut une révision gratuite de la vidéo finale. Pour les formats adultes, vous validez le scénario avant le début du travail, tout est donc convenu à l\u2019avance.',
       format: 'Vous recevrez un fichier haute qualité — Full HD ou 4K — parfait pour la télé, le téléphone ou les réseaux sociaux. Taille vidéo : 9:16 (vertical) ou 16:9 (horizontal) — à choisir dans le brief.',
       privacy: 'Votre confidentialité est ma priorité. Les photos servent uniquement à créer le dessin animé et ne sont jamais partagées. Sur demande, nous les supprimons juste après.',
       satisfaction: 'Je ferai tout pour vous faire sourire ! Nous apportons des modifications jusqu\u2019à ce que le résultat soit parfait — vos émotions comptent le plus pour nous.',
@@ -1582,7 +1590,7 @@
       timing: 'Línea infantil — de 48 a 72 horas. Formatos para adultos — de 5 a 7 días tras aprobar el guion.',
       how: 'Es simple: eliges un género. Completas un breve brief en nuestro bot de Telegram. Escribimos el guion. Tu dibujo animado llega al mismo chat.',
       materials: '¡Solo una foto del protagonista y tu idea! Para dibujos infantiles — preferiblemente 2 fotos nítidas de la cara (de frente y de perfil). Para historias más complejas — una breve descripción del personaje o evento.',
-      revisions: '¡Claro! Trabajamos juntos en el guion, y luego te muestro un borrador de la animación para que agregues tus sugerencias.',
+      revisions: 'Para los dibujos infantiles, el precio incluye una revisión gratuita del vídeo final. En los formatos para adultos apruebas el guion antes de empezar, así que todo se acuerda de antemano.',
       format: 'Recibirás un archivo de alta calidad — Full HD o 4K — perfecto para ver en TV, en el móvil o compartir en redes. Tamaño de vídeo: 9:16 (vertical) o 16:9 (horizontal) — lo eliges en el brief.',
       privacy: 'Tu privacidad es mi prioridad. Las fotos se usan solo para crear el dibujo animado y nunca se comparten. Si lo pides, las eliminamos justo después.',
       satisfaction: '¡Haré todo para que sonrías! Hacemos cambios hasta que el resultado sea perfecto — tus emociones son lo más importante para nosotros.',
@@ -1660,7 +1668,7 @@
       timing: 'Linia dziecięca — 48-72 godziny. Formaty dla dorosłych — 5-7 dni po akceptacji scenariusza.',
       how: 'To proste: wybierasz gatunek. Wypełniasz krótki brief w naszym bocie na Telegramie. Piszemy scenariusz. Twoja bajka trafia do tego samego czatu.',
       materials: 'Wystarczy zdjęcie bohatera i Twój pomysł! Do bajek dziecięcych — najlepiej 2 wyraźne zdjęcia twarzy (en face i profil). Do bardziej złożonych historii — krótki opis postaci lub wydarzenia.',
-      revisions: 'Oczywiście! Pracujemy razem nad scenariuszem, a potem pokażę Ci wersję roboczą animacji, żebyś mógł dodać swoje uwagi.',
+      revisions: 'W bajkach dla dzieci cena obejmuje jedną bezpłatną poprawkę gotowego filmu. W formatach dla dorosłych zatwierdzasz scenariusz przed rozpoczęciem pracy, więc wszystko uzgadniamy wcześniej.',
       format: 'Otrzymasz plik w wysokiej jakości — Full HD lub 4K — idealny do oglądania na TV, telefonie czy pochwalenia się w social mediach. Rozmiar wideo: 9:16 (pionowy) lub 16:9 (poziomy) — wybierzesz w briefie.',
       privacy: 'Twoja prywatność jest moim priorytetem. Zdjęcia są używane tylko do stworzenia bajki i nigdy nie są udostępniane. Na Twoją prośbę usuniemy je od razu po zakończeniu.',
       satisfaction: 'Zrobię wszystko, żebyś się uśmiechnął! Wprowadzamy poprawki, aż efekt będzie idealny — Twoje emocje są dla nas najważniejsze.',
@@ -1738,7 +1746,7 @@
       timing: 'Kinderlinie — 48 bis 72 Stunden. Formate für Erwachsene — 5 bis 7 Tage nach Drehbuch-Freigabe.',
       how: 'Es ist einfach: Du wählst ein Genre. Du füllst ein kurzes Briefing in unserem Telegram-Bot aus. Wir schreiben das Drehbuch. Dein Cartoon landet im selben Chat.',
       materials: 'Nur ein Foto der Hauptperson und deine Idee! Für Kinder-Cartoons — am besten 2 klare Gesichtsfotos (von vorne und im Profil). Für komplexere Geschichten — eine kurze Beschreibung der Figur oder des Ereignisses.',
-      revisions: 'Natürlich! Wir arbeiten gemeinsam am Drehbuch, und danach zeige ich dir einen Entwurf der Animation, damit du deine Wünsche ergänzen kannst.',
+      revisions: 'Bei Kinder-Cartoons ist eine kostenlose Korrektur des fertigen Videos im Preis enthalten. Bei Formaten für Erwachsene gibst du das Drehbuch vor Produktionsbeginn frei, daher stimmen wir alles im Voraus ab.',
       format: 'Du erhältst eine hochwertige Datei — Full HD oder 4K — perfekt zum Anschauen auf TV, Smartphone oder zum Teilen in sozialen Medien. Videogröße: 9:16 (vertikal) oder 16:9 (horizontal) — wählst du im Briefing.',
       privacy: 'Deine Privatsphäre ist meine Priorität. Fotos werden nur zur Erstellung des Cartoons verwendet und niemals weitergegeben. Auf Wunsch löschen wir sie sofort nach Fertigstellung.',
       satisfaction: 'Ich tue alles, damit du lächelst! Wir nehmen Änderungen vor, bis das Ergebnis perfekt ist — deine Emotionen sind uns das Wichtigste.',
@@ -1816,7 +1824,7 @@
       timing: 'Linha infantil — de 48 a 72 horas. Formatos para adultos — de 5 a 7 dias após a aprovação do roteiro.',
       how: 'É simples: você escolhe um gênero. Preenche um breve briefing em nosso bot do Telegram. Escrevemos o roteiro. Seu desenho chega no mesmo chat.',
       materials: 'Só uma foto do protagonista e sua ideia! Para desenhos infantis — de preferência 2 fotos nítidas do rosto (de frente e de perfil). Para histórias mais complexas — uma breve descrição do personagem ou evento.',
-      revisions: 'Claro! Trabalhamos juntos no roteiro, e depois mostro um rascunho da animação para você adicionar suas sugestões.',
+      revisions: 'Nos desenhos infantis, o preço inclui uma revisão gratuita do vídeo final. Nos formatos para adultos, você aprova o roteiro antes de começarmos, então tudo é combinado com antecedência.',
       format: 'Você receberá um arquivo de alta qualidade — Full HD ou 4K — perfeito para assistir na TV, celular ou compartilhar nas redes sociais. Tamanho do vídeo: 9:16 (vertical) ou 16:9 (horizontal) — você escolhe no brief.',
       privacy: 'Sua privacidade é minha prioridade. As fotos são usadas apenas para criar o desenho e nunca são compartilhadas. Se pedir, apagamos logo após a conclusão.',
       satisfaction: 'Farei de tudo para você sorrir! Fazemos alterações até o resultado ficar perfeito — suas emoções são o mais importante para nós.',
@@ -1894,7 +1902,7 @@
       timing: 'Çocuk hattı — 48-72 saat. Yetişkin formatları — senaryo onayından sonra 5-7 gün.',
       how: 'Basit: bir tür seçersiniz. Telegram botumuzda kısa bir brif doldurursunuz. Senaryoyu yazarız. Çizgi filminiz aynı sohbete gelir.',
       materials: 'Sadece kahramanın bir fotoğrafı ve fikriniz! Çocuk çizgi filmleri için — tercihen 2 net yüz fotoğrafı (önden ve profilden). Daha karmaşık hikâyeler için — karakter veya olayın kısa bir açıklaması.',
-      revisions: 'Elbette! Senaryo üzerinde birlikte çalışırız, sonra size animasyonun taslak halini gösteririm, böylece önerilerinizi ekleyebilirsiniz.',
+      revisions: 'Çocuk çizgi filmlerinde fiyata bitmiş videonun bir ücretsiz revizyonu dahildir. Yetişkin formatlarında senaryoyu üretime başlamadan önce onaylarsınız, bu yüzden her şeyi önceden netleştiririz.',
       format: 'Yüksek kaliteli bir dosya alacaksınız — Full HD veya 4K — TV\u2019de, telefonda izlemek veya sosyal medyada paylaşmak için mükemmel. Video boyutu: 9:16 (dikey) veya 16:9 (yatay) — briefte seçeceksiniz.',
       privacy: 'Gizliliğiniz benim önceliğim. Fotoğraflar yalnızca çizgi filmi oluşturmak için kullanılır ve asla paylaşılmaz. İsterseniz, tamamlandıktan hemen sonra sileriz.',
       satisfaction: 'Gülümsemeniz için elimden geleni yapacağım! Sonuç mükemmel olana kadar değişiklik yaparız — duygularınız bizim için en önemlisi.',
