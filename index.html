@@ -1092,6 +1092,7 @@
       renderCookieBanner('ua');
       if (!zoryanaRecognition) zoryanaMicShowIdleHint();
       buildLangDropdown();
+      zoryanaOnLangChange();
       return;
     }
     if (SUPPORTED_LANGS.includes(lang)) {
@@ -1107,7 +1108,7 @@
       renderCookieBanner(lang);
       if (!zoryanaRecognition) zoryanaMicShowIdleHint();
       buildLangDropdown();
-      if (document.getElementById('zoryana-panel').classList.contains('open')) zoryanaRenderQuick();
+      zoryanaOnLangChange();
       return;
     }
     // Для решти мов зі списку (pl/de/pt/tr) переклад ще не готовий.
@@ -1339,7 +1340,7 @@
       closing: 'Thanks for visiting Cartobi! I\u2019ll be here if you need another pinch of magic. Have a wonderful day and a fairy-tale mood! ✨',
     },
     ru: {
-      greeting: 'Привет! Я Зоряна! Расскажу всё про Карто́бі — жанры, цены, сроки. Просто напишите вопрос или нажмите кнопку ниже.',
+      greeting: 'Привет! Я Зоряна! Расскажу всё про Карто́би — жанры, цены, сроки. Просто напишите вопрос или нажмите кнопку ниже.',
       quick: [
         { label: 'Какие жанры?', key: 'genres' },
         { label: 'Сколько стоит?', key: 'price' },
@@ -1360,7 +1361,7 @@
       format: 'Вы получите файл в высоком качестве — Full HD или 4K, удобно смотреть на телевизоре, смартфоне или показать в соцсетях. Размер видео: 9:16 (вертикальный) или 16:9 (горизонтальный) — выберете в брифе.',
       privacy: 'Ваша приватность — мой приоритет. Фото используются только для создания мультфильма и никому не передаются. По желанию мы удаляем их сразу после завершения.',
       satisfaction: 'Я сделаю всё, чтобы вы улыбались! Мы вносим правки, пока результат не станет идеальным — ваши эмоции для нас самое главное.',
-      fallback: 'Хм, точного ответа на это у меня нет — лучше спросите прямо в боте @CartobiBot, там ответит команда Карто́бі 💛',
+      fallback: 'Хм, точного ответа на это у меня нет — лучше спросите прямо в боте @CartobiBot, там ответит команда Карто́би 💛',
       order: 'Чтобы оформить заказ, напишите нашему боту — нажмите кнопку "Создать героя" выше на странице 👆',
       mainMenu: [
         { label: '👶 Хочу мультфильм для ребёнка', key: 'kid' },
@@ -1999,6 +2000,21 @@
       }
     }
   }
+  // 04.10: після зміни мови сайту Зоряна починає розмову заново новою
+  // мовою. Раніше привітання лишалось мовою першого відкриття (напр.
+  // українською на німецькій сторінці), а мінялись лише кнопки.
+  function zoryanaOnLangChange() {
+    zoryanaSpeakGen++;
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (!zoryanaOpened) return; // привітання ще не показане — з'явиться вже новою мовою
+    zoryanaStep = 'menu';
+    zoryanaLastCategory = null;
+    const body = document.getElementById('zoryana-body');
+    if (body) body.innerHTML = '';
+    const open = document.getElementById('zoryana-panel').classList.contains('open');
+    zoryanaAddMsg((ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua).greeting, 'bot', open);
+    if (open) zoryanaRenderQuick();
+  }
   function zoryanaRenderQuick() {
     const t = ZORYANA_TXT[currentLang] || ZORYANA_TXT.ua;
     const el = document.getElementById('zoryana-quick');
@@ -2136,9 +2152,13 @@
     // Голоси від Google/Microsoft Natural/Online зазвичай звучать м'якше
     // за системний eSpeak-фолбек, але явне жіноче ім'я — надійніший
     // сигнал, тож перевіряємо його першим.
+    // 04.10: спершу якісні (Natural/Online/Neural/Google) жіночі, потім
+    // будь-які якісні, потім жіночі, потім перший голос ЦІЄЇ мови.
+    const hq = /google|natural|online|neural|premium|enhanced/i;
     const female = candidates.find(v => femaleNames.test(nameOf(v)));
-    const quality = candidates.find(v => /google|natural|online|neural/i.test(nameOf(v)));
-    return female || quality || candidates[0];
+    const hqFemale = candidates.find(v => hq.test(nameOf(v)) && femaleNames.test(nameOf(v)));
+    const quality = candidates.find(v => hq.test(nameOf(v)));
+    return hqFemale || quality || female || candidates[0];
   }
   // iOS-фікс 10.08: на iOS Safari є відомий баг — speechSynthesis.getVoices()
   // на перший виклик часто повертає ПОРОЖНІЙ масив, а onvoiceschanged
@@ -2151,6 +2171,9 @@
   // сам список імен. Фікс: перед першою реплікою кілька разів
   // пробуємо перезавантажити список голосів з невеликою затримкою,
   // поки він не заповниться (або поки не вичерпаємо спроби).
+  // Номер поточної озвучки: нова репліка або зміна мови скасовують
+  // попередню, і її решта речень уже не договорюється.
+  var zoryanaSpeakGen = 0;
   function zoryanaSpeak(text, attempt) {
     attempt = attempt || 0;
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
@@ -2164,39 +2187,44 @@
     try {
       const langCode = ZORYANA_VOICE_LANG[currentLang] || 'uk-UA';
       const voice = zoryanaPickVoice(langCode);
-      const clean = text.replace(/[👋💛🐾👆]/g, '').trim();
-      const rawSentences = clean.split(/(?<=[.!?…])\s+/).filter(Boolean);
-      // Довгі речення додатково ділимо по комах і тире — інакше довга
-      // фраза без жодної паузи всередині все одно звучить як суцільний
-      // потік (особливо помітно на переліках і числових діапазонах).
-      const sentences = rawSentences.flatMap(s =>
-        s.length > 40 ? s.split(/(?<=[,—])\s+/).filter(Boolean) : [s]
-      );
+      // 04.10: якщо на пристрої немає голосу ЦІЄЇ мови — мовчимо. Інакше
+      // браузер читає текст голосом за замовчуванням (часто англійським),
+      // і виходить нерозбірлива "каша". Текст на екрані лишається.
+      if (!voice) return;
+      // Лише для озвучки: прибираємо емодзі, знак наголосу (U+0301 у
+      // "Карто́бі" рушії читають як збій) і тире, яке деякі голоси
+      // вимовляють як слово. Видимий текст не змінюється.
+      const clean = text
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}️]/gu, '')
+        .replace(/́/g, '')
+        .replace(/\s+[—–]\s+/g, ', ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      // Ділимо тільки по кінцях речень: дрібні шматки по комах звучали
+      // уривчасто, без природної інтонації.
+      const sentences = clean.split(/(?<=[.!?…])\s+/).filter(Boolean);
+      const gen = ++zoryanaSpeakGen;
       window.speechSynthesis.cancel();
       let i = 0;
-      let advanced = false;
       function speakNext() {
-        if (i >= sentences.length) return;
-        const sentence = sentences[i];
-        advanced = false;
-        const utter = new SpeechSynthesisUtterance(sentence);
-        utter.lang = langCode;
-        if (voice) utter.voice = voice;
-        utter.pitch = 1.15;
-        utter.rate = 0.85;
+        if (gen !== zoryanaSpeakGen || i >= sentences.length) return;
+        const utter = new SpeechSynthesisUtterance(sentences[i]);
+        utter.lang = voice.lang || langCode;
+        utter.voice = voice;
+        utter.rate = 0.95;
+        utter.pitch = 1.05;
+        let advanced = false;
         const advance = () => {
-          if (advanced) return; // не рухаємось вдруге, якщо і onend, і таймер спрацювали разом
+          if (advanced) return;
           advanced = true;
           i++;
-          setTimeout(speakNext, 600);
+          setTimeout(speakNext, 250);
         };
         utter.onend = advance;
-        // Мобільний Chrome часто НЕ викликає onend для утворень у черзі —
-        // тому паралельно ставимо запасний таймер за орієнтовною
-        // тривалістю фрази (символ ≈ 65мс при повільному темпі), щоб пауза
-        // між реченнями з'являлась гарантовано, а не тільки на десктопі.
-        const estMs = Math.max(600, sentence.length * 65);
-        setTimeout(advance, estMs);
+        utter.onerror = advance;
+        // Запасний таймер для мобільного Chrome (onend інколи не приходить):
+        // з запасом, щоб не накладатися на ще недоказане речення.
+        setTimeout(advance, Math.max(1500, sentences[i].length * 110));
         window.speechSynthesis.speak(utter);
       }
       speakNext();
