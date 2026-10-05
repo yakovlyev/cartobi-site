@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Cartobi — Номер телефону</title>
+<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+<style>
+  :root{
+    --bg:#0A0722; --accent:#ffb020; --accent2:#ff8a00; --accent-text:#2a1400;
+    --text:#e8e5f5; --muted:#9b96c4; --border:rgba(255,255,255,0.14); --danger:#ff6b6b; --ok:#4cd98a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; padding:20px 16px 40px; text-align:center;}
+  h1{font-size:20px; margin:6px 0 10px; color:var(--accent);}
+  p{font-size:14.5px; color:var(--muted); line-height:1.55; margin:0 0 14px;}
+  .note{background:rgba(255,176,32,0.12); border:1.5px solid rgba(255,176,32,0.4); border-radius:12px; padding:11px 13px; color:var(--text); text-align:left;}
+  .big-btn{display:block; width:100%; border:none; border-radius:16px; padding:22px 14px; font-size:18px; font-weight:800; margin-top:8px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--accent-text); cursor:pointer;}
+  .big-btn:disabled{opacity:0.5;}
+  #status{font-size:15px; margin-top:16px; min-height:22px; line-height:1.5;}
+  #status.err{color:var(--danger);} #status.ok{color:var(--ok); font-weight:700;}
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<p id="why"></p>
+<p class="note" id="note"></p>
+<button type="button" class="big-btn" id="shareBtn"></button>
+<div id="status"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // 05.10: кнопка «Поділитися номером» під повідомленням бота. Telegram
+  // показує своє стандартне вікно і сам надсилає боту номер власника акаунта
+  // (Telegram.WebApp.requestContact) — номер не вводиться руками і його не підробити.
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+  const TXT = {
+    ua: { title: '📱 Номер телефону', why: 'Останній крок перед оплатою. Номер потрібен лише для зв\'язку щодо вашого замовлення — його бачимо тільки ми.',
+      note: 'Після натискання Telegram покаже стандартне вікно «Поділитися номером телефону?» з попередженням. Таке вікно показують усі боти — це нормально. Натисніть «Поділитися контактом».',
+      btn: '📱 Поділитися номером', ok: '✅ Дякуємо! Номер отримано, повертаємось у чат…', cancel: 'Номер не надіслано. Натисніть кнопку ще раз і оберіть «Поділитися контактом».', old: 'Ваша версія Telegram не підтримує цю кнопку. Закрийте це вікно і натисніть кнопку «📱 Поділитися номером» внизу екрана чату.' },
+    en: { title: '📱 Phone number', why: 'The last step before payment. We need the number only to contact you about your order — only we see it.',
+      note: 'Telegram will then show its standard "Share your phone number?" window with a warning. Every bot shows it — this is normal. Tap "Share contact".',
+      btn: '📱 Share my number', ok: '✅ Thank you! Number received, back to the chat…', cancel: 'The number was not sent. Tap the button again and choose "Share contact".', old: 'Your Telegram version does not support this button. Close this window and tap «📱 Share my number» at the bottom of the chat.' },
+    ru: { title: '📱 Номер телефона', why: 'Последний шаг перед оплатой. Номер нужен только для связи по вашему заказу — его видим только мы.',
+      note: 'После нажатия Telegram покажет стандартное окно «Поделиться номером телефона?» с предупреждением. Такое окно показывают все боты — это нормально. Нажмите «Поделиться контактом».',
+      btn: '📱 Поделиться номером', ok: '✅ Спасибо! Номер получен, возвращаемся в чат…', cancel: 'Номер не отправлен. Нажмите кнопку ещё раз и выберите «Поделиться контактом».', old: 'Ваша версия Telegram не поддерживает эту кнопку. Закройте окно и нажмите «📱 Поделиться номером» внизу чата.' },
+    it: { title: '📱 Numero di telefono', why: "L'ultimo passo prima del pagamento. Il numero serve solo per contattarti sul tuo ordine: lo vediamo solo noi.",
+      note: 'Telegram mostrerà la sua finestra standard «Condividere il numero di telefono?» con un avviso. Tutti i bot la mostrano: è normale. Tocca «Condividi contatto».',
+      btn: '📱 Condividi il numero', ok: '✅ Grazie! Numero ricevuto, torniamo alla chat…', cancel: 'Il numero non è stato inviato. Tocca di nuovo il pulsante e scegli «Condividi contatto».', old: 'La tua versione di Telegram non supporta questo pulsante. Chiudi la finestra e tocca «📱 Condividi il numero» in fondo alla chat.' },
+    fr: { title: '📱 Numéro de téléphone', why: "Dernière étape avant le paiement. Le numéro sert uniquement à vous contacter au sujet de votre commande — nous seuls le voyons.",
+      note: "Telegram affichera ensuite sa fenêtre standard « Partager votre numéro ? » avec un avertissement. Tous les bots l'affichent — c'est normal. Appuyez sur « Partager le contact ».",
+      btn: '📱 Partager mon numéro', ok: '✅ Merci ! Numéro reçu, retour au chat…', cancel: "Le numéro n'a pas été envoyé. Appuyez de nouveau et choisissez « Partager le contact ».", old: "Votre version de Telegram ne prend pas en charge ce bouton. Fermez la fenêtre et appuyez sur « 📱 Partager mon numéro » en bas du chat." },
+    es: { title: '📱 Número de teléfono', why: 'El último paso antes del pago. El número solo sirve para contactarte sobre tu pedido: solo lo vemos nosotros.',
+      note: 'Telegram mostrará su ventana estándar «¿Compartir tu número de teléfono?» con una advertencia. Todos los bots la muestran: es normal. Toca «Compartir contacto».',
+      btn: '📱 Compartir mi número', ok: '✅ ¡Gracias! Número recibido, volvemos al chat…', cancel: 'El número no se envió. Toca el botón otra vez y elige «Compartir contacto».', old: 'Tu versión de Telegram no admite este botón. Cierra la ventana y toca «📱 Compartir mi número» abajo en el chat.' },
+  };
+  const p = new URLSearchParams(location.search);
+  const lang = TXT[p.get('lang')] ? p.get('lang') : 'ua';
+  const t = TXT[lang];
+  document.documentElement.lang = lang === 'ua' ? 'uk' : lang;
+  document.getElementById('title').textContent = t.title;
+  document.getElementById('why').textContent = t.why;
+  document.getElementById('note').textContent = t.note;
+  const btn = document.getElementById('shareBtn');
+  const statusEl = document.getElementById('status');
+  btn.textContent = t.btn;
+  const setStatus = (m, c) => { statusEl.textContent = m; statusEl.className = c || ''; };
+  const supported = tg && typeof tg.requestContact === 'function' && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.9'));
+  if (!supported) { setStatus(t.old, 'err'); btn.disabled = true; return; }
+  btn.onclick = () => {
+    btn.disabled = true;
+    tg.requestContact((shared) => {
+      if (shared) { setStatus(t.ok, 'ok'); setTimeout(() => tg.close(), 1200); }
+      else { setStatus(t.cancel, 'err'); btn.disabled = false; }
+    });
+  };
+});
+</script>
+</body>
+</html>

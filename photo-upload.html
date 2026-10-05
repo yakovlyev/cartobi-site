@@ -22,6 +22,10 @@
   #status{font-size:15px; margin-top:16px; min-height:22px; line-height:1.5;}
   #status.err{color:var(--danger);} #status.ok{color:var(--ok); font-weight:700;}
   input[type=file]{display:none;}
+  .spinner{display:none; width:46px; height:46px; margin:18px auto 0; border:5px solid rgba(255,176,32,0.25); border-top-color:var(--accent); border-radius:50%; animation:spin 0.9s linear infinite;}
+  .spinner.show{display:block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #status.wait{color:var(--text); font-size:17px; font-weight:700;}
 </style>
 </head>
 <body>
@@ -30,6 +34,7 @@
 <button type="button" class="big-btn" id="pickBtn"></button>
 <input type="file" id="fileInput" accept="image/*">
 <img id="preview" alt="">
+<div class="spinner" id="spinner"></div>
 <div id="status"></div>
 
 <script>
@@ -46,37 +51,37 @@ document.addEventListener('DOMContentLoaded', function () {
       hintKids: 'Одне чітке фото обличчя анфас, при гарному світлі. З нього ми зробимо мультяшного героя.',
       hintPets: 'Одне чітке фото улюбленця, де добре видно мордочку і забарвлення.',
       hintOther: 'Одне чітке фото, де добре видно обличчя.',
-      pick: '📷 Обрати фото', again: '📷 Обрати інше фото', sending: 'Надсилаю фото…', ok: '✅ Фото отримано! Повертаємось у чат…',
+      pick: '📷 Обрати фото', again: '📷 Обрати інше фото', sending: '⏳ Надсилаю фото — зачекайте кілька секунд, не закривайте вікно', ok: '✅ Фото отримано! Повертаємось у чат…',
       err: 'Не вдалося надіслати. Перевірте інтернет і спробуйте ще раз.', notWaiting: 'Бот зараз не чекає фото. Поверніться в чат і продовжіть там.', bad: 'Це не схоже на фото. Оберіть зображення.', noTg: 'Відкрийте цю сторінку кнопкою в боті @CartobiBot.' },
     en: { kids: "Child's photo", pets: "Pet's photo", other: 'Photo for the cartoon',
       hintKids: 'One clear front-facing photo of the face, in good light. We will turn it into a cartoon hero.',
       hintPets: 'One clear photo of your pet where the face and coat are easy to see.',
       hintOther: 'One clear photo where the face is easy to see.',
-      pick: '📷 Choose a photo', again: '📷 Choose another photo', sending: 'Sending the photo…', ok: '✅ Photo received! Back to the chat…',
+      pick: '📷 Choose a photo', again: '📷 Choose another photo', sending: '⏳ Sending the photo — please wait a few seconds, do not close this window', ok: '✅ Photo received! Back to the chat…',
       err: 'Could not send. Check your connection and try again.', notWaiting: 'The bot is not waiting for a photo right now. Go back to the chat and continue there.', bad: 'This does not look like a photo. Please choose an image.', noTg: 'Open this page with the button in @CartobiBot.' },
     ru: { kids: 'Фото ребёнка', pets: 'Фото питомца', other: 'Фото для мультфильма',
       hintKids: 'Одно чёткое фото лица анфас, при хорошем свете. Из него мы сделаем мультяшного героя.',
       hintPets: 'Одно чёткое фото питомца, где хорошо видно мордочку и окрас.',
       hintOther: 'Одно чёткое фото, где хорошо видно лицо.',
-      pick: '📷 Выбрать фото', again: '📷 Выбрать другое фото', sending: 'Отправляю фото…', ok: '✅ Фото получено! Возвращаемся в чат…',
+      pick: '📷 Выбрать фото', again: '📷 Выбрать другое фото', sending: '⏳ Отправляю фото — подождите несколько секунд, не закрывайте окно', ok: '✅ Фото получено! Возвращаемся в чат…',
       err: 'Не удалось отправить. Проверьте интернет и попробуйте ещё раз.', notWaiting: 'Бот сейчас не ждёт фото. Вернитесь в чат и продолжите там.', bad: 'Это не похоже на фото. Выберите изображение.', noTg: 'Откройте эту страницу кнопкой в боте @CartobiBot.' },
     it: { kids: 'Foto del bambino', pets: 'Foto del tuo animale', other: 'Foto per il cartone',
       hintKids: 'Una foto chiara del viso, frontale e con buona luce. Ne faremo un eroe dei cartoni.',
       hintPets: 'Una foto chiara del tuo animale, con muso e mantello ben visibili.',
       hintOther: 'Una foto chiara in cui il viso si vede bene.',
-      pick: '📷 Scegli una foto', again: "📷 Scegli un'altra foto", sending: 'Invio della foto…', ok: '✅ Foto ricevuta! Torniamo alla chat…',
+      pick: '📷 Scegli una foto', again: "📷 Scegli un'altra foto", sending: '⏳ Invio della foto — attendi qualche secondo, non chiudere la finestra', ok: '✅ Foto ricevuta! Torniamo alla chat…',
       err: 'Invio non riuscito. Controlla la connessione e riprova.', notWaiting: 'Il bot ora non sta aspettando una foto. Torna alla chat e continua lì.', bad: "Non sembra una foto. Scegli un'immagine.", noTg: 'Apri questa pagina con il pulsante in @CartobiBot.' },
     fr: { kids: "Photo de l'enfant", pets: 'Photo de votre animal', other: 'Photo pour le dessin animé',
       hintKids: 'Une photo nette du visage, de face et bien éclairée. Nous en ferons un héros de dessin animé.',
       hintPets: 'Une photo nette de votre animal, où la tête et le pelage se voient bien.',
       hintOther: 'Une photo nette où le visage se voit bien.',
-      pick: '📷 Choisir une photo', again: '📷 Choisir une autre photo', sending: 'Envoi de la photo…', ok: '✅ Photo reçue ! Retour au chat…',
+      pick: '📷 Choisir une photo', again: '📷 Choisir une autre photo', sending: '⏳ Envoi de la photo — patientez quelques secondes, ne fermez pas la fenêtre', ok: '✅ Photo reçue ! Retour au chat…',
       err: "Échec de l'envoi. Vérifiez la connexion et réessayez.", notWaiting: "Le bot n'attend pas de photo pour le moment. Revenez au chat et continuez-y.", bad: 'Ce fichier ne ressemble pas à une photo. Choisissez une image.', noTg: 'Ouvrez cette page avec le bouton dans @CartobiBot.' },
     es: { kids: 'Foto del niño', pets: 'Foto de tu mascota', other: 'Foto para el dibujo animado',
       hintKids: 'Una foto clara de la cara, de frente y con buena luz. La convertiremos en un héroe animado.',
       hintPets: 'Una foto clara de tu mascota donde se vean bien la cara y el pelaje.',
       hintOther: 'Una foto clara donde se vea bien la cara.',
-      pick: '📷 Elegir una foto', again: '📷 Elegir otra foto', sending: 'Enviando la foto…', ok: '✅ ¡Foto recibida! Volvemos al chat…',
+      pick: '📷 Elegir una foto', again: '📷 Elegir otra foto', sending: '⏳ Enviando la foto — espera unos segundos, no cierres la ventana', ok: '✅ ¡Foto recibida! Volvemos al chat…',
       err: 'No se pudo enviar. Revisa la conexión e inténtalo de nuevo.', notWaiting: 'El bot no está esperando una foto ahora. Vuelve al chat y continúa allí.', bad: 'Esto no parece una foto. Elige una imagen.', noTg: 'Abre esta página con el botón en @CartobiBot.' },
   };
   const lang = TXT[params.get('lang')] ? params.get('lang') : 'ua';
@@ -89,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const fileInput = document.getElementById('fileInput');
   const preview = document.getElementById('preview');
   const statusEl = document.getElementById('status');
+  const spinner = document.getElementById('spinner');
   titleEl.textContent = '📷 ' + (track === 'kids' ? t.kids : track === 'pets' ? t.pets : t.other);
   hintEl.textContent = track === 'kids' ? t.hintKids : track === 'pets' ? t.hintPets : t.hintOther;
   pickBtn.textContent = t.pick;
@@ -123,17 +129,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function upload(b64) {
     pickBtn.disabled = true;
-    setStatus(t.sending);
+    spinner.classList.add('show');
+    setStatus(t.sending, 'wait');
     fetch(CARTOBI_API + '/webapp/photo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ initData: tg.initData, photo: b64 }),
     }).then((r) => {
+      spinner.classList.remove('show');
       if (r.status === 409) { setStatus(t.notWaiting, 'err'); pickBtn.disabled = false; pickBtn.textContent = t.again; return; }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       setStatus(t.ok, 'ok');
       setTimeout(() => tg.close(), 1200);
     }).catch(() => {
+      spinner.classList.remove('show');
       setStatus(t.err, 'err');
       pickBtn.disabled = false;
       pickBtn.textContent = t.again;
