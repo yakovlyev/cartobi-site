@@ -1162,6 +1162,12 @@
   function goToBot(genre, substyle) {
     let payload = 'g' + genre;
     if (substyle) payload += '_s' + substyle;
+    // 05.10: передаємо в бот, з якої соцмережі прийшов відвідувач
+    // (?utm_source=instagram → _uinstagram), щоб бачити, звідки замовлення.
+    try {
+      const src = (new URLSearchParams(location.search).get('utm_source') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20);
+      if (src) payload += '_u' + src;
+    } catch (e) { /* без джерела теж працює */ }
     window.location.href = 'https://t.me/' + BOT_USERNAME + '?start=' + payload;
   }
 
@@ -2005,6 +2011,7 @@
   // українською на німецькій сторінці), а мінялись лише кнопки.
   function zoryanaOnLangChange() {
     zoryanaSpeakGen++;
+    zoryanaStopAudio();
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     if (!zoryanaOpened) return; // привітання ще не показане — з'явиться вже новою мовою
     zoryanaStep = 'menu';
@@ -2174,13 +2181,54 @@
   // Номер поточної озвучки: нова репліка або зміна мови скасовують
   // попередню, і її решта речень уже не договорюється.
   var zoryanaSpeakGen = 0;
+  // 05.10: готова озвучка голосом Google Chirp 3 HD (Aoede), файли в
+  // audio/zoryana/<мова>/<хеш тексту>.mp3. Якщо файлу немає — голос браузера.
+  var zoryanaAudio = null;
+  function zoryanaTtsClean(text) {
+    return String(text || '')
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\uFE0F]/gu, '')
+      .replace(/\u0301/g, '')
+      .replace(/\s+[—–]\s+/g, ', ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function zoryanaHash(t) {
+    let x = 5381;
+    for (let i = 0; i < t.length; i++) x = ((x << 5) + x + t.charCodeAt(i)) >>> 0;
+    return x.toString(16).padStart(8, '0');
+  }
+  function zoryanaStopAudio() {
+    if (zoryanaAudio) { try { zoryanaAudio.pause(); } catch (e) {} zoryanaAudio = null; }
+  }
   function zoryanaSpeak(text, attempt) {
+    if (!attempt) {
+      const gen = ++zoryanaSpeakGen;
+      zoryanaStopAudio();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      const clean = zoryanaTtsClean(text);
+      const audio = new Audio('audio/zoryana/' + currentLang + '/' + zoryanaHash(clean) + '.mp3');
+      zoryanaAudio = audio;
+      let fellBack = false;
+      const fallback = () => {
+        if (fellBack || gen !== zoryanaSpeakGen) return;
+        fellBack = true;
+        if (zoryanaAudio === audio) zoryanaAudio = null;
+        zoryanaSpeakBrowser(text, 0);
+      };
+      audio.onerror = fallback;
+      const p = audio.play();
+      if (p && p.catch) p.catch(fallback);
+      return;
+    }
+    zoryanaSpeakBrowser(text, attempt);
+  }
+  function zoryanaSpeakBrowser(text, attempt) {
     attempt = attempt || 0;
     if (!('speechSynthesis' in window)) return; // немає підтримки — просто мовчки пропускаємо, текст і так є
     if (!zoryanaVoices.length && attempt < 10) {
       zoryanaLoadVoices();
       if (!zoryanaVoices.length) {
-        setTimeout(() => zoryanaSpeak(text, attempt + 1), 120);
+        setTimeout(() => zoryanaSpeakBrowser(text, attempt + 1), 120);
         return;
       }
     }
