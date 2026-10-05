@@ -59,6 +59,7 @@
     background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--accent-text); cursor:pointer;
   }
   .submit-btn:disabled{opacity:0.5;}
+  .submit-btn.incomplete{opacity:0.75;}
   .err{color:var(--danger); font-size:12.5px; margin-top:5px; display:none;}
   .err.show{display:block;}
   .section-title{font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin:26px 0 12px; font-weight:700;}
@@ -86,6 +87,7 @@
   <b id="totalVal">$0</b>
 </div>
 <div class="submit-bar">
+  <div class="err" id="sendErr" style="text-align:center;margin-bottom:6px;"></div>
   <button type="button" class="submit-btn" id="submitBtn">Надіслати бриф</button>
 </div>
 
@@ -93,6 +95,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
+const CARTOBI_API = 'https://cartobi.onrender.com';
+const sendErrEl = document.getElementById('sendErr');
 
 const params = new URLSearchParams(location.search);
 let track = params.get('track') || 'romance';
@@ -137,7 +141,7 @@ let currentLang = detectLang();
 
 const UI_TXT = {
   "ua": {
-    "photoNoticeKids": "📷 <b>Після цієї форми бот попросить фото дитини (краще 2 фото — анфас і профіль)</b> — це обов'язковий крок, без нього не можемо зробити персонажа.",
+    "photoNoticeKids": "📷 <b>Після цієї форми бот попросить фото дитини (одне чітке фото обличчя анфас — кнопкою «📷 Завантажити фото»)</b> — це обов'язковий крок, без нього не можемо зробити персонажа.",
     "photoNoticePets": "📷 <b>Після цієї форми бот попросить фото улюбленця</b> — це обов'язковий крок, без нього не можемо зробити персонажа схожим.",
     "photoNoticeAdult": "📷 <b>Після цієї форми бот запропонує надіслати фото</b> — необов'язково (опис зовнішності вже є нижче), але дуже рекомендуємо для точнішої схожості.",
     "kidsTitle": "🎬 Персональний мультфільм",
@@ -153,6 +157,8 @@ const UI_TXT = {
     "totalLabel": "Разом до сплати",
     "totalSub": "Оплата в гривнях за курсом НБУ на день оплати, без ПДВ",
     "submitBtn": "Надіслати бриф",
+    "sendingTxt": "Надсилаю…",
+    "sendErr": "Не вдалося надіслати. Перевірте інтернет і натисніть ще раз.",
     "requiredErr": "Це поле обов'язкове",
     "yourAnswer": "Ваша відповідь…",
     "genrePickerTitle": "💌 Дорослі формати",
@@ -166,7 +172,7 @@ const UI_TXT = {
     "formTitle": "Бриф"
   },
   "en": {
-    "photoNoticeKids": "📷 <b>After this form the bot will ask for a photo of the child (preferably 2 photos — front and profile)</b> — this is a required step, we can't make the character without it.",
+    "photoNoticeKids": "📷 <b>After this form the bot will ask for a photo of the child (one clear front-facing photo — via the «📷 Upload a photo» button)</b> — this is a required step, we can't make the character without it.",
     "photoNoticePets": "📷 <b>After this form the bot will ask for a photo of your pet</b> — this is a required step, we can't make the character look like your pet without it.",
     "photoNoticeAdult": "📷 <b>After this form the bot will offer to send a photo</b> — optional (the appearance description is already below), but highly recommended for a closer likeness.",
     "kidsTitle": "🎬 Personal Cartoon",
@@ -182,6 +188,8 @@ const UI_TXT = {
     "totalLabel": "Total to pay",
     "totalSub": "Payment in hryvnia at the NBU rate on the day of payment, no VAT",
     "submitBtn": "Send the brief",
+    "sendingTxt": "Sending…",
+    "sendErr": "Could not send. Check your connection and tap again.",
     "requiredErr": "This field is required",
     "yourAnswer": "Your answer…",
     "genrePickerTitle": "💌 Adult Formats",
@@ -195,7 +203,7 @@ const UI_TXT = {
     "formTitle": "Brief"
   },
   "ru": {
-    "photoNoticeKids": "📷 <b>После этой формы бот попросит фото ребёнка (лучше 2 фото — анфас и профиль)</b> — это обязательный шаг, без него не можем сделать персонажа.",
+    "photoNoticeKids": "📷 <b>После этой формы бот попросит фото ребёнка (одно чёткое фото лица анфас — кнопкой «📷 Загрузить фото»)</b> — это обязательный шаг, без него не можем сделать персонажа.",
     "photoNoticePets": "📷 <b>После этой формы бот попросит фото питомца</b> — это обязательный шаг, без него не можем сделать персонажа похожим.",
     "photoNoticeAdult": "📷 <b>После этой формы бот предложит прислать фото</b> — необязательно (описание внешности уже есть ниже), но очень рекомендуем для более точного сходства.",
     "kidsTitle": "🎬 Персональный мультфильм",
@@ -211,6 +219,8 @@ const UI_TXT = {
     "totalLabel": "Итого к оплате",
     "totalSub": "Оплата в гривнах по курсу НБУ на день оплаты, без НДС",
     "submitBtn": "Отправить бриф",
+    "sendingTxt": "Отправляю…",
+    "sendErr": "Не удалось отправить. Проверьте интернет и нажмите ещё раз.",
     "requiredErr": "Это поле обязательное",
     "yourAnswer": "Ваш ответ…",
     "genrePickerTitle": "💌 Взрослые форматы",
@@ -224,7 +234,7 @@ const UI_TXT = {
     "formTitle": "Бриф"
   },
   "it": {
-    "photoNoticeKids": "📷 <b>Dopo questo modulo il bot chiederà una foto del bambino (meglio 2 foto — frontale e di profilo)</b> — è un passaggio obbligatorio, senza non possiamo creare il personaggio.",
+    "photoNoticeKids": "📷 <b>Dopo questo modulo il bot chiederà una foto del bambino (una foto chiara del viso, frontale — con il pulsante «📷 Carica una foto»)</b> — è un passaggio obbligatorio, senza non possiamo creare il personaggio.",
     "photoNoticePets": "📷 <b>Dopo questo modulo il bot chiederà una foto del tuo animale</b> — è un passaggio obbligatorio, senza non possiamo rendere il personaggio somigliante.",
     "photoNoticeAdult": "📷 <b>Dopo questo modulo il bot proporrà di inviare una foto</b> — facoltativo (la descrizione dell’aspetto è già qui sotto), ma molto consigliato per una somiglianza più precisa.",
     "kidsTitle": "🎬 Cartone Personalizzato",
@@ -240,6 +250,8 @@ const UI_TXT = {
     "totalLabel": "Totale da pagare",
     "totalSub": "Pagamento in hryvnia al tasso NBU del giorno del pagamento, IVA esclusa",
     "submitBtn": "Invia il brief",
+    "sendingTxt": "Invio…",
+    "sendErr": "Invio non riuscito. Controlla la connessione e tocca di nuovo.",
     "requiredErr": "Questo campo è obbligatorio",
     "yourAnswer": "La tua risposta…",
     "genrePickerTitle": "💌 Formati per Adulti",
@@ -253,7 +265,7 @@ const UI_TXT = {
     "formTitle": "Brief"
   },
   "fr": {
-    "photoNoticeKids": "📷 <b>Après ce formulaire, le bot demandera une photo de l’enfant (de préférence 2 photos — de face et de profil)</b> — c’est une étape obligatoire, sans elle nous ne pouvons pas créer le personnage.",
+    "photoNoticeKids": "📷 <b>Après ce formulaire, le bot demandera une photo de l’enfant (une photo nette du visage, de face — avec le bouton «📷 Envoyer une photo»)</b> — c’est une étape obligatoire, sans elle nous ne pouvons pas créer le personnage.",
     "photoNoticePets": "📷 <b>Après ce formulaire, le bot demandera une photo de votre animal</b> — c’est une étape obligatoire, sans elle nous ne pouvons pas rendre le personnage ressemblant.",
     "photoNoticeAdult": "📷 <b>Après ce formulaire, le bot proposera d’envoyer une photo</b> — facultatif (la description de l’apparence est déjà ci-dessous), mais fortement recommandé pour une meilleure ressemblance.",
     "kidsTitle": "🎬 Dessin Animé Personnalisé",
@@ -269,6 +281,8 @@ const UI_TXT = {
     "totalLabel": "Total à payer",
     "totalSub": "Paiement en hryvnias au taux de la BNU le jour du paiement, hors TVA",
     "submitBtn": "Envoyer le brief",
+    "sendingTxt": "Envoi…",
+    "sendErr": "Échec de l'envoi. Vérifiez la connexion et réessayez.",
     "requiredErr": "Ce champ est obligatoire",
     "yourAnswer": "Votre réponse…",
     "genrePickerTitle": "💌 Formats Adultes",
@@ -282,7 +296,7 @@ const UI_TXT = {
     "formTitle": "Brief"
   },
   "es": {
-    "photoNoticeKids": "📷 <b>Después de este formulario el bot pedirá una foto del niño/a (mejor 2 fotos — de frente y de perfil)</b> — es un paso obligatorio, sin ella no podemos crear el personaje.",
+    "photoNoticeKids": "📷 <b>Después de este formulario el bot pedirá una foto del niño/a (una foto clara de la cara, de frente — con el botón «📷 Subir una foto»)</b> — es un paso obligatorio, sin ella no podemos crear el personaje.",
     "photoNoticePets": "📷 <b>Después de este formulario el bot pedirá una foto de tu mascota</b> — es un paso obligatorio, sin ella no podemos hacer que el personaje se parezca.",
     "photoNoticeAdult": "📷 <b>Después de este formulario el bot propondrá enviar una foto</b> — opcional (la descripción del aspecto ya está abajo), pero muy recomendable para un parecido más preciso.",
     "kidsTitle": "🎬 Dibujo Animado Personal",
@@ -298,6 +312,8 @@ const UI_TXT = {
     "totalLabel": "Total a pagar",
     "totalSub": "Pago en grivnas al tipo de cambio del NBU el día del pago, sin IVA",
     "submitBtn": "Enviar el brief",
+    "sendingTxt": "Enviando…",
+    "sendErr": "No se pudo enviar. Revisa la conexión y toca de nuevo.",
     "requiredErr": "Este campo es obligatorio",
     "yourAnswer": "Tu respuesta…",
     "genrePickerTitle": "💌 Formatos para Adultos",
@@ -4537,7 +4553,6 @@ function renderForm() {
     if (!presetGenre) allQuestions.push({ key: 'interest', type: 'buttons', q: t.kidsGenreQ, options: KIDS_GENRES_I18N[currentLang] });
     allQuestions.push({ key: 'gender', type: 'buttons', q: t.kidsGenderQ, options: [t.kidsBoy, t.kidsGirl] });
     allQuestions.push({ key: 'videoConsent', type: 'buttons', q: t.videoConsentQ, options: [t.videoConsentYes, t.videoConsentNo] });
-    allQuestions.push({ key: 'phone', q: t.phoneQ, hint: t.phoneHint });
 
     allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length + 2, q));
 
@@ -4570,7 +4585,9 @@ function renderForm() {
     const brief = ADULT_BRIEFS_I18N[currentLang][track] || ADULT_BRIEFS_I18N[currentLang].romance;
     titleEl.textContent = brief.title;
     introEl.textContent = brief.intro;
-    allQuestions = brief.questions;
+    // 05.10: телефон більше не питаємо у формі — тільки кнопкою «Поділитися
+    // номером» у боті (Telegram передає справжній номер власника акаунта).
+    allQuestions = brief.questions.filter((q) => q.key !== 'phone');
     allQuestions.forEach((q, i) => addQuestion(i + 1, allQuestions.length, q));
 
     if (track === 'pets') {
@@ -4623,7 +4640,7 @@ function updateTotals() {
 
 function requiredKeys() {
   if (isKids) {
-    const keys = ['name', 'gender', 'tariff', 'videoConsent', 'phone'];
+    const keys = ['name', 'gender', 'tariff', 'videoConsent'];
     if (!presetGenre) keys.push('interest');
     return keys;
   }
@@ -4639,7 +4656,9 @@ function validateForm() {
     const v = answers[k];
     return v === undefined || v === null || v === '';
   });
-  submitBtn.disabled = missing.length > 0;
+  // 05.10: кнопка НІКОЛИ не вимикається мовчки — інакше натискання нічого не
+  // робить і клієнт думає, що все зависло. Порожні поля підсвічуються при натисканні.
+  submitBtn.classList.toggle('incomplete', missing.length > 0);
   return missing;
 }
 
@@ -4660,7 +4679,27 @@ submitBtn.addEventListener('click', () => {
   formAlreadySubmitted = true;
   submitBtn.disabled = true;
   const payload = { track, answers, presetGenre: presetGenre || null, lang: currentLang };
-  if (tg) {
+  if (tg && tg.initData) {
+    // 05.10: форма відкривається кнопкою прямо під повідомленням бота (inline).
+    // Звідти sendData() не працює, тому бриф іде напряму на сервер бота разом
+    // з підписаними даними Telegram (initData) — сервер перевіряє підпис.
+    sendErrEl.classList.remove('show');
+    submitBtn.textContent = UI_TXT[currentLang].sendingTxt || '…';
+    fetch(CARTOBI_API + '/webapp/brief', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData: tg.initData, data: JSON.stringify(payload) }),
+    }).then((r) => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      tg.close();
+    }).catch(() => {
+      formAlreadySubmitted = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = UI_TXT[currentLang].submitBtn;
+      sendErrEl.textContent = UI_TXT[currentLang].sendErr || 'Error, try again';
+      sendErrEl.classList.add('show');
+    });
+  } else if (tg) {
     tg.sendData(JSON.stringify(payload));
     tg.close();
   } else {
