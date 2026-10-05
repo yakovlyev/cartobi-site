@@ -133,10 +133,11 @@ document.addEventListener('DOMContentLoaded', function () {
     setStatus(t.sending, 'wait');
     fetch(CARTOBI_API + '/webapp/photo', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Tg-Init-Data': tg.initData },
       body: JSON.stringify({ initData: tg.initData, photo: b64 }),
     }).then((r) => {
       spinner.classList.remove('show');
+      if (r.status === 503) { setStatus(t.err, 'err'); pickBtn.disabled = false; pickBtn.textContent = t.again; return; }
       if (r.status === 409) { setStatus(t.notWaiting, 'err'); pickBtn.disabled = false; pickBtn.textContent = t.again; return; }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       setStatus(t.ok, 'ok');
