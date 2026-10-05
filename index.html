@@ -2182,7 +2182,7 @@
   // попередню, і її решта речень уже не договорюється.
   var zoryanaSpeakGen = 0;
   // 05.10: готова озвучка голосом Google Chirp 3 HD (Aoede), файли в
-  // audio/zoryana/<мова>/<хеш тексту>.mp3. Якщо файлу немає — голос браузера.
+  // audio/zoryana2/<мова>/<хеш тексту>.mp3 (v2: повільніше, з паузами). Якщо файлу немає — голос браузера.
   var zoryanaAudio = null;
   function zoryanaTtsClean(text) {
     return String(text || '')
@@ -2206,7 +2206,7 @@
       zoryanaStopAudio();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       const clean = zoryanaTtsClean(text);
-      const audio = new Audio('audio/zoryana/' + currentLang + '/' + zoryanaHash(clean) + '.mp3');
+      const audio = new Audio('audio/zoryana2/' + currentLang + '/' + zoryanaHash(clean) + '.mp3');
       zoryanaAudio = audio;
       let fellBack = false;
       const fallback = () => {
